@@ -1,0 +1,195 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Language, PageId, Property, PropertyFilterState } from './types';
+import { propertiesData } from './data/properties';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { InquiryModal } from './components/InquiryModal';
+import { IntroAnimation } from './components/IntroAnimation';
+import { CustomCursor } from './components/CustomCursor';
+import { HomePage } from './pages/HomePage';
+import { AboutPage } from './pages/AboutPage';
+import { PropertiesPage } from './pages/PropertiesPage';
+import { PropertyDetailsPage } from './pages/PropertyDetailsPage';
+import { ServicesPage } from './pages/ServicesPage';
+import { ContactPage } from './pages/ContactPage';
+import { MessageCircle, Phone } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+export default function App() {
+  const [language, setLanguage] = useState<Language>('ar');
+  const [currentPage, setCurrentPage] = useState<PageId>('home');
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [initialFilters, setInitialFilters] = useState<Partial<PropertyFilterState>>({});
+  const [introFinished, setIntroFinished] = useState(false);
+
+  // Inquiry Modal State
+  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  const [inquiryProperty, setInquiryProperty] = useState<Property | null>(null);
+  const [inquiryServiceTitle, setInquiryServiceTitle] = useState<string | null>(null);
+
+  // Update HTML dir and lang on language change
+  useEffect(() => {
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+    document.title = language === 'ar'
+      ? 'شركة أنوار نجد العقارية | فرص وحلول عقارية استثمارية'
+      : 'Anwar Najd Real Estate Company | Investment Real Estate Solutions';
+  }, [language]);
+
+  const handleSelectProperty = (property: Property) => {
+    setSelectedProperty(property);
+    setCurrentPage('property-details');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleApplySearchFilter = (filter: Partial<PropertyFilterState>) => {
+    setInitialFilters(filter);
+    setCurrentPage('properties');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenInquiry = (propOrNull?: Property | null, serviceTitle?: string) => {
+    setInquiryProperty(propOrNull || null);
+    setInquiryServiceTitle(serviceTitle || null);
+    setIsInquiryOpen(true);
+  };
+
+  const openWhatsAppFloating = () => {
+    const isAr = language === 'ar';
+    const message = isAr
+      ? 'السلام عليكم، أود التواصل مع شركة أنوار نجد العقارية'
+      : 'Hello, I would like to contact Anwar Najd Real Estate Company';
+    window.open(`https://wa.me/966502886202?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-[#193555] flex flex-col font-sans selection:bg-[#088AC3] selection:text-white">
+      {/* 2. Premium 1-Second Intro Animation */}
+      {!introFinished && (
+        <IntroAnimation onComplete={() => setIntroFinished(true)} />
+      )}
+
+      {/* 10. Subtle Premium Custom Cursor on Desktop */}
+      <CustomCursor />
+
+      {/* Header */}
+      <Header
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        language={language}
+        setLanguage={setLanguage}
+        onOpenInquiry={() => handleOpenInquiry(null)}
+      />
+
+      {/* Main Pages with Smooth Page Transitions */}
+      <main className="flex-1">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage + (currentPage === 'property-details' ? `-${selectedProperty?.id || 'default'}` : '')}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {currentPage === 'home' && (
+              <HomePage
+                language={language}
+                setCurrentPage={setCurrentPage}
+                onSelectProperty={handleSelectProperty}
+                onOpenInquiry={handleOpenInquiry}
+                onApplySearchFilter={handleApplySearchFilter}
+              />
+            )}
+
+            {currentPage === 'about' && (
+              <AboutPage
+                language={language}
+                setCurrentPage={setCurrentPage}
+                onOpenInquiry={() => handleOpenInquiry(null)}
+              />
+            )}
+
+            {currentPage === 'properties' && (
+              <PropertiesPage
+                language={language}
+                initialFilters={initialFilters}
+                onSelectProperty={handleSelectProperty}
+                onOpenInquiry={handleOpenInquiry}
+              />
+            )}
+
+            {currentPage === 'property-details' && (
+              <PropertyDetailsPage
+                property={selectedProperty || propertiesData[0]}
+                language={language}
+                setCurrentPage={setCurrentPage}
+                onSelectProperty={handleSelectProperty}
+                onOpenInquiry={(p) => handleOpenInquiry(p)}
+              />
+            )}
+
+            {currentPage === 'services' && (
+              <ServicesPage
+                language={language}
+                setCurrentPage={setCurrentPage}
+                onOpenInquiry={(svcTitle) => handleOpenInquiry(null, svcTitle)}
+              />
+            )}
+
+            {currentPage === 'contact' && (
+              <ContactPage language={language} />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      {/* Footer in Luxury Dark Navy Accent */}
+      <Footer
+        setCurrentPage={setCurrentPage}
+        language={language}
+        setLanguage={setLanguage}
+      />
+
+      {/* Reusable Inquiry Modal */}
+      <InquiryModal
+        isOpen={isInquiryOpen}
+        onClose={() => setIsInquiryOpen(false)}
+        property={inquiryProperty}
+        serviceTitle={inquiryServiceTitle}
+        language={language}
+      />
+
+      {/* Floating Quick Action CTA: WhatsApp & Direct Contact for Mobile / Quick Access */}
+      <div className="fixed bottom-6 end-6 z-40 flex flex-col items-center gap-3">
+        {/* Floating Call Button with Motion Lift */}
+        <motion.a
+          whileHover={{ scale: 1.12, y: -2 }}
+          whileTap={{ scale: 0.94 }}
+          href="tel:0502886202"
+          className="w-12 h-12 rounded-full bg-white text-[#088AC3] border border-slate-200 shadow-xl flex items-center justify-center hover:bg-slate-50 transition-colors"
+          title={language === 'ar' ? 'اتصال هاتفي مباشر: 0502886202' : 'Call: +966 50 288 6202'}
+          aria-label="Direct Phone Call"
+        >
+          <Phone className="w-5 h-5" />
+        </motion.a>
+
+        {/* Floating WhatsApp Button with Pulse */}
+        <motion.button
+          whileHover={{ scale: 1.12, y: -2 }}
+          whileTap={{ scale: 0.94 }}
+          onClick={openWhatsAppFloating}
+          className="w-14 h-14 rounded-full bg-emerald-600 text-white shadow-2xl flex items-center justify-center hover:bg-emerald-500 transition-colors cursor-pointer border-2 border-white"
+          title={language === 'ar' ? 'محادثة فورية عبر واتساب: 0502886202' : 'WhatsApp Us: +966 50 288 6202'}
+          aria-label="WhatsApp Us"
+        >
+          <MessageCircle className="w-7 h-7 fill-white/20" />
+        </motion.button>
+      </div>
+    </div>
+  );
+}

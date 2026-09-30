@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-ar: 'Cairo', system-ui, -apple-system, sans-serif;
+    --font-en: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --brand-navy: #193555;
+    --brand-medium: #355D7F;
+    --brand-cyan: #088AC3;
+    --brand-cyan-light: #0B85BF;
+    --brand-bg-light: #F8FAFC;
+    --brand-bg-soft: #F0F6FA;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html[dir="rtl"] {
+    font-family: var(--font-ar);
+  }
+
+  html[dir="ltr"] {
+    font-family: var(--font-en);
+  }
+}
+
+/* Custom luxury scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #088ac3;
+}
+
+/* Brand-matched utility classes */
+.bg-brand-navy {
+  background-color: #193555;
+}
+
+.text-brand-navy {
+  color: #193555;
+}
+
+.border-brand-navy {
+  border-color: #193555;
+}
+
+.bg-brand-medium {
+  background-color: #355D7F;
+}
+
+.text-brand-medium {
+  color: #355D7F;
+}
+
+.bg-brand-cyan {
+  background-color: #088AC3;
+}
+
+.text-brand-cyan {
+  color: #088AC3;
+}
+
+.border-brand-cyan {
+  border-color: #088AC3;
+}
+
+.hover\:bg-brand-cyan:hover {
+  background-color: #0779AB;
+}
+
+/* Luxury card and shadow styling */
+.luxury-card {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -4px rgba(25, 53, 85, 0.06);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-card:hover {
+  border-color: rgba(8, 138, 195, 0.4);
+  box-shadow: 0 12px 28px -6px rgba(25, 53, 85, 0.12);
+  transform: translateY(-2px);
+}
+
+/* 3D Depth Utilities */
+.perspective-container {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@keyframes floatSubtle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.5deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.04);
+  }
+}
+
+.animate-float-subtle {
+  animation: floatSubtle 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+
+
