@@ -21,7 +21,31 @@ import { MessageCircle, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
-  const [language, setLanguage] = useState<Language>('ar');
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('anwar_najd_lang');
+        if (saved === 'ar' || saved === 'en') {
+          return saved;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return 'ar';
+  });
+
+  const setLanguage = (newLang: Language) => {
+    setLanguageState(newLang);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('anwar_najd_lang', newLang);
+      } catch {
+        // ignore
+      }
+    }
+  };
+
   const [currentPage, setCurrentPage] = useState<PageId>('home');
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [initialFilters, setInitialFilters] = useState<Partial<PropertyFilterState>>({});
@@ -36,9 +60,10 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
+    document.body.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.title = language === 'ar'
-      ? 'شركة أنوار نجد العقارية | فرص وحلول عقارية استثمارية'
-      : 'Anwar Najd Real Estate Company | Investment Real Estate Solutions';
+      ? 'شركة أنوار نجد العقارية | Anwar Najd Real Estate Company'
+      : 'Anwar Najd Real Estate Company | شركة أنوار نجد العقارية';
   }, [language]);
 
   const handleSelectProperty = (property: Property) => {
@@ -68,7 +93,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#193555] flex flex-col font-sans selection:bg-[#088AC3] selection:text-white">
+    <div
+      dir={language === 'ar' ? 'rtl' : 'ltr'}
+      className="min-h-screen bg-white text-[#193555] flex flex-col selection:bg-[#088AC3] selection:text-white"
+    >
       {/* 2. Premium 1-Second Intro Animation */}
       {!introFinished && (
         <IntroAnimation onComplete={() => setIntroFinished(true)} />
@@ -90,7 +118,7 @@ export default function App() {
       <main className="flex-1">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentPage + (currentPage === 'property-details' ? `-${selectedProperty?.id || 'default'}` : '')}
+            key={`${currentPage}-${language}${currentPage === 'property-details' ? `-${selectedProperty?.id || 'default'}` : ''}`}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}

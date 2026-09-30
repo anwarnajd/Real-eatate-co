@@ -190,7 +190,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
                   >
                     <Building2 className="w-5 h-5" />
                   </motion.div>
-                  <span className="text-xs font-bold text-[#193555] block">طريق الملك فهد، الرياض</span>
+                  <span className="text-xs font-bold text-[#193555] block">
+                    {isAr ? 'طريق الملك فهد، الرياض' : 'King Fahd Road, Riyadh'}
+                  </span>
                   <span className="text-[11px] text-[#088AC3] font-semibold">{t.companyShort}</span>
                 </div>
               </div>

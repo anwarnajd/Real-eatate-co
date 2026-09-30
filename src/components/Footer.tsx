@@ -190,15 +190,35 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
             </div>
 
-            {/* Language Switcher pill in footer */}
+            {/* Functional Language Switcher: العربية | English */}
             <div className="pt-3">
-              <button
-                onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-[#38BDF8] py-1.5 px-3 rounded-lg bg-white/5 border border-white/10 cursor-pointer transition-colors"
-              >
-                <span>{language === 'ar' ? 'Switch to English' : 'التحويل للغة العربية'}</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#38BDF8]" />
-              </button>
+              <div className="inline-flex items-center p-1 rounded-xl bg-white/10 border border-white/15">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('ar')}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    language === 'ar'
+                      ? 'bg-[#088AC3] text-white shadow-xs'
+                      : 'text-slate-300 hover:text-white'
+                  }`}
+                  title="التحويل إلى اللغة العربية"
+                >
+                  العربية
+                </button>
+                <span className="text-white/30 text-xs px-1 select-none">|</span>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    language === 'en'
+                      ? 'bg-[#088AC3] text-white shadow-xs'
+                      : 'text-slate-300 hover:text-white'
+                  }`}
+                  title="Switch to English"
+                >
+                  English
+                </button>
+              </div>
             </div>
           </div>
         </div>

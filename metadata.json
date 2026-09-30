@@ -2,5 +2,7 @@
   "name": "شركة أنوار نجد العقارية | Anwar Najd Real Estate",
   "description": "شركة أنوار نجد العقارية — حلول وفرص عقارية استثمارية وسكنية رائدة في المملكة العربية السعودية. Anwar Najd Real Estate Company — Premier real estate investment and advisory in Saudi Arabia.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

@@ -107,17 +107,34 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Zone 3: Actions - Language Switcher & WhatsApp/Call CTA */}
           <div className="hidden sm:flex items-center gap-3">
-            {/* Language Switcher */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={toggleLanguage}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#193555] hover:text-[#088AC3] bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
-              title="Change Language"
-            >
-              <Globe className="w-3.5 h-3.5 text-[#088AC3]" />
-              <span>{language === 'ar' ? 'English' : 'العربية'}</span>
-            </motion.button>
+            {/* Functional Language Switcher: العربية | English */}
+            <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setLanguage('ar')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  language === 'ar'
+                    ? 'bg-[#088AC3] text-white shadow-xs'
+                    : 'text-[#193555] hover:text-[#088AC3] hover:bg-white/70'
+                }`}
+                title="التحويل إلى اللغة العربية"
+              >
+                العربية
+              </button>
+              <span className="text-slate-300 text-xs px-1 select-none">|</span>
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  language === 'en'
+                    ? 'bg-[#088AC3] text-white shadow-xs'
+                    : 'text-[#193555] hover:text-[#088AC3] hover:bg-white/70'
+                }`}
+                title="Switch to English"
+              >
+                English
+              </button>
+            </div>
 
             {/* Direct WhatsApp CTA with smooth hover lift and glow */}
             <motion.button
@@ -144,15 +161,34 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Mobile Menu & Language Toggle */}
           <div className="flex items-center gap-2 lg:hidden">
-            <button
-              onClick={toggleLanguage}
-              className="px-2.5 py-1 text-xs font-bold text-[#088AC3] bg-[#F0F7FB] border border-[#088AC3]/30 rounded-md"
-            >
-              {language === 'ar' ? 'EN' : 'عربي'}
-            </button>
+            <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200">
+              <button
+                type="button"
+                onClick={() => setLanguage('ar')}
+                className={`px-2 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  language === 'ar'
+                    ? 'bg-[#088AC3] text-white shadow-xs'
+                    : 'text-[#193555] hover:text-[#088AC3]'
+                }`}
+              >
+                عربي
+              </button>
+              <span className="text-slate-300 text-[10px] px-0.5 select-none">|</span>
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`px-2 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  language === 'en'
+                    ? 'bg-[#088AC3] text-white shadow-xs'
+                    : 'text-[#193555] hover:text-[#088AC3]'
+                }`}
+              >
+                EN
+              </button>
+            </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#193555] hover:text-[#088AC3] rounded-lg focus:outline-none"
+              className="p-2 text-[#193555] hover:text-[#088AC3] rounded-lg focus:outline-none cursor-pointer"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -167,8 +203,47 @@ export const Header: React.FC<HeaderProps> = ({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2 shadow-lg"
+          className="lg:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-2 shadow-lg"
         >
+          {/* Mobile Language Switcher Row in Drawer */}
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between mb-3">
+            <span className="text-xs font-bold text-[#193555] flex items-center gap-1.5">
+              <Globe className="w-4 h-4 text-[#088AC3]" />
+              <span>{isAr ? 'لغة الموقع' : 'Language'}</span>
+            </span>
+            <div className="flex items-center p-1 rounded-lg bg-white border border-slate-200 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => {
+                  setLanguage('ar');
+                  setMobileMenuOpen(false);
+                }}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  language === 'ar'
+                    ? 'bg-[#088AC3] text-white'
+                    : 'text-[#193555] hover:text-[#088AC3]'
+                }`}
+              >
+                العربية
+              </button>
+              <span className="text-slate-300 text-xs px-1 select-none">|</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setLanguage('en');
+                  setMobileMenuOpen(false);
+                }}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  language === 'en'
+                    ? 'bg-[#088AC3] text-white'
+                    : 'text-[#193555] hover:text-[#088AC3]'
+                }`}
+              >
+                English
+              </button>
+            </div>
+          </div>
+
           {navLinks.map((link) => (
             <button
               key={link.id}
