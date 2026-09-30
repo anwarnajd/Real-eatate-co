@@ -375,9 +375,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               >
                 <div className="relative md:w-80 h-56 md:h-auto flex-shrink-0 bg-slate-100 overflow-hidden">
                   <img
-                    src={prop.images[0]}
+                    src={prop.images[0] || '/images/property-fallback.jpg'}
                     alt={isAr ? prop.title.ar : prop.title.en}
+                    loading="lazy"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+                    }}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute top-3.5 start-3.5 px-3 py-1 rounded-lg bg-white/95 text-[#193555] text-xs font-bold shadow-xs">

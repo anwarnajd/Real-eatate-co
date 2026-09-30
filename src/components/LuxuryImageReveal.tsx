@@ -26,9 +26,13 @@ export const LuxuryImageReveal: React.FC<LuxuryImageRevealProps> = ({
     <div className={`relative overflow-hidden ${aspectRatio} ${className}`}>
       {/* Target Image with Scale Entrance */}
       <motion.img
-        src={src}
+        src={src || '/images/property-fallback.jpg'}
         alt={alt}
+        loading="lazy"
         referrerPolicy="no-referrer"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+        }}
         initial={{ scale: 1.1, filter: 'blur(4px)' }}
         whileInView={{ scale: 1, filter: 'blur(0px)' }}
         viewport={{ once: true, amount: 0.2 }}

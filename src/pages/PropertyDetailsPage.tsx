@@ -46,7 +46,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
   const images = property.images && property.images.length > 0
     ? property.images
-    : ['/src/assets/images/hero_riyadh_luxury_skyline_1790743838940.jpg'];
+    : ['/images/property-fallback.jpg'];
 
   const typeLabels: Record<string, { ar: string; en: string }> = {
     villa: { ar: 'فيلا فاخرة', en: 'Luxury Villa' },
@@ -131,6 +131,9 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 src={images[activeImageIndex]}
                 alt={isAr ? property.title.ar : property.title.en}
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+                }}
                 initial={{ opacity: 0, scale: 1.05 }}
                 animate={{ opacity: 1, scale: isZoomed ? 1.08 : 1.02 }}
                 exit={{ opacity: 0 }}
@@ -206,7 +209,11 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   <img
                     src={img}
                     alt={`Thumbnail ${idx + 1}`}
+                    loading="lazy"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+                    }}
                     className="w-full h-full object-cover"
                   />
                 </motion.button>

@@ -103,9 +103,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           style={{ transform: 'translateZ(15px)' }}
         >
           <motion.img
-            src={property.images[0]}
+            src={property.images[0] || '/images/property-fallback.jpg'}
             alt={isAr ? property.title.ar : property.title.en}
+            loading="lazy"
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+            }}
             animate={{
               scale: isHovered ? 1.08 : 1,
             }}

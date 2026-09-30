@@ -125,9 +125,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({
           >
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl group bg-slate-100">
               <img
-                src="/src/assets/images/about_corporate_lounge_1790743884178.jpg"
+                src="/images/about-corporate-lounge.jpg"
                 alt="Anwar Najd Real Estate Corporate Advisory Suite"
+                loading="lazy"
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+                }}
                 className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/80 via-transparent to-transparent" />

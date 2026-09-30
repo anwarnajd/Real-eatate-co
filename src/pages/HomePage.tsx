@@ -104,9 +104,13 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="absolute inset-0 z-0 scale-110 pointer-events-none"
         >
           <motion.img
-            src="/src/assets/images/hero_riyadh_luxury_skyline_1790743838940.jpg"
+            src="/images/hero-skyline.jpg"
             alt="Riyadh Luxury Architecture & Skyline"
+            loading="eager"
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+            }}
             initial={{ scale: 1.18, opacity: 0.8 }}
             animate={{ scale: 1.05, opacity: 1 }}
             transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1] }}

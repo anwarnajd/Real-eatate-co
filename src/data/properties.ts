@@ -26,9 +26,9 @@ export const propertiesData: Property[] = [
     area: 750,
     featured: true,
     images: [
-      '/src/assets/images/property_luxury_villa_riyadh_1790743850520.jpg',
-      '/src/assets/images/property_modern_penthouse_1790743860321.jpg',
-      '/src/assets/images/hero_riyadh_luxury_skyline_1790743838940.jpg',
+      '/images/property-villa-hittin.jpg',
+      '/images/property-penthouse-malqa.jpg',
+      '/images/hero-skyline.jpg',
     ],
     description: {
       ar: 'قصر عصري استثنائي بتصميم معماري فريد في أحد أرقى أحياء شمال الرياض (حطين). يتميز بواجهات حجرية زجاجية فاخرة، مسبح خاص ذو إطلالة بانورامية، تكييف مخفي متكامل، مصعد داخلي بانورامي، وأنظمة بيوت ذكية متكاملة (Smart Home) تتيح التحكم الكامل بالإضاءة والتكييف والأمان.',
@@ -93,9 +93,9 @@ export const propertiesData: Property[] = [
     area: 420,
     featured: true,
     images: [
-      '/src/assets/images/property_modern_penthouse_1790743860321.jpg',
-      '/src/assets/images/property_luxury_villa_riyadh_1790743850520.jpg',
-      '/src/assets/images/about_corporate_lounge_1790743884178.jpg',
+      '/images/property-penthouse-malqa.jpg',
+      '/images/property-villa-hittin.jpg',
+      '/images/about-corporate-lounge.jpg',
     ],
     description: {
       ar: 'شقة بنتهاوس دوبلكس فارهة في برج سكني راقٍ بحي الملقا، تتميز بإطلالة علوية خلابة على أفق مدينة الرياض. أرضيات رخامية إيطالية نخب أول، أسقف مرتفعة تمنح شعوراً بالاتساع والرحابة، تراس خارجي واسع مع جلسة شواء ومسبح جاكوزي خارجي مجهز.',
@@ -153,9 +153,9 @@ export const propertiesData: Property[] = [
     area: 580,
     featured: true,
     images: [
-      '/src/assets/images/property_commercial_hub_1790743874003.jpg',
-      '/src/assets/images/about_corporate_lounge_1790743884178.jpg',
-      '/src/assets/images/hero_riyadh_luxury_skyline_1790743838940.jpg',
+      '/images/property-commercial-tower.jpg',
+      '/images/about-corporate-lounge.jpg',
+      '/images/hero-skyline.jpg',
     ],
     description: {
       ar: 'مكاتب إدارية مفتوحة المساحة (Open Space) في برج تجاري ذكي من الفئة الممتازة (Grade A). تتمتع بواجهة زجاجية بانورامية، بنية تحتية رقمية متطورة للألياف الضوئية، بهو استقبال فندقي فخم مع خدمة أمنية واستقبال مدار الساعة، ومواقف سيارات مخصصة في القبو.',
@@ -215,8 +215,9 @@ export const propertiesData: Property[] = [
     area: 450,
     featured: true,
     images: [
-      '/src/assets/images/property_luxury_villa_riyadh_1790743850520.jpg',
-      '/src/assets/images/about_corporate_lounge_1790743884178.jpg',
+      '/images/property-villa-narjis.jpg',
+      '/images/about-corporate-lounge.jpg',
+      '/images/property-villa-hittin.jpg',
     ],
     description: {
       ar: 'فيلا سكنية فاخرة في موقع استراتيجي هادئ بحي النرجس، قريبة من طريق الملك سلمان ومطار الملك خالد الدولي. تصميم مدروس يستغل الإضاءة الطبيعية مع فناء وسطي داخلي، تشطيبات عالية الجودة، ومرافق متكاملة تضمن الخصوصية التامة للعائلة.',
@@ -276,8 +277,9 @@ export const propertiesData: Property[] = [
     area: 185,
     featured: false,
     images: [
-      '/src/assets/images/property_modern_penthouse_1790743860321.jpg',
-      '/src/assets/images/about_corporate_lounge_1790743884178.jpg',
+      '/images/property-apartment-yasmin.jpg',
+      '/images/property-penthouse-malqa.jpg',
+      '/images/about-corporate-lounge.jpg',
     ],
     description: {
       ar: 'شقة سكنية راقية مفروشة بأثاث إيطالي فاخر في مجمع سكني مغلق بحي الياسمين. تشتمل على مطبخ مجهز بالكامل بأحدث الأجهزة، دخول ذكي، نظام أمان ومراقبة، وموقف سيارة خاص في القبو.',
@@ -332,8 +334,9 @@ export const propertiesData: Property[] = [
     area: 900,
     featured: false,
     images: [
-      '/src/assets/images/hero_riyadh_luxury_skyline_1790743838940.jpg',
-      '/src/assets/images/property_commercial_hub_1790743874003.jpg',
+      '/images/property-land-khair.jpg',
+      '/images/hero-skyline.jpg',
+      '/images/property-commercial-tower.jpg',
     ],
     description: {
       ar: 'أرض مميزة ذات موقع استثماري واعد في نطاق التطوير العمراني الجديد شمال الرياض. تقع على شارع تجاري رئيسي بعرض 30 متراً، صك إلكتروني رسمي ومخطط معتمد جاهز للتطوير التجاري أو المجمعات السكنية.',
