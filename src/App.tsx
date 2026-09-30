@@ -20,30 +20,78 @@ import { ContactPage } from './pages/ContactPage';
 import { MessageCircle, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function App() {
-  const [language, setLanguageState] = useState<Language>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('anwar_najd_lang');
-        if (saved === 'ar' || saved === 'en') {
-          return saved;
-        }
-      } catch {
-        // ignore
+// Bulletproof storage helper that never crashes even in strict private mode or sandboxed iframes
+const getInitialLanguage = (): Language => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = window.localStorage.getItem('anwar_najd_lang');
+      if (saved === 'ar' || saved === 'en') {
+        return saved;
       }
     }
-    return 'ar';
-  });
+  } catch {
+    // storage unavailable or restricted
+  }
+  return 'ar';
+};
+
+const setSafeLanguage = (lang: Language): void => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem('anwar_najd_lang', lang);
+    }
+  } catch {
+    // storage unavailable or restricted
+  }
+};
+
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any) {
+    console.error('Anwar Najd App caught error:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50 text-center font-sans">
+          <div className="max-w-md p-8 bg-white rounded-2xl shadow-xl border border-slate-200">
+            <h2 className="text-xl font-bold text-[#193555] mb-2">شركة أنوار نجد العقارية</h2>
+            <p className="text-xs text-slate-500 mb-6">Anwar Najd Real Estate Company</p>
+            <button
+              onClick={() => {
+                try {
+                  window.localStorage?.removeItem('anwar_najd_lang');
+                } catch {}
+                window.location.reload();
+              }}
+              className="px-6 py-2.5 bg-[#088AC3] hover:bg-[#0779AB] text-white font-bold rounded-xl text-xs cursor-pointer shadow-md"
+            >
+              إعادة التحميل / Reload Website
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export default function App() {
+  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
 
   const setLanguage = (newLang: Language) => {
-    setLanguageState(newLang);
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('anwar_najd_lang', newLang);
-      } catch {
-        // ignore
-      }
-    }
+    const safeLang: Language = newLang === 'en' ? 'en' : 'ar';
+    setLanguageState(safeLang);
+    setSafeLanguage(safeLang);
   };
 
   const [currentPage, setCurrentPage] = useState<PageId>('home');
@@ -93,10 +141,11 @@ export default function App() {
   };
 
   return (
-    <div
-      dir={language === 'ar' ? 'rtl' : 'ltr'}
-      className="min-h-screen bg-white text-[#193555] flex flex-col selection:bg-[#088AC3] selection:text-white"
-    >
+    <ErrorBoundary>
+      <div
+        dir={language === 'ar' ? 'rtl' : 'ltr'}
+        className="min-h-screen bg-white text-[#193555] flex flex-col selection:bg-[#088AC3] selection:text-white"
+      >
       {/* 2. Premium 1-Second Intro Animation */}
       {!introFinished && (
         <IntroAnimation onComplete={() => setIntroFinished(true)} />
@@ -218,6 +267,7 @@ export default function App() {
           <MessageCircle className="w-7 h-7 fill-white/20" />
         </motion.button>
       </div>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

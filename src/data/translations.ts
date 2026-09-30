@@ -1,4 +1,4 @@
-export const translations = {
+const rawTranslations = {
   ar: {
     companyName: 'شركة أنوار نجد العقارية',
     companyShort: 'أنوار نجد العقارية',
@@ -533,3 +533,22 @@ export const translations = {
     },
   },
 };
+
+export const getTranslations = (lang?: string | null) => {
+  if (lang === 'en') return rawTranslations.en;
+  return rawTranslations.ar;
+};
+
+// Safe translations Proxy that guarantees translations[language] never returns undefined, even if language is undefined or invalid.
+export const translations = new Proxy(rawTranslations, {
+  get(target, prop: string | symbol) {
+    if (prop === 'en') return target.en;
+    if (prop === 'ar') return target.ar;
+    if (typeof prop === 'string' && prop in target) {
+      return (target as any)[prop];
+    }
+    // Failsafe fallback: return Arabic dictionary so no property access ever crashes
+    return target.ar;
+  },
+}) as typeof rawTranslations & Record<string, typeof rawTranslations.ar>;
+
