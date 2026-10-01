@@ -171,7 +171,7 @@ export default function App() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
             {currentPage === 'home' && (
               <HomePage
@@ -241,11 +241,16 @@ export default function App() {
         language={language}
       />
 
-      {/* Floating Quick Action CTA: WhatsApp & Direct Contact for Mobile / Quick Access */}
-      <div className="fixed bottom-6 end-6 z-40 flex flex-col items-center gap-3">
+      {/* Floating Quick Action CTA: WhatsApp & Direct Contact with Smooth Load Entrance */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed bottom-6 end-6 z-40 flex flex-col items-center gap-3"
+      >
         {/* Floating Call Button with Motion Lift */}
         <motion.a
-          whileHover={{ scale: 1.12, y: -2 }}
+          whileHover={{ scale: 1.08, y: -2 }}
           whileTap={{ scale: 0.94 }}
           href="tel:0502886202"
           className="w-12 h-12 rounded-full bg-white text-[#088AC3] border border-slate-200 shadow-xl flex items-center justify-center hover:bg-slate-50 transition-colors"
@@ -255,18 +260,18 @@ export default function App() {
           <Phone className="w-5 h-5" />
         </motion.a>
 
-        {/* Floating WhatsApp Button with Pulse */}
+        {/* Floating WhatsApp Button */}
         <motion.button
-          whileHover={{ scale: 1.12, y: -2 }}
+          whileHover={{ scale: 1.08, y: -2 }}
           whileTap={{ scale: 0.94 }}
           onClick={openWhatsAppFloating}
-          className="w-14 h-14 rounded-full bg-emerald-600 text-white shadow-2xl flex items-center justify-center hover:bg-emerald-500 transition-colors cursor-pointer border-2 border-white"
+          className="w-14 h-14 rounded-full bg-emerald-600 text-white shadow-2xl flex items-center justify-center hover:bg-emerald-500 transition-all cursor-pointer border-2 border-white"
           title={language === 'ar' ? 'محادثة فورية عبر واتساب: 0502886202' : 'WhatsApp Us: +966 50 288 6202'}
           aria-label="WhatsApp Us"
         >
           <MessageCircle className="w-7 h-7 fill-white/20" />
         </motion.button>
-      </div>
+      </motion.div>
       </div>
     </ErrorBoundary>
   );

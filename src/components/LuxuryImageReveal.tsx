@@ -16,6 +16,8 @@ export const LuxuryImageReveal: React.FC<LuxuryImageRevealProps> = ({
   aspectRatio = 'aspect-[4/3]',
   overlayColor = 'cyan',
 }) => {
+  const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
+
   const overlayColors = {
     cyan: 'bg-gradient-to-r from-[#088AC3] to-[#38BDF8]',
     navy: 'bg-gradient-to-r from-[#193555] to-[#355D7F]',
@@ -33,17 +35,17 @@ export const LuxuryImageReveal: React.FC<LuxuryImageRevealProps> = ({
         onError={(e) => {
           (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
         }}
-        initial={{ scale: 1.1, filter: 'blur(4px)' }}
-        whileInView={{ scale: 1, filter: 'blur(0px)' }}
+        initial={{ scale: 1.08, opacity: 0.9 }}
+        whileInView={{ scale: 1, opacity: 1 }}
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
         className="w-full h-full object-cover"
       />
 
-      {/* Sweeping Curtain Mask Reveal Overlay */}
+      {/* Sweeping Curtain Mask Reveal Overlay adapting to RTL/LTR */}
       <motion.div
         initial={{ x: '0%' }}
-        whileInView={{ x: '102%' }}
+        whileInView={{ x: isRtl ? '-102%' : '102%' }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         className={`absolute inset-0 z-10 pointer-events-none ${overlayColors[overlayColor]}`}

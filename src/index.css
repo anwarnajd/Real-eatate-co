@@ -10,10 +10,21 @@
     --brand-cyan-light: #0B85BF;
     --brand-bg-light: #F8FAFC;
     --brand-bg-soft: #F0F6FA;
+    --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Accessibility: Respect user reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   html[dir="rtl"], body[dir="rtl"], [dir="rtl"] {

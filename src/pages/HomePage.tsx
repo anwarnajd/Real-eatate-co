@@ -86,22 +86,17 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="w-full bg-white text-[#193555] overflow-x-hidden">
-      {/* 1. Cinematic Luxury Hero Section with Multi-Layer Parallax & Word-by-Word Reveal */}
+      {/* 1. Cinematic Luxury Hero Section with Multi-Layer Parallax & Cinematic Reveal Sequence */}
       <section
         ref={heroRef}
         onMouseMove={handleHeroMouseMove}
         onMouseLeave={handleHeroMouseLeave}
         className="relative min-h-[92vh] flex flex-col justify-center items-center overflow-hidden border-b border-slate-200"
       >
-        {/* Layer 1: Background Property Image with Slow Zoom & Scroll Parallax */}
+        {/* Layer 1: Background Property Image with Very Subtle Cinematic Zoom & Parallax */}
         <motion.div
           style={{ y: heroBgY }}
-          animate={{
-            x: mouseOffset.x * -0.5,
-            y: mouseOffset.y * -0.5,
-          }}
-          transition={{ type: 'spring', stiffness: 90, damping: 25 }}
-          className="absolute inset-0 z-0 scale-110 pointer-events-none"
+          className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
         >
           <motion.img
             src="/images/hero-skyline.jpg"
@@ -111,18 +106,23 @@ export const HomePage: React.FC<HomePageProps> = ({
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
             }}
-            initial={{ scale: 1.18, opacity: 0.8 }}
-            animate={{ scale: 1.05, opacity: 1 }}
-            transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-full object-cover object-center"
+            animate={{
+              scale: [1.00, 1.05, 1.00],
+            }}
+            transition={{
+              duration: 16,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            className="w-full h-full object-cover object-center will-change-transform"
           />
 
-          {/* Layer 2: Soft Blue & Navy Scrim Gradient */}
+          {/* Layer 2: Subtle Dark/Brand Scrim Gradient for Crisp Contrast */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/95 via-[#10243B]/70 to-[#193555]/65" />
         </motion.div>
 
         {/* Layer 3: Subtle Architectural Grid Lines & Blueprint Accents */}
-        <div className="absolute inset-0 z-[2] pointer-events-none opacity-25">
+        <div className="absolute inset-0 z-[2] pointer-events-none opacity-20">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="heroArchGrid" width="60" height="60" patternUnits="userSpaceOnUse">
@@ -134,74 +134,79 @@ export const HomePage: React.FC<HomePageProps> = ({
           </svg>
         </div>
 
-        {/* Layer 4: Floating Ambient Light Orbs with Parallax Drift */}
+        {/* Layer 4: Floating Ambient Light Orbs with Subtle Drift */}
         <motion.div
           animate={{
-            x: mouseOffset.x * 0.9,
-            y: mouseOffset.y * 0.9,
+            x: mouseOffset.x * 0.5,
+            y: mouseOffset.y * 0.5,
           }}
-          transition={{ type: 'spring', stiffness: 80, damping: 25 }}
-          className="absolute top-1/4 -start-24 w-96 h-96 bg-[#088AC3]/25 rounded-full blur-[110px] pointer-events-none animate-pulse-glow z-[3]"
+          transition={{ type: 'spring', stiffness: 60, damping: 30 }}
+          className="absolute top-1/4 -start-24 w-96 h-96 bg-[#088AC3]/20 rounded-full blur-[120px] pointer-events-none z-[3]"
         />
         <motion.div
           animate={{
-            x: mouseOffset.x * -0.6,
-            y: mouseOffset.y * -0.6,
+            x: mouseOffset.x * -0.4,
+            y: mouseOffset.y * -0.4,
           }}
-          transition={{ type: 'spring', stiffness: 80, damping: 25 }}
-          className="absolute bottom-1/4 -end-24 w-96 h-96 bg-[#38BDF8]/20 rounded-full blur-[120px] pointer-events-none animate-float-subtle z-[3]"
+          transition={{ type: 'spring', stiffness: 60, damping: 30 }}
+          className="absolute bottom-1/4 -end-24 w-96 h-96 bg-[#38BDF8]/15 rounded-full blur-[130px] pointer-events-none z-[3]"
         />
 
-        {/* Layer 5: Foreground Headline & Content with Word-by-Word Motion */}
+        {/* Layer 5: Staggered Cinematic Content Entrance */}
         <motion.div
           style={{ y: heroContentY }}
           className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24 pb-16"
         >
-          {/* Subtle Tagline */}
+          {/* 1. Anwar Najd Logo Icon Mark (0.1s) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-4 flex justify-center"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-2 shadow-lg flex items-center justify-center">
+              <Building className="w-5 h-5 text-[#38BDF8]" />
+            </div>
+          </motion.div>
+
+          {/* 2. Introductory Tag Text (0.25s) */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 border border-white/25 text-[#38BDF8] text-xs sm:text-sm font-bold mb-6 backdrop-blur-md shadow-xs"
+            transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#38BDF8] text-xs sm:text-sm font-bold mb-6 backdrop-blur-md shadow-xs"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" />
             <span>{t.hero.tag}</span>
           </motion.div>
 
-          {/* Word-by-Word Animated Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-snug max-w-4xl mx-auto drop-shadow-md flex flex-wrap justify-center gap-x-2 sm:gap-x-3">
-            {headlineWords.map((word, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{
-                  duration: 0.7,
-                  delay: 0.2 + i * 0.08,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="inline-block"
-              >
-                {word}
-              </motion.span>
-            ))}
-          </h1>
+          {/* 3. Cinematic Headline Reveal via overflow: hidden (0.4s) */}
+          <div className="overflow-hidden py-1">
+            <motion.h1
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: '0%', opacity: 1 }}
+              transition={{ duration: 0.85, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-snug max-w-4xl mx-auto drop-shadow-md"
+            >
+              {t.hero.headline}
+            </motion.h1>
+          </div>
 
-          {/* Supporting Text */}
+          {/* 4. Supporting Text (0.6s) */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.55 }}
+            transition={{ duration: 0.7, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="mt-6 text-base sm:text-lg lg:text-xl text-slate-100 max-w-2xl mx-auto leading-relaxed drop-shadow font-medium"
           >
             {t.hero.subheadline}
           </motion.p>
 
-          {/* Action Buttons: Magnetic Cyan Primary & Navy/White Secondary */}
+          {/* 5. CTA Buttons (0.8s) */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7 }}
+            transition={{ duration: 0.7, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <MagneticButton
@@ -209,7 +214,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 setCurrentPage('properties');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="w-full sm:w-auto px-8 py-3.5 bg-[#088AC3] hover:bg-[#0779AB] text-white font-bold rounded-xl shadow-lg shadow-[#088AC3]/30 transition-all flex items-center justify-center gap-2 group"
+              className="w-full sm:w-auto px-8 py-3.5 bg-[#088AC3] hover:bg-[#0779AB] text-white font-bold rounded-xl shadow-lg shadow-[#088AC3]/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
               <span>{t.hero.exploreBtn}</span>
               <motion.span
@@ -225,17 +230,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                 setCurrentPage('contact');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="w-full sm:w-auto px-8 py-3.5 bg-white/95 hover:bg-white text-[#193555] font-bold rounded-xl shadow-md transition-all"
+              className="w-full sm:w-auto px-8 py-3.5 bg-white/95 hover:bg-white text-[#193555] font-bold rounded-xl shadow-md transition-all cursor-pointer"
             >
               <span>{t.hero.contactBtn}</span>
             </MagneticButton>
           </motion.div>
 
-          {/* 14. Floating Luxury Search Bar on Crisp White with Depth */}
+          {/* 6. Floating Luxury Search Bar (0.95s) */}
           <motion.div
-            initial={{ opacity: 0, y: 35 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.85, delay: 0.95, ease: [0.22, 1, 0.36, 1] }}
             className="mt-12 w-full max-w-4xl mx-auto bg-white rounded-3xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(25,53,85,0.25)] border border-slate-100 text-start text-[#193555]"
           >
             {/* Segmented Purpose Tabs */}

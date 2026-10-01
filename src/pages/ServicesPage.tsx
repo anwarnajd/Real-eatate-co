@@ -21,7 +21,7 @@ interface ServicesPageProps {
   onOpenInquiry: (serviceTitle?: string) => void;
 }
 
-// 3D Tilt Service Card Component
+// Luxury Corporate Service Card Component
 const ServiceCardItem: React.FC<{
   service: { id: string; title: string; desc: string; points: string[] };
   icon: React.ReactNode;
@@ -30,64 +30,38 @@ const ServiceCardItem: React.FC<{
   onRequest: () => void;
   index: number;
 }> = ({ service, icon, requestLabel, isAr, onRequest, index }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setRotateX(y * -10);
-    setRotateY(x * 10);
-  };
-
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setRotateX(0);
-    setRotateY(0);
-  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.12 }}
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{ perspective: '1000px' }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className="h-full"
     >
       <motion.div
         animate={{
-          rotateX: isHovered ? rotateX : 0,
-          rotateY: isHovered ? rotateY : 0,
-          y: isHovered ? -8 : 0,
-          scale: isHovered ? 1.02 : 1,
+          y: isHovered ? -6 : 0,
         }}
-        transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-        style={{ transformStyle: 'preserve-3d' }}
-        className={`p-8 rounded-2xl bg-white border transition-all duration-300 flex flex-col justify-between h-full group ${
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className={`p-8 rounded-2xl bg-white border transition-all duration-400 flex flex-col justify-between h-full group ${
           isHovered
-            ? 'border-[#088AC3] shadow-[0_20px_40px_-15px_rgba(8,138,195,0.22)]'
+            ? 'border-[#088AC3]/50 shadow-[0_20px_35px_-10px_rgba(25,53,85,0.12)]'
             : 'border-[#E2E8F0] shadow-sm'
         }`}
       >
-        <div style={{ transform: 'translateZ(20px)' }}>
-          {/* Animated Icon with subtle rotation and glow on hover */}
+        <div>
+          {/* Animated Icon with subtle lift on hover */}
           <motion.div
             animate={{
-              rotate: isHovered ? 6 : 0,
-              scale: isHovered ? 1.1 : 1,
+              y: isHovered ? -2 : 0,
+              scale: isHovered ? 1.06 : 1,
             }}
-            transition={{ type: 'spring', stiffness: 350, damping: 20 }}
-            className="w-14 h-14 rounded-2xl bg-[#F0F7FB] border border-[#088AC3]/20 flex items-center justify-center mb-6 shadow-xs group-hover:border-[#088AC3]/50 group-hover:bg-[#E6F4FA]"
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="w-14 h-14 rounded-2xl bg-[#F0F7FB] border border-[#088AC3]/20 flex items-center justify-center mb-6 shadow-2xs group-hover:border-[#088AC3]/40 group-hover:bg-[#E6F4FA] transition-colors"
           >
             {icon}
           </motion.div>
@@ -110,7 +84,7 @@ const ServiceCardItem: React.FC<{
           </div>
         </div>
 
-        <div style={{ transform: 'translateZ(15px)' }}>
+        <div>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -119,8 +93,8 @@ const ServiceCardItem: React.FC<{
           >
             <span>{requestLabel}</span>
             <motion.span
-              animate={{ x: isHovered ? (isAr ? -3 : 3) : 0 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              animate={{ x: isHovered ? (isAr ? -4 : 4) : 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
               {isAr ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
             </motion.span>

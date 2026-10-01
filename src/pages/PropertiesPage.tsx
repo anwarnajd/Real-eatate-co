@@ -3,6 +3,7 @@ import { Property, Language, PropertyPurpose, PropertyType, PropertyFilterState 
 import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
   SlidersHorizontal,
@@ -354,16 +355,26 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
             </button>
           </div>
         ) : viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProperties.map((prop) => (
-              <PropertyCard
-                key={prop.id}
-                property={prop}
-                language={language}
-                onSelect={onSelectProperty}
-              />
-            ))}
-          </div>
+          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <AnimatePresence>
+              {filteredProperties.map((prop) => (
+                <motion.div
+                  layout
+                  key={prop.id}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <PropertyCard
+                    property={prop}
+                    language={language}
+                    onSelect={onSelectProperty}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         ) : (
           /* List View on Crisp White Cards */
           <div className="space-y-6">

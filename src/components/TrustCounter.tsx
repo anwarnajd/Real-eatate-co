@@ -12,26 +12,54 @@ interface TrustCounterProps {
 export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
   const t = translations[language];
   const [count, setCount] = useState(0);
+  const [expCount, setExpCount] = useState(0);
+  const [propCount, setPropCount] = useState(0);
+  const [satCount, setSatCount] = useState(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
 
   useEffect(() => {
     if (!isInView) return;
 
-    let start = 0;
-    const end = 30000;
-    const duration = 2400;
-    const increment = Math.ceil(end / (duration / 25));
+    let start30k = 0;
+    const end30k = 30000;
+    const duration = 2200;
+    const steps = 60;
+    const interval = duration / steps;
+    const increment30k = Math.ceil(end30k / steps);
+
+    let startExp = 0;
+    const endExp = 15;
+    const incExp = endExp / steps;
+
+    let startProp = 0;
+    const endProp = 500;
+    const incProp = endProp / steps;
+
+    let startSat = 0;
+    const endSat = 98;
+    const incSat = endSat / steps;
 
     const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setCount(end);
+      start30k += increment30k;
+      startExp += incExp;
+      startProp += incProp;
+      startSat += incSat;
+
+      if (start30k >= end30k) {
+        setCount(end30k);
+        setExpCount(endExp);
+        setPropCount(endProp);
+        setSatCount(endSat);
         clearInterval(timer);
       } else {
-        setCount(start);
+        setCount(start30k);
+        setExpCount(Math.min(endExp, Math.floor(startExp)));
+        setPropCount(Math.min(endProp, Math.floor(startProp)));
+        setSatCount(Math.min(endSat, Math.floor(startSat)));
       }
-    }, 25);
+    }, interval);
 
     return () => clearInterval(timer);
   }, [isInView]);
@@ -137,7 +165,7 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums">
-                  {t.trustSection.stat2Number}
+                  {expCount}+
                 </div>
                 <div className="text-xs sm:text-sm font-extrabold text-[#088AC3]">
                   {t.trustSection.stat2Label}
@@ -164,7 +192,7 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums">
-                  {t.trustSection.stat3Number}
+                  {propCount}+
                 </div>
                 <div className="text-xs sm:text-sm font-extrabold text-[#088AC3]">
                   {t.trustSection.stat3Label}
@@ -191,7 +219,7 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums">
-                  {t.trustSection.stat4Number}
+                  %{satCount}
                 </div>
                 <div className="text-xs sm:text-sm font-extrabold text-[#088AC3]">
                   {t.trustSection.stat4Label}

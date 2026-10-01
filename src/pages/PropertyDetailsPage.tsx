@@ -318,7 +318,13 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
             {/* Detailed Specs */}
             {property.specs && property.specs.length > 0 && (
-              <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs">
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs"
+              >
                 <h3 className="text-lg font-bold text-[#193555] mb-4 pb-2 border-b border-slate-100">
                   {t.propertyDetails.propertySpecs}
                 </h3>
@@ -336,11 +342,17 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Features & Amenities */}
-            <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs">
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs"
+            >
               <h3 className="text-lg font-bold text-[#193555] mb-4 pb-2 border-b border-slate-100">
                 {t.propertyDetails.featuresTitle}
               </h3>
@@ -352,10 +364,16 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Location Area & Map Simulation */}
-            <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs">
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs"
+            >
               <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                 <h3 className="text-lg font-bold text-[#193555]">
                   {t.propertyDetails.locationTitle}
@@ -391,7 +409,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   </span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Sticky Inquiry Column (4 cols) with 3D Depth Lift */}

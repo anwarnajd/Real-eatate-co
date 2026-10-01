@@ -31,12 +31,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({
   return (
     <div className="w-full bg-white text-[#193555] overflow-x-hidden">
       {/* 1. Page Header Banner on Light Subtle Blue/Gray */}
-      <section className="py-20 bg-[#F4F8FB] border-b border-[#E1EBF2] relative overflow-hidden">
+      <section className="py-24 bg-[#F4F8FB] border-b border-[#E1EBF2] relative overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#088AC3]/10 blur-[100px] pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="text-xs uppercase tracking-widest font-bold text-[#088AC3]"
           >
             {t.aboutPage.badge}
@@ -44,7 +45,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="mt-2 text-3xl sm:text-5xl font-black text-[#193555] tracking-tight"
           >
             {t.aboutPage.title}
@@ -52,7 +53,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="mt-4 text-base sm:text-lg text-[#475569] max-w-2xl mx-auto"
           >
             {t.aboutPage.subtitle}
@@ -61,14 +62,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({
       </section>
 
       {/* 2. Detailed Company Introduction with High-End Architectural Photo & Brand Badge */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column: Story & Narrative (7 cols) */}
           <motion.div
-            initial={{ opacity: 0, x: isAr ? 30 : -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7 space-y-6"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#F0F7FB] border border-[#088AC3]/20 text-[#088AC3] text-xs font-bold">
@@ -98,7 +99,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
                   setCurrentPage('properties');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="px-6 py-3 bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-2 cursor-pointer"
+                className="px-6 py-3 bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
               >
                 <span>{isAr ? 'تصفح قائمة العقارات' : 'Browse Properties'}</span>
                 {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
@@ -108,7 +109,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={onOpenInquiry}
-                className="px-6 py-3 bg-white hover:bg-slate-50 text-[#193555] text-xs font-bold rounded-xl border border-slate-300 transition-colors cursor-pointer shadow-xs"
+                className="px-6 py-3 bg-white hover:bg-slate-50 text-[#193555] text-xs font-bold rounded-xl border border-slate-300 transition-all cursor-pointer shadow-xs"
               >
                 <span>{isAr ? 'طلب استشارة' : 'Inquire With Us'}</span>
               </motion.button>
@@ -120,11 +121,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({
             initial={{ opacity: 0, x: isAr ? -30 : 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-5 space-y-6"
           >
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl group bg-slate-100">
-              <img
+              <motion.img
                 src="/images/about-corporate-lounge.jpg"
                 alt="Anwar Najd Real Estate Corporate Advisory Suite"
                 loading="lazy"
@@ -132,9 +133,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
                 }}
-                className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105"
+                whileHover={{ scale: 1.04 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full h-80 sm:h-96 object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/80 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/80 via-transparent to-transparent pointer-events-none" />
 
               {/* Overlaid Accreditation Callout */}
               <div className="absolute bottom-4 inset-x-4 p-4 rounded-xl bg-white/95 backdrop-blur-md border border-slate-200 shadow-md">
@@ -156,10 +159,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({
               </div>
             </div>
 
-            {/* Official Brand Identity Card with Subtle 3D Hover */}
+            {/* Official Brand Identity Card */}
             <motion.div
-              whileHover={{ y: -4, scale: 1.01 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              whileHover={{ y: -3 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="p-6 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] shadow-sm hover:border-[#088AC3]/40 flex flex-col sm:flex-row items-center gap-6"
             >
               <OriginalLogoBadge size="sm" className="flex-shrink-0" />

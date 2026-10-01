@@ -24,17 +24,21 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [rotateY, setRotateY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Micro cursor tilt strictly on desktop (max 1.5 degrees, no large rotation)
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
+    if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
     const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    // Calculate rotation (-6 to +6 degrees for subtle luxury depth)
-    const rX = ((mouseY / height) - 0.5) * -10;
-    const rY = ((mouseX / width) - 0.5) * 10;
+    // Subtle 1.5 degrees max
+    const rX = ((mouseY / height) - 0.5) * -2.5;
+    const rY = ((mouseX / width) - 0.5) * 2.5;
 
     setRotateX(rX);
     setRotateY(rY);
@@ -70,38 +74,26 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => onSelect(property)}
-      style={{
-        perspective: '1000px',
-      }}
-      className="cursor-pointer select-none"
+      className="cursor-pointer select-none h-full"
     >
       <motion.div
         animate={{
           rotateX: isHovered ? rotateX : 0,
           rotateY: isHovered ? rotateY : 0,
           y: isHovered ? -6 : 0,
-          scale: isHovered ? 1.015 : 1,
         }}
         transition={{
-          type: 'spring',
-          stiffness: 280,
-          damping: 24,
-          mass: 0.8,
+          duration: 0.4,
+          ease: [0.22, 1, 0.36, 1],
         }}
-        style={{
-          transformStyle: 'preserve-3d',
-        }}
-        className={`group bg-white rounded-2xl overflow-hidden border transition-shadow duration-500 flex flex-col ${
+        className={`group bg-white rounded-2xl overflow-hidden border transition-all duration-500 flex flex-col h-full ${
           isHovered
-            ? 'border-[#088AC3]/60 shadow-[0_22px_45px_-12px_rgba(25,53,85,0.18)]'
+            ? 'border-[#088AC3]/40 shadow-[0_20px_35px_-10px_rgba(25,53,85,0.14)]'
             : 'border-[#E2E8F0] shadow-sm'
         }`}
       >
-        {/* Layer 1: Property Image with 3D Depth Shift */}
-        <div
-          className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100"
-          style={{ transform: 'translateZ(15px)' }}
-        >
+        {/* Layer 1: Property Image with Slow Luxury Zoom & Hover Overlay */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
           <motion.img
             src={property.images[0] || '/images/property-fallback.jpg'}
             alt={isAr ? property.title.ar : property.title.en}
@@ -111,20 +103,32 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
             }}
             animate={{
-              scale: isHovered ? 1.08 : 1,
+              scale: isHovered ? 1.045 : 1,
             }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="w-full h-full object-cover"
           />
 
           {/* Scrim Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/80 via-transparent to-transparent pointer-events-none" />
 
-          {/* Floating Badges with Z-Translation */}
+          {/* Hover Overlay with VIEW PROPERTY Callout */}
           <div
-            className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-xs font-bold"
-            style={{ transform: 'translateZ(30px)' }}
+            className={`absolute inset-0 bg-[#10243B]/30 backdrop-blur-[1px] transition-opacity duration-400 flex items-center justify-center pointer-events-none ${
+              isHovered ? 'opacity-100' : 'opacity-0'
+            }`}
           >
+            <motion.span
+              animate={{ y: isHovered ? 0 : 8, opacity: isHovered ? 1 : 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="px-4 py-2 rounded-xl bg-white/95 text-[#193555] font-black text-xs shadow-lg flex items-center gap-1.5"
+            >
+              <span>{isAr ? 'عرض تفاصيل العقار' : 'VIEW PROPERTY'}</span>
+            </motion.span>
+          </div>
+
+          {/* Floating Badges */}
+          <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-xs font-bold pointer-events-none">
             <span className="px-3 py-1 rounded-lg bg-white/95 text-[#193555] shadow-sm backdrop-blur-xs">
               {isAr ? purposeLabels[property.purpose].ar : purposeLabels[property.purpose].en}
             </span>
@@ -134,21 +138,15 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           </div>
 
           {/* Floating Price Tag */}
-          <div
-            className="absolute bottom-3.5 inset-x-3.5 flex items-end justify-between text-white"
-            style={{ transform: 'translateZ(25px)' }}
-          >
+          <div className="absolute bottom-3.5 inset-x-3.5 flex items-end justify-between text-white pointer-events-none">
             <div className="text-xl font-black font-mono tracking-tight drop-shadow-md">
               {isAr ? property.priceFormatted.ar : property.priceFormatted.en}
             </div>
           </div>
         </div>
 
-        {/* Layer 2: Card Content Area Rising with 3D Depth */}
-        <div
-          className="p-5 flex-1 flex flex-col justify-between"
-          style={{ transform: 'translateZ(20px)' }}
-        >
+        {/* Layer 2: Card Content Area */}
+        <div className="p-5 flex-1 flex flex-col justify-between">
           <div>
             {/* Location Line */}
             <div className="flex items-center gap-1.5 text-xs text-[#088AC3] font-bold mb-2">

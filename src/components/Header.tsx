@@ -60,14 +60,16 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-md py-0'
-          : 'bg-white/80 backdrop-blur-sm border-b border-slate-200/50 py-1'
+          ? 'bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-[0_4px_20px_-4px_rgba(25,53,85,0.08)] py-0'
+          : currentPage === 'home'
+          ? 'bg-white/85 backdrop-blur-md border-b border-slate-200/40 py-1'
+          : 'bg-white/90 backdrop-blur-md border-b border-slate-200/50 py-1'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className={`flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? 'h-16' : 'h-20'}`}>
           {/* Zone 1: Exact Brand Logo with smooth hover motion */}
           <motion.div
             onClick={() => handleNavClick('home')}
@@ -75,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
             whileTap={{ scale: 0.98 }}
             className="cursor-pointer group flex-shrink-0"
           >
-            <Logo language={language} variant="light" size="md" />
+            <Logo language={language} variant="light" size={scrolled ? 'sm' : 'md'} />
           </motion.div>
 
           {/* Zone 2: Navigation Links with Animated Underline */}
@@ -86,19 +88,21 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
-                  className={`px-3.5 py-2 text-sm font-semibold transition-colors whitespace-nowrap relative rounded-lg cursor-pointer ${
+                  className={`group px-3.5 py-2 text-sm font-semibold transition-colors whitespace-nowrap relative rounded-lg cursor-pointer ${
                     isActive
                       ? 'text-[#088AC3] font-bold'
-                      : 'text-[#193555] hover:text-[#088AC3] hover:bg-slate-50'
+                      : 'text-[#193555] hover:text-[#088AC3]'
                   }`}
                 >
-                  {link.label}
-                  {isActive && (
+                  <span>{link.label}</span>
+                  {isActive ? (
                     <motion.span
                       layoutId="activeNavIndicator"
                       className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-[#088AC3] rounded-full"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
+                  ) : (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#088AC3]/70 rounded-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-4/5" />
                   )}
                 </button>
               );
