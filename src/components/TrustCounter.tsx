@@ -128,7 +128,7 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
                     +{formattedCount}
                   </span>
                   <span className="text-xl sm:text-3xl font-extrabold text-[#38BDF8]">
-                    {language === 'ar' ? 'أكثر من 30,000 عميل' : '30,000+ Clients'}
+                    {language === 'ar' ? 'أكثر من 30,000 عميل' : '30,000+ Clients Served'}
                   </span>
                 </div>
                 <p className="mt-3 text-sm sm:text-lg text-slate-200 font-medium max-w-xl leading-relaxed">

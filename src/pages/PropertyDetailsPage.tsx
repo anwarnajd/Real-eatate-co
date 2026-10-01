@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Property, Language, PageId } from '../types';
 import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
@@ -19,6 +19,8 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  X,
+  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -41,8 +43,10 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const isAr = language === 'ar';
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   const images = property.images && property.images.length > 0
     ? property.images
@@ -57,8 +61,8 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   };
 
   const purposeLabels: Record<string, { ar: string; en: string }> = {
-    buy: { ar: 'للبيع', en: 'For Sale' },
-    rent: { ar: 'للإيجار', en: 'For Rent' },
+    buy: { ar: 'للبيع', en: 'FOR SALE' },
+    rent: { ar: 'للإيجار', en: 'FOR RENT' },
   };
 
   const nextImage = () => {
@@ -69,10 +73,49 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  // Keyboard navigation for gallery & lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isLightboxOpen) {
+        setIsLightboxOpen(false);
+      }
+      if (e.key === 'ArrowRight') {
+        if (isAr) prevImage();
+        else nextImage();
+      }
+      if (e.key === 'ArrowLeft') {
+        if (isAr) nextImage();
+        else prevImage();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, isAr, images.length]);
+
+  // Touch swipe support for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (diff > 40) {
+      if (isAr) prevImage();
+      else nextImage();
+    } else if (diff < -40) {
+      if (isAr) nextImage();
+      else prevImage();
+    }
+    setTouchStartX(null);
+  };
+
   const handleWhatsAppInquiry = () => {
+    const propTitle = isAr ? property.title.ar : property.title.en;
     const text = isAr
-      ? `السلام عليكم، أود الاستفسار عن العقار: ${property.title.ar} (المرجع: ${property.refNumber}) المعلن على موقع شركة أنوار نجد العقارية.`
-      : `Hello, I would like to inquire about property: ${property.title.en} (Ref: ${property.refNumber}) listed on Anwar Najd Real Estate Company website.`;
+      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة أنوار نجد العقارية.`
+      : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}) at Anwar Najd Real Estate Company.`;
 
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -118,12 +161,15 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
           </div>
         </div>
 
-        {/* 1. Large Immersive Gallery with Smooth Image Slide & Hover Zoom */}
+        {/* 1. Large Immersive Gallery with Click to Enlarge / Lightbox */}
         <div className="mb-10 space-y-4">
           <div
             onMouseEnter={() => setIsZoomed(true)}
             onMouseLeave={() => setIsZoomed(false)}
-            className="relative aspect-[16/9] sm:aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl group"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onClick={() => setIsLightboxOpen(true)}
+            className="relative aspect-[16/9] sm:aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl group cursor-zoom-in"
           >
             <AnimatePresence mode="wait">
               <motion.img
@@ -134,36 +180,38 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
                 }}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: isZoomed ? 1.08 : 1.02 }}
+                initial={{ opacity: 0, scale: 1.04 }}
+                animate={{ opacity: 1, scale: isZoomed ? 1.07 : 1.02 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="w-full h-full object-cover transition-transform duration-700"
               />
             </AnimatePresence>
 
             {/* Subtle Gradient Scrim on Bottom */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
             {/* Slider Controls */}
             {images.length > 1 && (
               <>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     prevImage();
                   }}
-                  className="absolute start-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-[#193555] shadow-md transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
+                  className="absolute start-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/85 hover:bg-white text-[#193555] shadow-md transition-all opacity-80 group-hover:opacity-100 cursor-pointer z-10"
                   aria-label="Previous image"
                 >
                   <ChevronRight className={`w-5 h-5 ${isAr ? '' : 'rotate-180'}`} />
                 </button>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     nextImage();
                   }}
-                  className="absolute end-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-[#193555] shadow-md transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
+                  className="absolute end-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/85 hover:bg-white text-[#193555] shadow-md transition-all opacity-80 group-hover:opacity-100 cursor-pointer z-10"
                   aria-label="Next image"
                 >
                   <ChevronLeft className={`w-5 h-5 ${isAr ? '' : 'rotate-180'}`} />
@@ -172,37 +220,60 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             )}
 
             {/* Floating Tags on Hero */}
-            <div className="absolute top-4 start-4 flex items-center gap-2">
+            <div className="absolute top-4 start-4 flex items-center gap-2 z-10">
               <span className="px-3.5 py-1 rounded-lg bg-[#088AC3] text-white font-bold text-xs shadow-md">
-                {isAr ? purposeLabels[property.purpose].ar : purposeLabels[property.purpose].en}
+                {isAr ? purposeLabels[property.purpose]?.ar : purposeLabels[property.purpose]?.en}
               </span>
               <span className="px-3.5 py-1 rounded-lg bg-white/95 text-[#193555] font-bold text-xs shadow-md">
-                {isAr ? typeLabels[property.type].ar : typeLabels[property.type].en}
+                {isAr ? typeLabels[property.type]?.ar : typeLabels[property.type]?.en}
+              </span>
+              <span className="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow-md">
+                {isAr ? 'متاح' : 'AVAILABLE'}
               </span>
             </div>
 
+            {/* Enlarge Button Hint */}
+            <div className="absolute top-4 end-4 z-10">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLightboxOpen(true);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 text-white text-xs font-semibold backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{isAr ? 'تكبير المعرض' : 'Click to Enlarge'}</span>
+              </button>
+            </div>
+
             {/* Price Badge on Hero */}
-            <div className="absolute bottom-4 start-4 sm:bottom-6 sm:start-6 text-white">
+            <div className="absolute bottom-4 start-4 sm:bottom-6 sm:start-6 text-white z-10">
               <span className="text-xs uppercase tracking-wider text-[#38BDF8] font-bold block mb-1">
-                {isAr ? 'السعر المطلوب' : 'Listing Price'}
+                {isAr ? 'القيمة الاستثمارية / السعر' : 'Listing Price'}
               </span>
               <div className="text-2xl sm:text-4xl font-black font-mono tracking-tight drop-shadow-md">
                 {isAr ? property.priceFormatted.ar : property.priceFormatted.en}
               </div>
             </div>
+
+            {/* Image Counter */}
+            <div className="absolute bottom-4 end-4 z-10 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-xs font-mono">
+              {activeImageIndex + 1} / {images.length}
+            </div>
           </div>
 
           {/* Thumbnails row */}
           {images.length > 1 && (
-            <div className="flex items-center gap-3 overflow-x-auto pb-2">
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
               {images.map((img, idx) => (
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.04 }}
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
                   className={`relative w-24 sm:w-32 aspect-[4/3] rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all cursor-pointer ${
                     activeImageIndex === idx
-                      ? 'border-[#088AC3] shadow-md'
+                      ? 'border-[#088AC3] shadow-md ring-2 ring-[#088AC3]/20'
                       : 'border-slate-200 opacity-70 hover:opacity-100'
                   }`}
                 >
@@ -239,13 +310,15 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   {' · '}
                   {isAr ? property.location.cityAr : property.location.cityEn}
                 </span>
+                <span className="text-slate-300">|</span>
+                <span className="font-mono text-slate-500 font-semibold">{property.refNumber}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#193555] tracking-tight leading-tight">
                 {isAr ? property.title.ar : property.title.en}
               </h1>
             </motion.div>
 
-            {/* Quick Metrics Bar with Subtle Hover Animation */}
+            {/* Quick Metrics Bar with Verified Details Only */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -301,7 +374,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               )}
             </motion.div>
 
-            {/* Description */}
+            {/* Overview / Description */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -311,12 +384,12 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               <h3 className="text-lg font-bold text-[#193555] mb-4 pb-2 border-b border-slate-100">
                 {t.propertyDetails.description}
               </h3>
-              <p className="text-sm sm:text-base text-[#475569] leading-relaxed whitespace-pre-line">
+              <p className="text-sm sm:text-base text-[#475569] leading-relaxed whitespace-pre-line font-normal">
                 {isAr ? property.description.ar : property.description.en}
               </p>
             </motion.div>
 
-            {/* Detailed Specs */}
+            {/* Detailed Key Specs (Only Verified Details) */}
             {property.specs && property.specs.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 25 }}
@@ -507,6 +580,117 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
           </div>
         )}
       </div>
+
+      {/* 8. FULLSCREEN GALLERY LIGHTBOX MODAL */}
+      <AnimatePresence>
+        {isLightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Top Lightbox Bar */}
+            <div className="flex items-center justify-between text-white z-20 pb-2">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-mono px-3 py-1 rounded-lg bg-white/10 border border-white/20">
+                  {activeImageIndex + 1} / {images.length}
+                </span>
+                <span className="text-sm font-bold hidden sm:inline text-slate-200">
+                  {isAr ? property.title.ar : property.title.en}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleWhatsAppInquiry}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{isAr ? 'استفسر عبر واتساب' : 'Inquire on WhatsApp'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsLightboxOpen(false)}
+                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  aria-label="Close Lightbox"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            {/* Center Large Image with Slide Animation */}
+            <div className="relative flex-1 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeImageIndex}
+                  src={images[activeImageIndex]}
+                  alt={`${isAr ? property.title.ar : property.title.en} - ${activeImageIndex + 1}`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="max-h-[75vh] max-w-full object-contain rounded-xl shadow-2xl"
+                />
+              </AnimatePresence>
+
+              {/* Prev / Next Buttons in Lightbox */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      prevImage();
+                    }}
+                    className="absolute start-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors cursor-pointer"
+                    aria-label="Previous image"
+                  >
+                    <ChevronRight className={`w-6 h-6 ${isAr ? '' : 'rotate-180'}`} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      nextImage();
+                    }}
+                    className="absolute end-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors cursor-pointer"
+                    aria-label="Next image"
+                  >
+                    <ChevronLeft className={`w-6 h-6 ${isAr ? '' : 'rotate-180'}`} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Bottom Thumbnails Strip in Lightbox */}
+            {images.length > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-2 overflow-x-auto max-w-full">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative w-16 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
+                      activeImageIndex === idx
+                        ? 'border-[#38BDF8] scale-105'
+                        : 'border-white/30 opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

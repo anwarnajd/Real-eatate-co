@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { Property, Language, PageId, PropertyPurpose, PropertyType } from '../types';
 import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
@@ -18,13 +18,13 @@ import {
   Headphones,
   Sparkles,
 } from 'lucide-react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 
 interface HomePageProps {
   language: Language;
   setCurrentPage: (page: PageId) => void;
   onSelectProperty: (property: Property) => void;
-  onOpenInquiry: (property?: Property | null) => void;
+  onOpenInquiry: (property?: Property | null, serviceTitle?: string) => void;
   onApplySearchFilter: (filter: {
     purpose: PropertyPurpose | 'all';
     type: PropertyType | 'all';
@@ -70,6 +70,20 @@ export const HomePage: React.FC<HomePageProps> = ({
   const handleHeroMouseLeave = () => {
     setMouseOffset({ x: 0, y: 0 });
   };
+
+  // Featured Properties Filter State
+  const [featuredCategory, setFeaturedCategory] = useState<'all' | 'residential' | 'commercial' | 'investment' | 'projects'>('all');
+
+  const displayedProperties = useMemo<Property[]>(() => {
+    return propertiesData.filter((p: Property) => {
+      if (featuredCategory === 'all') return true;
+      if (featuredCategory === 'residential') return ['villa', 'penthouse', 'apartment'].includes(p.type);
+      if (featuredCategory === 'commercial') return p.type === 'commercial';
+      if (featuredCategory === 'investment') return p.type === 'land' || p.type === 'commercial';
+      if (featuredCategory === 'projects') return p.featured;
+      return true;
+    });
+  }, [featuredCategory]);
 
   const featuredProperties = propertiesData.filter((p) => p.featured);
   const headlineWords = t.hero.headline.split(' ');
@@ -364,14 +378,14 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 6. TRUST STATISTIC EXPERIENCE (+30,000 CLIENTS MONUMENT) */}
       <TrustCounter language={language} />
 
-      {/* 4. INTERACTIVE PROPERTY SHOWCASE (عقارات مختارة) */}
+      {/* 4. INTERACTIVE PROPERTY SHOWCASE: FEATURED PROPERTIES & PROJECTS */}
       <section className="py-20 lg:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-14"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8"
         >
           <div>
             <span className="text-xs uppercase tracking-widest font-extrabold text-[#088AC3]">
@@ -380,7 +394,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black text-[#193555] tracking-tight">
               {t.featured.title}
             </h2>
-            <p className="mt-2 text-sm sm:text-base text-[#475569] max-w-xl">
+            <p className="mt-2 text-sm sm:text-base text-[#475569] max-w-xl leading-relaxed">
               {t.featured.subtitle}
             </p>
           </div>
@@ -397,23 +411,91 @@ export const HomePage: React.FC<HomePageProps> = ({
           </MagneticButton>
         </motion.div>
 
-        {/* Magazine-Style Interactive 3D Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredProperties.map((prop, idx) => (
-            <motion.div
-              key={prop.id}
-              initial={{ opacity: 0, y: 35 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: idx * 0.15 }}
-            >
-              <PropertyCard
-                property={prop}
-                language={language}
-                onSelect={onSelectProperty}
-              />
-            </motion.div>
-          ))}
+        {/* 6. Simple Interactive Filter Tabs (Compact and horizontally scrollable on mobile) */}
+        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-none">
+          {(
+            [
+              { id: 'all', label: t.featured.filters.all },
+              { id: 'residential', label: t.featured.filters.residential },
+              { id: 'commercial', label: t.featured.filters.commercial },
+              { id: 'investment', label: t.featured.filters.investment },
+              { id: 'projects', label: t.featured.filters.projects },
+            ] as const
+          ).map((tab) => {
+            const isActive = featuredCategory === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setFeaturedCategory(tab.id)}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                  isActive
+                    ? 'bg-[#088AC3] text-white shadow-md shadow-[#088AC3]/20'
+                    : 'bg-slate-100 text-[#475569] hover:text-[#193555] hover:bg-slate-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Property Cards Grid with AnimatePresence */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <AnimatePresence mode="popLayout">
+            {displayedProperties.map((prop, idx) => (
+              <motion.div
+                layout
+                key={prop.id}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.4, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <PropertyCard
+                  property={prop}
+                  language={language}
+                  onSelect={onSelectProperty}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </section>
+
+      {/* 12. INVESTMENT SECTION (فرص عقارية واستثمارية) */}
+      <section className="py-16 sm:py-20 bg-gradient-to-br from-[#10243B] via-[#193555] to-[#10243B] text-white border-y border-slate-200 relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#088AC3]/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col lg:flex-row items-center justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-12 backdrop-blur-md"
+          >
+            <div className="max-w-2xl text-center lg:text-start">
+              <span className="text-xs uppercase tracking-widest font-extrabold text-[#38BDF8] inline-flex items-center gap-1.5 mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{t.investment.badge}</span>
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+                {t.investment.title}
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-slate-200 leading-relaxed">
+                {t.investment.subtitle}
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-shrink-0">
+              <MagneticButton
+                onClick={() => onOpenInquiry(null, isAr ? 'فرص عقارية واستثمارية' : 'Real Estate & Investment Opportunities')}
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#088AC3] hover:bg-[#0779AB] text-white font-bold rounded-xl shadow-lg shadow-[#088AC3]/30 transition-all cursor-pointer text-center text-xs sm:text-sm"
+              >
+                <span>{t.investment.cta}</span>
+              </MagneticButton>
+            </div>
+          </motion.div>
         </div>
       </section>
 

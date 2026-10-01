@@ -64,20 +64,45 @@ const rawTranslations = {
     },
 
     featured: {
-      badge: 'فرص حصرية',
-      title: 'عقارات مختارة',
-      subtitle: 'مجموعة منتقاة من أرقى العقارات والفرص الاستثمارية في الرياض',
+      badge: 'العقارات والمشاريع',
+      title: 'العقارات والمشاريع المميزة',
+      subtitle: 'اكتشف مجموعة مختارة من الفرص العقارية والمشاريع والعقارات التي تقدمها شركة أنوار نجد العقارية.',
       viewAll: 'عرض كافة العقارات',
       viewDetails: 'عرض التفاصيل',
+      askAbout: 'استفسر عن هذا العقار',
       beds: 'غرف نوم',
       baths: 'دورات مياه',
       areaUnit: 'م²',
       currency: 'ر.س',
+      statusAvailable: 'متاح',
+      filters: {
+        all: 'الكل',
+        residential: 'سكني',
+        commercial: 'تجاري',
+        investment: 'استثماري',
+        projects: 'المشاريع',
+      },
+      badges: {
+        forSale: 'للبيع',
+        forRent: 'للإيجار',
+        available: 'متاح',
+        newProject: 'مشروع جديد',
+        investment: 'استثماري',
+        residential: 'سكني',
+        commercial: 'تجاري',
+      },
+    },
+
+    investment: {
+      badge: 'حلول استثمارية',
+      title: 'فرص عقارية واستثمارية',
+      subtitle: 'اكتشف فرصاً عقارية مختارة لتلبية الاحتياجات السكنية والتجارية والاستثمارية المختلفة.',
+      cta: 'ناقش فرصة استثمارية',
     },
 
     whyUs: {
       badge: 'لماذا تختارنا',
-      title: 'لماذا أنوار نجد العقارية؟',
+      title: 'لماذا أنوار نجد؟',
       subtitle: 'نرتكز على أسس راسخة من الموثوقية والمهنية لنمنحك تجربة عقارية استثنائية',
       item1: {
         title: 'خدمات عقارية احترافية',
@@ -331,20 +356,45 @@ const rawTranslations = {
     },
 
     featured: {
-      badge: 'Exclusive Opportunities',
-      title: 'Featured Properties',
-      subtitle: 'A handpicked portfolio of high-end residential estates and prime commercial assets in Riyadh',
+      badge: 'Properties & Projects',
+      title: 'FEATURED PROPERTIES & PROJECTS',
+      subtitle: 'Explore selected real-estate opportunities, projects and properties presented by Anwar Najd Real Estate Company.',
       viewAll: 'View All Properties',
-      viewDetails: 'View Details',
+      viewDetails: 'VIEW DETAILS',
+      askAbout: 'ASK ABOUT THIS PROPERTY',
       beds: 'Beds',
       baths: 'Baths',
       areaUnit: 'm²',
       currency: 'SAR',
+      statusAvailable: 'Available',
+      filters: {
+        all: 'ALL',
+        residential: 'RESIDENTIAL',
+        commercial: 'COMMERCIAL',
+        investment: 'INVESTMENT',
+        projects: 'PROJECTS',
+      },
+      badges: {
+        forSale: 'FOR SALE',
+        forRent: 'FOR RENT',
+        available: 'AVAILABLE',
+        newProject: 'NEW PROJECT',
+        investment: 'INVESTMENT',
+        residential: 'RESIDENTIAL',
+        commercial: 'COMMERCIAL',
+      },
+    },
+
+    investment: {
+      badge: 'Investment Solutions',
+      title: 'REAL ESTATE & INVESTMENT OPPORTUNITIES',
+      subtitle: 'Discover real-estate opportunities selected to support different residential, commercial and investment needs.',
+      cta: 'DISCUSS AN OPPORTUNITY',
     },
 
     whyUs: {
       badge: 'Why Choose Us',
-      title: 'Why Anwar Najd Real Estate Company?',
+      title: 'WHY ANWAR NAJD?',
       subtitle: 'Built on a firm foundation of reliability, market intelligence, and executive professionalism',
       item1: {
         title: 'Professional Real Estate Service',

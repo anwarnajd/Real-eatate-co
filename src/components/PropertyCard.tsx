@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Property, Language } from '../types';
 import { translations } from '../data/translations';
-import { MapPin, BedDouble, Bath, Maximize2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Maximize2, ArrowLeft, ArrowRight, MessageCircle, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface PropertyCardProps {
@@ -63,8 +63,18 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   const purposeLabels: Record<string, { ar: string; en: string }> = {
-    buy: { ar: 'للبيع', en: 'For Sale' },
-    rent: { ar: 'للإيجار', en: 'For Rent' },
+    buy: { ar: 'للبيع', en: 'FOR SALE' },
+    rent: { ar: 'للإيجار', en: 'FOR RENT' },
+  };
+
+  const handleWhatsAppInquiry = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const propTitle = isAr ? property.title.ar : property.title.en;
+    const text = isAr
+      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة أنوار نجد العقارية.`
+      : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}) at Anwar Najd Real Estate Company.`;
+
+    window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
@@ -92,7 +102,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             : 'border-[#E2E8F0] shadow-sm'
         }`}
       >
-        {/* Layer 1: Property Image with Slow Luxury Zoom & Hover Overlay */}
+        {/* Layer 1: Property Image with Slow Luxury Zoom & Hover Overlay (aspect 4/3) */}
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
           <motion.img
             src={property.images[0] || '/images/property-fallback.jpg'}
@@ -109,8 +119,8 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             className="w-full h-full object-cover"
           />
 
-          {/* Scrim Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/80 via-transparent to-transparent pointer-events-none" />
+          {/* Scrim Gradient for text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/85 via-transparent to-transparent pointer-events-none" />
 
           {/* Hover Overlay with VIEW PROPERTY Callout */}
           <div
@@ -123,25 +133,36 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="px-4 py-2 rounded-xl bg-white/95 text-[#193555] font-black text-xs shadow-lg flex items-center gap-1.5"
             >
-              <span>{isAr ? 'عرض تفاصيل العقار' : 'VIEW PROPERTY'}</span>
+              <span>{isAr ? 'عرض تفاصيل العقار' : 'VIEW DETAILS'}</span>
             </motion.span>
           </div>
 
           {/* Floating Badges */}
-          <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-xs font-bold pointer-events-none">
-            <span className="px-3 py-1 rounded-lg bg-white/95 text-[#193555] shadow-sm backdrop-blur-xs">
-              {isAr ? purposeLabels[property.purpose].ar : purposeLabels[property.purpose].en}
+          <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-xs font-bold pointer-events-none z-10">
+            <span className="px-3 py-1 rounded-lg bg-white/95 text-[#193555] shadow-sm backdrop-blur-xs font-mono">
+              {isAr ? purposeLabels[property.purpose]?.ar : purposeLabels[property.purpose]?.en}
             </span>
-            <span className="px-3 py-1 rounded-lg bg-[#193555]/95 text-white shadow-sm backdrop-blur-xs">
-              {isAr ? typeLabels[property.type].ar : typeLabels[property.type].en}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-600/95 text-white shadow-sm backdrop-blur-xs text-[11px] font-bold">
+                {isAr ? 'متاح' : 'AVAILABLE'}
+              </span>
+              <span className="px-3 py-1 rounded-lg bg-[#193555]/95 text-white shadow-sm backdrop-blur-xs">
+                {isAr ? typeLabels[property.type]?.ar : typeLabels[property.type]?.en}
+              </span>
+            </div>
           </div>
 
           {/* Floating Price Tag */}
-          <div className="absolute bottom-3.5 inset-x-3.5 flex items-end justify-between text-white pointer-events-none">
+          <div className="absolute bottom-3.5 inset-x-3.5 flex items-end justify-between text-white pointer-events-none z-10">
             <div className="text-xl font-black font-mono tracking-tight drop-shadow-md">
               {isAr ? property.priceFormatted.ar : property.priceFormatted.en}
             </div>
+            {property.featured && (
+              <span className="px-2.5 py-0.5 rounded-md bg-[#088AC3]/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-[#38BDF8]" />
+                <span>{isAr ? 'مميز' : 'FEATURED'}</span>
+              </span>
+            )}
           </div>
         </div>
 
@@ -149,24 +170,32 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         <div className="p-5 flex-1 flex flex-col justify-between">
           <div>
             {/* Location Line */}
-            <div className="flex items-center gap-1.5 text-xs text-[#088AC3] font-bold mb-2">
+            <div className="flex items-center gap-1.5 text-xs text-[#088AC3] font-bold mb-1.5">
               <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
               <span>
                 {isAr ? property.location.districtAr : property.location.districtEn}
                 {' · '}
                 {isAr ? property.location.cityAr : property.location.cityEn}
               </span>
+              <span className="text-slate-300">|</span>
+              <span className="font-mono text-slate-400 text-[11px]">{property.refNumber}</span>
             </div>
 
             {/* Property Title */}
-            <h3 className="text-base sm:text-lg font-bold text-[#193555] group-hover:text-[#088AC3] transition-colors line-clamp-2 leading-snug">
+            <h3 className="text-base sm:text-lg font-bold text-[#193555] group-hover:text-[#088AC3] transition-colors line-clamp-1 leading-snug">
               {isAr ? property.title.ar : property.title.en}
             </h3>
+
+            {/* Short Description */}
+            <p className="mt-1.5 text-xs text-[#475569] line-clamp-2 leading-relaxed font-normal">
+              {isAr ? property.description.ar : property.description.en}
+            </p>
           </div>
 
-          {/* Layer 3: Specifications & Interactive Animated CTA */}
+          {/* Layer 3: Specifications & Dual Action Buttons */}
           <div className="mt-4 pt-4 border-t border-slate-100">
-            <div className="flex items-center justify-between text-xs text-[#475569]">
+            {/* Verified Details Bar */}
+            <div className="flex items-center justify-between text-xs text-[#475569] mb-4">
               {property.bedrooms !== undefined && (
                 <div className="flex items-center gap-1.5">
                   <BedDouble className="w-4 h-4 text-[#355D7F]" />
@@ -190,21 +219,34 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               </div>
             </div>
 
-            {/* Action CTA with Animated Smooth Arrow */}
-            <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-[#088AC3] group-hover:text-[#0779AB]">
-              <span className="group-hover:underline">{t.featured.viewDetails}</span>
-              <motion.div
-                animate={{
-                  x: isHovered ? (isAr ? -4 : 4) : 0,
+            {/* Dual CTA Actions: VIEW DETAILS (Primary) & ASK ABOUT THIS PROPERTY (Secondary / WhatsApp) */}
+            <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelect(property);
                 }}
-                transition={{ type: 'spring', stiffness: 350, damping: 20 }}
+                className="w-full sm:flex-1 py-2.5 px-3 bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                {isAr ? (
-                  <ArrowLeft className="w-4 h-4 text-[#088AC3]" />
-                ) : (
-                  <ArrowRight className="w-4 h-4 text-[#088AC3]" />
-                )}
-              </motion.div>
+                <span>{isAr ? 'عرض التفاصيل' : 'VIEW DETAILS'}</span>
+                <motion.span
+                  animate={{ x: isHovered ? (isAr ? -3 : 3) : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isAr ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                </motion.span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleWhatsAppInquiry}
+                className="w-full sm:flex-1 py-2.5 px-3 bg-slate-50 hover:bg-emerald-50 text-[#193555] hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                title={isAr ? 'استفسار عبر واتساب' : 'Inquire via WhatsApp'}
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                <span className="truncate">{isAr ? 'استفسر عن هذا العقار' : 'ASK ABOUT THIS PROPERTY'}</span>
+              </button>
             </div>
           </div>
         </div>

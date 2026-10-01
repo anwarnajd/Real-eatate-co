@@ -35,7 +35,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   const [purpose, setPurpose] = useState<PropertyPurpose | 'all'>(
     initialFilters?.purpose || 'all'
   );
-  const [category, setCategory] = useState<'all' | 'residential' | 'commercial' | 'land'>('all');
+  const [category, setCategory] = useState<'all' | 'residential' | 'commercial' | 'investment' | 'projects'>('all');
   const [district, setDistrict] = useState<string>(initialFilters?.district || 'all');
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(initialFilters?.maxPrice || 0);
@@ -54,8 +54,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         if (!['villa', 'penthouse', 'apartment'].includes(prop.type)) return false;
       } else if (category === 'commercial') {
         if (prop.type !== 'commercial') return false;
-      } else if (category === 'land') {
-        if (prop.type !== 'land') return false;
+      } else if (category === 'investment') {
+        if (!['land', 'commercial'].includes(prop.type)) return false;
+      } else if (category === 'projects') {
+        if (!prop.featured) return false;
       }
 
       // District match
@@ -168,52 +170,30 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               </button>
             </div>
 
-            {/* Category tabs: All, Residential, Commercial, Land */}
-            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl overflow-x-auto">
-              <button
-                type="button"
-                onClick={() => setCategory('all')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
-                  category === 'all'
-                    ? 'bg-white text-[#088AC3] shadow-xs'
-                    : 'text-[#475569] hover:text-[#193555]'
-                }`}
-              >
-                {t.propertiesPage.all}
-              </button>
-              <button
-                type="button"
-                onClick={() => setCategory('residential')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
-                  category === 'residential'
-                    ? 'bg-white text-[#088AC3] shadow-xs'
-                    : 'text-[#475569] hover:text-[#193555]'
-                }`}
-              >
-                {t.propertiesPage.residential}
-              </button>
-              <button
-                type="button"
-                onClick={() => setCategory('commercial')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
-                  category === 'commercial'
-                    ? 'bg-white text-[#088AC3] shadow-xs'
-                    : 'text-[#475569] hover:text-[#193555]'
-                }`}
-              >
-                {t.propertiesPage.commercial}
-              </button>
-              <button
-                type="button"
-                onClick={() => setCategory('land')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
-                  category === 'land'
-                    ? 'bg-white text-[#088AC3] shadow-xs'
-                    : 'text-[#475569] hover:text-[#193555]'
-                }`}
-              >
-                {t.propertiesPage.land}
-              </button>
+            {/* Category tabs: ALL, RESIDENTIAL, COMMERCIAL, INVESTMENT, PROJECTS */}
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl overflow-x-auto scrollbar-none">
+              {(
+                [
+                  { id: 'all', label: t.featured.filters.all },
+                  { id: 'residential', label: t.featured.filters.residential },
+                  { id: 'commercial', label: t.featured.filters.commercial },
+                  { id: 'investment', label: t.featured.filters.investment },
+                  { id: 'projects', label: t.featured.filters.projects },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setCategory(tab.id)}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
+                    category === tab.id
+                      ? 'bg-white text-[#088AC3] shadow-xs'
+                      : 'text-[#475569] hover:text-[#193555]'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
             {/* Reset Filters */}
