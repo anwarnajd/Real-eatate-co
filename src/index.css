@@ -13,6 +13,19 @@
     --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   html {
     scroll-behavior: smooth;
   }

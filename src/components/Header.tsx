@@ -75,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => handleNavClick('home')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="cursor-pointer group flex-shrink-0"
+            className="cursor-pointer group flex-shrink min-w-0"
           >
             <Logo language={language} variant="light" size={scrolled ? 'sm' : 'md'} />
           </motion.div>
@@ -110,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Zone 3: Actions - Language Switcher & WhatsApp/Call CTA */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {/* Functional Language Switcher: العربية | English */}
             <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 shadow-2xs">
               <button
@@ -163,36 +163,38 @@ export const Header: React.FC<HeaderProps> = ({
             </motion.a>
           </div>
 
-          {/* Mobile Menu & Language Toggle */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200">
+          {/* Mobile Menu & Compact Language Toggle */}
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden flex-shrink-0">
+            <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setLanguage('ar')}
-                className={`px-2 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                className={`px-2 py-1 text-[11px] font-bold rounded-md transition-all cursor-pointer ${
                   language === 'ar'
                     ? 'bg-[#088AC3] text-white shadow-xs'
                     : 'text-[#193555] hover:text-[#088AC3]'
                 }`}
+                title="العربية"
               >
-                عربي
+                العربية
               </button>
               <span className="text-slate-300 text-[10px] px-0.5 select-none">|</span>
               <button
                 type="button"
                 onClick={() => setLanguage('en')}
-                className={`px-2 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                className={`px-2 py-1 text-[11px] font-bold rounded-md transition-all cursor-pointer ${
                   language === 'en'
                     ? 'bg-[#088AC3] text-white shadow-xs'
                     : 'text-[#193555] hover:text-[#088AC3]'
                 }`}
+                title="English"
               >
                 EN
               </button>
             </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#193555] hover:text-[#088AC3] rounded-lg focus:outline-none cursor-pointer"
+              className="w-11 h-11 flex items-center justify-center text-[#193555] hover:text-[#088AC3] rounded-lg focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

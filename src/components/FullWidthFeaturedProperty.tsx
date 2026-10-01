@@ -22,6 +22,7 @@ export const FullWidthFeaturedProperty: React.FC<FullWidthFeaturedPropertyProps>
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -38,13 +39,13 @@ export const FullWidthFeaturedProperty: React.FC<FullWidthFeaturedPropertyProps>
   };
 
   return (
-    <section className="relative py-20 lg:py-28 bg-[#F8FAFC] border-y border-[#E2E8F0] overflow-hidden">
-      {/* Background Architectural Glow */}
-      <div className="absolute top-1/2 start-0 w-[500px] h-[500px] bg-[#088AC3]/08 rounded-full blur-[120px] pointer-events-none" />
+    <section className="relative py-16 sm:py-20 lg:py-28 bg-[#F8FAFC] border-y border-[#E2E8F0] overflow-hidden">
+      {/* Background Architectural Glow - Desktop only */}
+      <div className="hidden sm:block absolute top-1/2 start-0 w-[500px] h-[500px] bg-[#088AC3]/08 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header Tag */}
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2 mb-6 sm:mb-8">
           <span className="w-8 h-[2px] bg-[#088AC3]" />
           <span className="text-xs uppercase tracking-widest font-extrabold text-[#088AC3]">
             {isAr ? 'عقار الشهر الاستثنائي — فرصة نادرة' : 'Spotlight Luxury Property of the Month'}
@@ -55,7 +56,7 @@ export const FullWidthFeaturedProperty: React.FC<FullWidthFeaturedPropertyProps>
         <div
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#E2E8F0] shadow-xl hover:shadow-2xl transition-shadow duration-500"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center bg-white rounded-3xl p-4 sm:p-10 lg:p-12 border border-[#E2E8F0] shadow-xl hover:shadow-2xl transition-shadow duration-500"
         >
           {/* Column 1: Massive Cinematic Image with Parallax (7 cols) */}
           <div className="lg:col-span-7 relative">

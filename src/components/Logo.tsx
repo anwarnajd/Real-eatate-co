@@ -20,16 +20,16 @@ export const Logo: React.FC<LogoProps> = ({
 
   // Sizing definitions
   const iconDimensions = {
-    sm: 'w-10 h-10',
-    md: 'w-13 h-13',
-    lg: 'w-16 h-16',
-    xl: 'w-24 h-24',
+    sm: 'w-8 h-8 sm:w-10 sm:h-10',
+    md: 'w-9 h-9 sm:w-12 sm:h-12',
+    lg: 'w-12 h-12 sm:w-16 sm:h-16',
+    xl: 'w-16 h-16 sm:w-24 sm:h-24',
   };
 
   const isDarkBg = variant === 'dark' || variant === 'footer';
 
   return (
-    <div className={`inline-flex items-center gap-3.5 select-none ${className}`}>
+    <div className={`inline-flex items-center gap-2 sm:gap-3.5 select-none max-w-full overflow-hidden ${className}`}>
       {/* 
         Exact Emblem from the client's uploaded logo:
         - House outline with chimney
@@ -124,16 +124,16 @@ export const Logo: React.FC<LogoProps> = ({
 
       {/* Brand Typography */}
       {showText && (
-        <div className="flex flex-col justify-center text-start">
+        <div className="flex flex-col justify-center text-start min-w-0">
           <span
-            className={`font-black tracking-tight leading-none text-base sm:text-lg ${
+            className={`font-black tracking-tight leading-tight text-xs sm:text-base lg:text-lg truncate max-w-[140px] min-[390px]:max-w-[190px] sm:max-w-none ${
               isDarkBg ? 'text-white' : 'text-[#193555]'
             }`}
           >
-            {isAr ? 'شركة أنوار نجد العقارية' : 'Anwar Najd Real Estate Company'}
+            {isAr ? 'شركة أنوار نجد العقارية' : 'Anwar Najd Real Estate Co.'}
           </span>
           <span
-            className={`font-bold text-[10px] sm:text-xs tracking-wider uppercase mt-1 ${
+            className={`hidden min-[420px]:block font-bold text-[9px] sm:text-xs tracking-wider uppercase mt-0.5 truncate max-w-[190px] sm:max-w-none ${
               isDarkBg ? 'text-cyan-300' : 'text-[#088AC3]'
             }`}
           >

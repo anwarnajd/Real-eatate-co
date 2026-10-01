@@ -22,6 +22,10 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   const y = useSpring(0, { stiffness: 250, damping: 20 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Only enable magnetic tracking on desktop devices with hover & mouse pointer
+    if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
     if (!btnRef.current) return;
     const rect = btnRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -35,6 +39,9 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   };
 
   const handleMouseEnter = () => {
+    if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
     setIsHovered(true);
   };
 
@@ -53,7 +60,7 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
       onClick={onClick}
       style={{ x, y }}
       whileTap={{ scale: 0.96 }}
-      className={`relative cursor-pointer transition-shadow ${className}`}
+      className={`relative cursor-pointer transition-shadow max-w-full ${className}`}
       {...(props as any)}
     >
       {children}

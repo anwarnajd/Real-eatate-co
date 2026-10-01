@@ -50,7 +50,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
         <circle cx="950" cy="240" r="3" fill="#088AC3" />
       </svg>
 
-      {/* 3. Slow Drifting Cyan Laser/Beam Line */}
+      {/* 3. Slow Drifting Cyan Laser/Beam Line - Desktop only */}
       <motion.div
         animate={{
           x: ['-100%', '200%'],
@@ -60,7 +60,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
           repeat: Infinity,
           ease: 'linear',
         }}
-        className="absolute top-1/3 left-0 w-72 h-[1px] bg-gradient-to-r from-transparent via-[#088AC3]/30 to-transparent pointer-events-none"
+        className="hidden md:block absolute top-1/3 left-0 w-72 h-[1px] bg-gradient-to-r from-transparent via-[#088AC3]/30 to-transparent pointer-events-none"
       />
     </div>
   );

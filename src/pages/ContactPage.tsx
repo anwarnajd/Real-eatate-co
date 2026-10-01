@@ -87,8 +87,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Left Column: Direct Info Cards & Quick Action Buttons (5 cols) */}
           <motion.div
-            initial={{ opacity: 0, x: isAr ? 30 : -30 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="lg:col-span-5 space-y-6"
           >
@@ -201,8 +201,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
 
           {/* Right Column: Contact Form (7 cols) in Crisp White */}
           <motion.div
-            initial={{ opacity: 0, x: isAr ? -30 : 30 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="lg:col-span-7"
           >

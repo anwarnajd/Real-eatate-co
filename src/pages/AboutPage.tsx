@@ -118,8 +118,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({
 
           {/* Right Column: Visual Showcase + Brand Emblem */}
           <motion.div
-            initial={{ opacity: 0, x: isAr ? -30 : 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-5 space-y-6"

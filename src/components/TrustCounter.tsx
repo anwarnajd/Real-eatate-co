@@ -71,9 +71,9 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
       {/* Architectural Background Lines */}
       <ArchitecturalBackground />
 
-      {/* Floating Ambient Cyan Orbs */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#088AC3]/08 blur-[120px] rounded-full pointer-events-none animate-pulse-glow" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#355D7F]/08 blur-[100px] rounded-full pointer-events-none" />
+      {/* Floating Ambient Cyan Orbs - Desktop only */}
+      <div className="hidden sm:block absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#088AC3]/08 blur-[120px] rounded-full pointer-events-none" />
+      <div className="hidden sm:block absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#355D7F]/08 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         {/* Section Header with Fade & Slide Up */}
@@ -102,11 +102,11 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           whileHover={{ y: -4 }}
-          className="mb-12 p-8 sm:p-14 rounded-3xl bg-[#193555] text-white shadow-2xl relative overflow-hidden group border border-[#355D7F]/40"
+          className="mb-12 p-5 sm:p-14 rounded-3xl bg-[#193555] text-white shadow-2xl relative overflow-hidden group border border-[#355D7F]/40"
         >
           {/* Subtle Ambient Glow inside Card */}
-          <div className="absolute -top-32 -right-32 w-[450px] h-[450px] bg-[#088AC3]/25 blur-[90px] pointer-events-none animate-pulse-glow" />
-          <div className="absolute -bottom-28 -left-28 w-[380px] h-[380px] bg-[#38BDF8]/15 blur-[80px] pointer-events-none" />
+          <div className="hidden sm:block absolute -top-32 -right-32 w-[450px] h-[450px] bg-[#088AC3]/25 blur-[90px] pointer-events-none" />
+          <div className="hidden sm:block absolute -bottom-28 -left-28 w-[380px] h-[380px] bg-[#38BDF8]/15 blur-[80px] pointer-events-none" />
 
           {/* Architectural CAD lines inside card */}
           <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none">
@@ -118,16 +118,16 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
             <div className="flex flex-col sm:flex-row items-center gap-8">
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.12 }}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#088AC3]/20 border border-[#088AC3]/50 flex items-center justify-center flex-shrink-0 text-[#38BDF8] shadow-xl shadow-[#088AC3]/20"
+                className="w-16 h-16 sm:w-24 sm:h-24 rounded-3xl bg-[#088AC3]/20 border border-[#088AC3]/50 flex items-center justify-center flex-shrink-0 text-[#38BDF8] shadow-xl shadow-[#088AC3]/20"
               >
-                <Users className="w-10 h-10 sm:w-12 sm:h-12 text-[#38BDF8]" />
+                <Users className="w-8 h-8 sm:w-12 sm:h-12 text-[#38BDF8]" />
               </motion.div>
               <div>
                 <div className="flex flex-col sm:flex-row sm:items-baseline justify-center lg:justify-start gap-3">
-                  <span className="text-5xl sm:text-7xl lg:text-8xl font-black text-white font-mono tracking-tight tabular-nums drop-shadow-md">
+                  <span className="text-4xl sm:text-7xl lg:text-8xl font-black text-white font-mono tracking-tight tabular-nums drop-shadow-md">
                     +{formattedCount}
                   </span>
-                  <span className="text-2xl sm:text-3xl font-extrabold text-[#38BDF8]">
+                  <span className="text-xl sm:text-3xl font-extrabold text-[#38BDF8]">
                     {language === 'ar' ? 'أكثر من 30,000 عميل' : '30,000+ Clients'}
                   </span>
                 </div>

@@ -59,6 +59,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const heroContentY = useTransform(scrollY, [0, 600], [0, -60]);
 
   const handleHeroMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     if (!heroRef.current) return;
     const rect = heroRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -91,7 +92,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         ref={heroRef}
         onMouseMove={handleHeroMouseMove}
         onMouseLeave={handleHeroMouseLeave}
-        className="relative min-h-[92vh] flex flex-col justify-center items-center overflow-hidden border-b border-slate-200"
+        className="relative min-h-[85vh] sm:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden border-b border-slate-200 w-full max-w-full"
       >
         {/* Layer 1: Background Property Image with Very Subtle Cinematic Zoom & Parallax */}
         <motion.div
@@ -122,7 +123,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         </motion.div>
 
         {/* Layer 3: Subtle Architectural Grid Lines & Blueprint Accents */}
-        <div className="absolute inset-0 z-[2] pointer-events-none opacity-20">
+        <div className="absolute inset-0 z-[2] pointer-events-none opacity-20 overflow-hidden">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="heroArchGrid" width="60" height="60" patternUnits="userSpaceOnUse">
@@ -134,14 +135,14 @@ export const HomePage: React.FC<HomePageProps> = ({
           </svg>
         </div>
 
-        {/* Layer 4: Floating Ambient Light Orbs with Subtle Drift */}
+        {/* Layer 4: Floating Ambient Light Orbs - Desktop fine pointer only */}
         <motion.div
           animate={{
             x: mouseOffset.x * 0.5,
             y: mouseOffset.y * 0.5,
           }}
           transition={{ type: 'spring', stiffness: 60, damping: 30 }}
-          className="absolute top-1/4 -start-24 w-96 h-96 bg-[#088AC3]/20 rounded-full blur-[120px] pointer-events-none z-[3]"
+          className="hidden md:block absolute top-1/4 start-0 w-80 h-80 bg-[#088AC3]/20 rounded-full blur-[120px] pointer-events-none z-[3]"
         />
         <motion.div
           animate={{
@@ -149,22 +150,22 @@ export const HomePage: React.FC<HomePageProps> = ({
             y: mouseOffset.y * -0.4,
           }}
           transition={{ type: 'spring', stiffness: 60, damping: 30 }}
-          className="absolute bottom-1/4 -end-24 w-96 h-96 bg-[#38BDF8]/15 rounded-full blur-[130px] pointer-events-none z-[3]"
+          className="hidden md:block absolute bottom-1/4 end-0 w-80 h-80 bg-[#38BDF8]/15 rounded-full blur-[130px] pointer-events-none z-[3]"
         />
 
         {/* Layer 5: Staggered Cinematic Content Entrance */}
         <motion.div
           style={{ y: heroContentY }}
-          className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24 pb-16"
+          className="relative z-10 w-full max-w-5xl mx-0 sm:mx-auto px-[18px] sm:px-6 lg:px-8 text-center pt-14 sm:pt-24 pb-12 sm:pb-16 flex flex-col items-center"
         >
           {/* 1. Anwar Najd Logo Icon Mark (0.1s) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-4 flex justify-center"
+            className="mb-3 sm:mb-4 flex justify-center"
           >
-            <div className="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-2 shadow-lg flex items-center justify-center">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-2 shadow-lg flex items-center justify-center">
               <Building className="w-5 h-5 text-[#38BDF8]" />
             </div>
           </motion.div>
@@ -174,19 +175,24 @@ export const HomePage: React.FC<HomePageProps> = ({
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#38BDF8] text-xs sm:text-sm font-bold mb-6 backdrop-blur-md shadow-xs"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#38BDF8] text-xs sm:text-sm font-bold mb-4 sm:mb-6 backdrop-blur-md shadow-xs max-w-full"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" />
-            <span>{t.hero.tag}</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#38BDF8] flex-shrink-0" />
+            <span className="truncate">{t.hero.tag}</span>
           </motion.div>
 
           {/* 3. Cinematic Headline Reveal via overflow: hidden (0.4s) */}
-          <div className="overflow-hidden py-1">
+          <div className="overflow-hidden py-1 w-full max-w-full">
             <motion.h1
               initial={{ y: '100%', opacity: 0 }}
               animate={{ y: '0%', opacity: 1 }}
               transition={{ duration: 0.85, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight sm:leading-snug max-w-4xl mx-auto drop-shadow-md"
+              style={{
+                fontSize: 'clamp(1.75rem, 8.5vw, 3.5rem)',
+                lineHeight: 1.12,
+                overflowWrap: 'break-word',
+              }}
+              className="font-black text-white tracking-tight max-w-4xl mx-auto drop-shadow-md break-words w-full"
             >
               {t.hero.headline}
             </motion.h1>
@@ -197,24 +203,28 @@ export const HomePage: React.FC<HomePageProps> = ({
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-6 text-base sm:text-lg lg:text-xl text-slate-100 max-w-2xl mx-auto leading-relaxed drop-shadow font-medium"
+            style={{
+              lineHeight: 1.6,
+              overflowWrap: 'break-word',
+            }}
+            className="mt-4 sm:mt-6 text-[16px] sm:text-[18px] text-slate-100 w-full max-w-2xl mx-auto drop-shadow font-medium px-1 break-words"
           >
             {t.hero.subheadline}
           </motion.p>
 
-          {/* 5. CTA Buttons (0.8s) */}
+          {/* 5. CTA Buttons: Stack vertically on mobile, row on tablet/desktop (0.8s) */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-full sm:max-w-none mx-auto"
           >
             <MagneticButton
               onClick={() => {
                 setCurrentPage('properties');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="w-full sm:w-auto px-8 py-3.5 bg-[#088AC3] hover:bg-[#0779AB] text-white font-bold rounded-xl shadow-lg shadow-[#088AC3]/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              className="w-full sm:w-auto min-h-[52px] px-6 sm:px-8 py-3.5 bg-[#088AC3] hover:bg-[#0779AB] text-white font-bold rounded-xl shadow-lg shadow-[#088AC3]/30 transition-all flex items-center justify-center gap-2 group cursor-pointer text-center text-sm sm:text-base"
             >
               <span>{t.hero.exploreBtn}</span>
               <motion.span
@@ -230,7 +240,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 setCurrentPage('contact');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="w-full sm:w-auto px-8 py-3.5 bg-white/95 hover:bg-white text-[#193555] font-bold rounded-xl shadow-md transition-all cursor-pointer"
+              className="w-full sm:w-auto min-h-[52px] px-6 sm:px-8 py-3.5 bg-white/95 hover:bg-white text-[#193555] font-bold rounded-xl shadow-md transition-all cursor-pointer text-center text-sm sm:text-base flex items-center justify-center"
             >
               <span>{t.hero.contactBtn}</span>
             </MagneticButton>
@@ -241,7 +251,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.95, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-12 w-full max-w-4xl mx-auto bg-white rounded-3xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(25,53,85,0.25)] border border-slate-100 text-start text-[#193555]"
+            className="mt-10 sm:mt-12 w-full max-w-4xl mx-auto bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-[0_20px_50px_rgba(25,53,85,0.25)] border border-slate-100 text-start text-[#193555]"
           >
             {/* Segmented Purpose Tabs */}
             <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
