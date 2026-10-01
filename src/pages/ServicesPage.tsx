@@ -189,7 +189,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto">
             {isAr
-              ? 'خبراء شركة أنوار نجد العقارية على أتم الاستعداد لتقديم حلول واستشارات مصممة وفق أهدافك الاستثمارية.'
+              ? 'خبراء شركة انوار نجد العقارية على أتم الاستعداد لتقديم حلول واستشارات مصممة وفق أهدافك الاستثمارية.'
               : 'Our executive advisors are at your service to craft bespoke investment and disposition strategies.'}
           </p>
           <div className="mt-6">

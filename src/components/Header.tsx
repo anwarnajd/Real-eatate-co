@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const openWhatsApp = () => {
     const message = isAr
-      ? 'السلام عليكم، أود الاستفسار عن خدمات وعقارات شركة أنوار نجد العقارية'
+      ? 'السلام عليكم، أود الاستفسار عن خدمات وعقارات شركة انوار نجد العقارية'
       : 'Hello, I would like to inquire about properties and services from Anwar Najd Real Estate Company';
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(message)}`, '_blank');
   };

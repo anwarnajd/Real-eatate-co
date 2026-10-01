@@ -44,7 +44,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
 
   const handleWhatsAppDirect = () => {
     const text = isAr
-      ? `السلام عليكم، أود التواصل مع شركة أنوار نجد العقارية.\nالاسم: ${formData.name || 'عميل كريم'}\nرقم التواصل: ${formData.phone || 'غير محدد'}\nالموضوع: ${formData.serviceOrProperty || 'استفسار عام'}\n${formData.message}`
+      ? `السلام عليكم، أود التواصل مع شركة انوار نجد العقارية.\nالاسم: ${formData.name || 'عميل كريم'}\nرقم التواصل: ${formData.phone || 'غير محدد'}\nالموضوع: ${formData.serviceOrProperty || 'استفسار عام'}\n${formData.message}`
       : `Hello, I would like to contact Anwar Najd Real Estate Company.\nName: ${formData.name || 'Client'}\nPhone: ${formData.phone || 'Not specified'}\nTopic: ${formData.serviceOrProperty || 'General Inquiry'}\n${formData.message}`;
 
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');

@@ -130,7 +130,7 @@ export const Logo: React.FC<LogoProps> = ({
               isDarkBg ? 'text-white' : 'text-[#193555]'
             }`}
           >
-            {isAr ? 'شركة أنوار نجد العقارية' : 'Anwar Najd Real Estate Co.'}
+            {isAr ? 'شركة انوار نجد العقارية' : 'Anwar Najd Real Estate Co.'}
           </span>
           <span
             className={`hidden min-[420px]:block font-bold text-[9px] sm:text-xs tracking-wider uppercase mt-0.5 truncate max-w-[190px] sm:max-w-none ${

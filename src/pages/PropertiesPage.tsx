@@ -5,6 +5,11 @@ import { propertiesData } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
 import { motion, AnimatePresence } from 'motion/react';
 import {
+  RIYADH_DISTRICTS,
+  EXACT_PRICE_RANGES,
+  OWNER_PROPERTY_TYPES,
+} from '../data/riyadhNeighborhoods';
+import {
   Search,
   SlidersHorizontal,
   LayoutGrid,
@@ -14,6 +19,7 @@ import {
   BedDouble,
   Bath,
   Maximize2,
+  Building,
 } from 'lucide-react';
 
 interface PropertiesPageProps {
@@ -36,9 +42,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     initialFilters?.purpose || 'all'
   );
   const [category, setCategory] = useState<'all' | 'residential' | 'commercial' | 'investment' | 'projects'>('all');
+  const [propertyType, setPropertyType] = useState<PropertyType | 'all'>(initialFilters?.type || 'all');
   const [district, setDistrict] = useState<string>(initialFilters?.district || 'all');
-  const [minPrice, setMinPrice] = useState<number>(0);
-  const [maxPrice, setMaxPrice] = useState<number>(initialFilters?.maxPrice || 0);
+  const [priceRangeId, setPriceRangeId] = useState<string>(initialFilters?.priceRangeId || 'all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'area-desc'>('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -51,25 +57,54 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
 
       // Category match
       if (category === 'residential') {
-        if (!['villa', 'penthouse', 'apartment'].includes(prop.type)) return false;
+        if (!['villa', 'penthouse', 'apartment', 'ground_floor', 'upper_floor', 'roof_apartment'].includes(prop.type)) return false;
       } else if (category === 'commercial') {
-        if (prop.type !== 'commercial') return false;
+        if (!['commercial', 'commercial_land', 'commercial_building', 'retail_shop', 'warehouse'].includes(prop.type)) return false;
       } else if (category === 'investment') {
-        if (!['land', 'commercial'].includes(prop.type)) return false;
+        if (!['land', 'commercial', 'commercial_land', 'residential_land', 'commercial_building'].includes(prop.type)) return false;
       } else if (category === 'projects') {
         if (!prop.featured) return false;
       }
 
-      // District match
-      if (district !== 'all' && district !== '') {
-        const matchesAr = prop.location.districtAr.includes(district);
-        const matchesEn = prop.location.districtEn.toLowerCase().includes(district.toLowerCase());
-        if (!matchesAr && !matchesEn) return false;
+      // Property Type dropdown match
+      if (propertyType !== 'all') {
+        if (prop.type !== propertyType) {
+          // If specific type not directly matching, check fallback group
+          const matchesVilla = propertyType === 'villa' && prop.type === 'villa';
+          const matchesApt = propertyType === 'apartment' && ['apartment', 'roof_apartment', 'ground_floor', 'upper_floor'].includes(prop.type);
+          const matchesPent = propertyType === 'penthouse' && prop.type === 'penthouse';
+          const matchesComm = ['commercial', 'commercial_building', 'retail_shop', 'warehouse'].includes(propertyType) && prop.type === 'commercial';
+          const matchesLand = ['land', 'residential_land', 'commercial_land'].includes(propertyType) && prop.type === 'land';
+
+          if (!matchesVilla && !matchesApt && !matchesPent && !matchesComm && !matchesLand) {
+            return false;
+          }
+        }
       }
 
-      // Min & Max Price
-      if (minPrice > 0 && prop.price < minPrice) return false;
-      if (maxPrice > 0 && prop.price > maxPrice) return false;
+      // District match
+      if (district !== 'all' && district !== '') {
+        const dLower = district.toLowerCase();
+        const matchesAr = prop.location.districtAr.includes(district) || district.includes(prop.location.districtAr);
+        const matchesEn = prop.location.districtEn.toLowerCase().includes(dLower) || dLower.includes(prop.location.districtEn.toLowerCase());
+
+        const matchedItem = RIYADH_DISTRICTS.find(
+          (rd) => rd.nameAr === district || rd.nameEn.toLowerCase() === dLower || rd.id === dLower
+        );
+        const matchesViaItem = matchedItem
+          ? prop.location.districtAr.includes(matchedItem.nameAr) ||
+            prop.location.districtEn.toLowerCase().includes(matchedItem.nameEn.toLowerCase())
+          : false;
+
+        if (!matchesAr && !matchesEn && !matchesViaItem) return false;
+      }
+
+      // Exact Owner-Specified Price Range Match
+      if (priceRangeId !== 'all') {
+        const selectedRange = EXACT_PRICE_RANGES.find((r) => r.id === priceRangeId);
+        if (selectedRange && selectedRange.min > 0 && prop.price < selectedRange.min) return false;
+        if (selectedRange && selectedRange.max > 0 && prop.price > selectedRange.max) return false;
+      }
 
       // Search Query
       if (searchQuery.trim() !== '') {
@@ -98,14 +133,14 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
       if (sortBy === 'area-desc') return b.area - a.area;
       return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
     });
-  }, [purpose, category, district, minPrice, maxPrice, searchQuery, sortBy]);
+  }, [purpose, category, propertyType, district, priceRangeId, searchQuery, sortBy]);
 
   const handleResetFilters = () => {
     setPurpose('all');
     setCategory('all');
+    setPropertyType('all');
     setDistrict('all');
-    setMinPrice(0);
-    setMaxPrice(0);
+    setPriceRangeId('all');
     setSearchQuery('');
     setSortBy('featured');
   };
@@ -206,7 +241,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
             </button>
           </div>
 
-          {/* Bottom row: Search input, District, Min Price, Max Price */}
+          {/* Bottom row: Search input, Property Type, District, Price Range */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Search Input */}
             <div className="relative">
@@ -220,50 +255,49 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               />
             </div>
 
-            {/* District select */}
+            {/* Property Type Dropdown */}
+            <div>
+              <select
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value as PropertyType | 'all')}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
+              >
+                {OWNER_PROPERTY_TYPES.map((pt) => (
+                  <option key={pt.id} value={pt.id}>
+                    {isAr ? pt.nameAr : pt.nameEn}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* District select with All Riyadh Neighborhoods */}
             <div>
               <select
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
               >
-                <option value="all">{t.hero.searchCard.allLocations}</option>
-                <option value="حطين">{isAr ? 'حي حطين' : 'Hittin'}</option>
-                <option value="الملقا">{isAr ? 'حي الملقا' : 'Al Malqa'}</option>
-                <option value="النرجس">{isAr ? 'حي النرجس' : 'Al Narjis'}</option>
-                <option value="الياسمين">{isAr ? 'حي الياسمين' : 'Al Yasmin'}</option>
-                <option value="العليا">{isAr ? 'العليا - طريق الملك فهد' : 'Al Olaya'}</option>
-                <option value="الخير">{isAr ? 'حي الخير شمال الرياض' : 'Al Khair'}</option>
+                <option value="all">{isAr ? 'كافة أحياء الرياض' : 'All Riyadh Districts'}</option>
+                {RIYADH_DISTRICTS.map((d) => (
+                  <option key={d.id} value={d.nameAr}>
+                    {isAr ? `حي ${d.nameAr}` : `${d.nameEn} District`}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* Min Price */}
+            {/* Exact Owner-Specified Price Range */}
             <div>
               <select
-                value={minPrice}
-                onChange={(e) => setMinPrice(Number(e.target.value))}
+                value={priceRangeId}
+                onChange={(e) => setPriceRangeId(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
               >
-                <option value="0">{isAr ? 'السعر الأدنى: الكل' : 'Min Price: Any'}</option>
-                <option value="100000">{isAr ? 'من 100,000 ر.س' : 'From 100,000 SAR'}</option>
-                <option value="1000000">{isAr ? 'من 1,000,000 ر.س' : 'From 1,000,000 SAR'}</option>
-                <option value="3000000">{isAr ? 'من 3,000,000 ر.س' : 'From 3,000,000 SAR'}</option>
-                <option value="5000000">{isAr ? 'من 5,000,000 ر.س' : 'From 5,000,000 SAR'}</option>
-              </select>
-            </div>
-
-            {/* Max Price */}
-            <div>
-              <select
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
-              >
-                <option value="0">{isAr ? 'السعر الأعلى: الكل' : 'Max Price: Any'}</option>
-                <option value="500000">{isAr ? 'حتى 500,000 ر.س' : 'Up to 500,000 SAR'}</option>
-                <option value="2000000">{isAr ? 'حتى 2,000,000 ر.س' : 'Up to 2,000,000 SAR'}</option>
-                <option value="5000000">{isAr ? 'حتى 5,000,000 ر.س' : 'Up to 5,000,000 SAR'}</option>
-                <option value="10000000">{isAr ? 'حتى 10,000,000 ر.س' : 'Up to 10,000,000 SAR'}</option>
+                {EXACT_PRICE_RANGES.map((pr) => (
+                  <option key={pr.id} value={pr.id}>
+                    {isAr ? pr.labelAr : pr.labelEn}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

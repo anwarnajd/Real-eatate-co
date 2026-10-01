@@ -71,7 +71,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     e.stopPropagation();
     const propTitle = isAr ? property.title.ar : property.title.en;
     const text = isAr
-      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة أنوار نجد العقارية.`
+      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة انوار نجد العقارية.`
       : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}) at Anwar Najd Real Estate Company.`;
 
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');

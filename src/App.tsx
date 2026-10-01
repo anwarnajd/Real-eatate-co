@@ -64,7 +64,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
       return (
         <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50 text-center font-sans">
           <div className="max-w-md p-8 bg-white rounded-2xl shadow-xl border border-slate-200">
-            <h2 className="text-xl font-bold text-[#193555] mb-2">شركة أنوار نجد العقارية</h2>
+            <h2 className="text-xl font-bold text-[#193555] mb-2">شركة انوار نجد العقارية</h2>
             <p className="text-xs text-slate-500 mb-6">Anwar Najd Real Estate Company</p>
             <button
               onClick={() => {
@@ -110,8 +110,8 @@ export default function App() {
     document.documentElement.lang = language;
     document.body.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.title = language === 'ar'
-      ? 'شركة أنوار نجد العقارية | Anwar Najd Real Estate Company'
-      : 'Anwar Najd Real Estate Company | شركة أنوار نجد العقارية';
+      ? 'شركة انوار نجد العقارية | Anwar Najd Real Estate Company'
+      : 'Anwar Najd Real Estate Company | شركة انوار نجد العقارية';
   }, [language]);
 
   const handleSelectProperty = (property: Property) => {
@@ -135,7 +135,7 @@ export default function App() {
   const openWhatsAppFloating = () => {
     const isAr = language === 'ar';
     const message = isAr
-      ? 'السلام عليكم، أود التواصل مع شركة أنوار نجد العقارية'
+      ? 'السلام عليكم، أود التواصل مع شركة انوار نجد العقارية'
       : 'Hello, I would like to contact Anwar Najd Real Estate Company';
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(message)}`, '_blank');
   };

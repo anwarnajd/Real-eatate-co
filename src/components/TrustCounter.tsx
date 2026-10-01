@@ -13,7 +13,6 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
   const t = translations[language];
   const [count, setCount] = useState(0);
   const [expCount, setExpCount] = useState(0);
-  const [propCount, setPropCount] = useState(0);
   const [satCount, setSatCount] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,12 +29,8 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
     const increment30k = Math.ceil(end30k / steps);
 
     let startExp = 0;
-    const endExp = 15;
+    const endExp = 11;
     const incExp = endExp / steps;
-
-    let startProp = 0;
-    const endProp = 500;
-    const incProp = endProp / steps;
 
     let startSat = 0;
     const endSat = 98;
@@ -44,19 +39,16 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
     const timer = setInterval(() => {
       start30k += increment30k;
       startExp += incExp;
-      startProp += incProp;
       startSat += incSat;
 
       if (start30k >= end30k) {
         setCount(end30k);
         setExpCount(endExp);
-        setPropCount(endProp);
         setSatCount(endSat);
         clearInterval(timer);
       } else {
         setCount(start30k);
         setExpCount(Math.min(endExp, Math.floor(startExp)));
-        setPropCount(Math.min(endProp, Math.floor(startProp)));
         setSatCount(Math.min(endSat, Math.floor(startSat)));
       }
     }, interval);
@@ -123,17 +115,17 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
                 <Users className="w-8 h-8 sm:w-12 sm:h-12 text-[#38BDF8]" />
               </motion.div>
               <div>
-                <div className="flex flex-col sm:flex-row sm:items-baseline justify-center lg:justify-start gap-3">
-                  <span className="text-4xl sm:text-7xl lg:text-8xl font-black text-white font-mono tracking-tight tabular-nums drop-shadow-md">
-                    +{formattedCount}
+                <div className="flex flex-col items-start justify-center">
+                  <span className="text-4xl sm:text-7xl lg:text-8xl font-black text-white font-mono tracking-tight tabular-nums drop-shadow-md leading-none">
+                    {language === 'ar' ? `+${formattedCount}` : `${formattedCount}+`}
                   </span>
-                  <span className="text-xl sm:text-3xl font-extrabold text-[#38BDF8]">
-                    {language === 'ar' ? 'أكثر من 30,000 عميل' : '30,000+ Clients Served'}
+                  <span className="text-xl sm:text-3xl font-extrabold text-[#38BDF8] mt-2 sm:mt-3">
+                    {language === 'ar' ? 'أكثر من 30,000 عميل' : 'Clients Served'}
                   </span>
                 </div>
                 <p className="mt-3 text-sm sm:text-lg text-slate-200 font-medium max-w-xl leading-relaxed">
                   {language === 'ar'
-                    ? 'أكثر من 30,000 عميل يضعون ثقتهم المستمرة في خبرات شركة أنوار نجد العقارية واستشاراتها الموثوقة.'
+                    ? 'أكثر من 30,000 عميل يضعون ثقتهم المستمرة في خبرات شركة انوار نجد العقارية واستشاراتها الموثوقة.'
                     : 'Over thirty thousand valued clients rely on Anwar Najd Real Estate Company for premier real estate transactions.'}
                 </p>
               </div>
@@ -150,7 +142,7 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
 
         {/* Supporting Secondary Metric Indicators: 3 Clean White Cards with Staggered Entrance */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Stat 2: 15+ Years Experience */}
+          {/* Stat 2: +11 Years Experience */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -165,9 +157,10 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums">
-                  {expCount}+
+                  {language === 'ar' ? `+${expCount}` : `${expCount}+`}
                 </div>
-                <div className="text-xs sm:text-sm font-extrabold text-[#088AC3]">
+                {/* Clear, readable, and prominent on mobile */}
+                <div className="text-sm sm:text-base font-black text-[#088AC3] mt-0.5">
                   {t.trustSection.stat2Label}
                 </div>
               </div>
@@ -177,7 +170,7 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
             </p>
           </motion.div>
 
-          {/* Stat 3: 500+ Curated Properties */}
+          {/* Stat 3: Non-Numeric Diverse Real Estate Portfolio */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -191,11 +184,11 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
                 <Building2 className="w-7 h-7" />
               </div>
               <div>
-                <div className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums">
-                  {propCount}+
+                <div className="text-xl sm:text-2xl font-black text-[#193555] leading-snug">
+                  {language === 'ar' ? 'خيارات عقارية متنوعة' : 'Diverse Portfolio'}
                 </div>
-                <div className="text-xs sm:text-sm font-extrabold text-[#088AC3]">
-                  {t.trustSection.stat3Label}
+                <div className="text-xs sm:text-sm font-bold text-[#088AC3] mt-0.5">
+                  {language === 'ar' ? 'سكنية • تجارية • استثمارية' : 'Residential • Commercial • Investment'}
                 </div>
               </div>
             </div>
@@ -218,8 +211,11 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
                 <ThumbsUp className="w-7 h-7" />
               </div>
               <div>
-                <div className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums">
-                  %{satCount}
+                <div
+                  className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums"
+                  dir={language === 'ar' ? 'rtl' : 'ltr'}
+                >
+                  {language === 'ar' ? `%{satCount}` : `${satCount}%`}
                 </div>
                 <div className="text-xs sm:text-sm font-extrabold text-[#088AC3]">
                   {t.trustSection.stat4Label}

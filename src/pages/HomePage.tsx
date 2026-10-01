@@ -19,6 +19,11 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import {
+  RIYADH_DISTRICTS,
+  EXACT_PRICE_RANGES,
+  OWNER_PROPERTY_TYPES,
+} from '../data/riyadhNeighborhoods';
 
 interface HomePageProps {
   language: Language;
@@ -29,7 +34,9 @@ interface HomePageProps {
     purpose: PropertyPurpose | 'all';
     type: PropertyType | 'all';
     district: string;
+    minPrice: number;
     maxPrice: number;
+    priceRangeId?: string;
   }) => void;
 }
 
@@ -47,7 +54,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [purpose, setPurpose] = useState<PropertyPurpose>('buy');
   const [propertyType, setPropertyType] = useState<PropertyType | 'all'>('all');
   const [district, setDistrict] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<number>(0);
+  const [priceRangeId, setPriceRangeId] = useState<string>('all');
 
   // Mouse Parallax for Hero
   const heroRef = useRef<HTMLDivElement>(null);
@@ -90,11 +97,14 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const selectedRange = EXACT_PRICE_RANGES.find((r) => r.id === priceRangeId);
     onApplySearchFilter({
       purpose,
       type: propertyType,
       district: district === 'all' ? '' : district,
-      maxPrice: priceRange,
+      minPrice: selectedRange ? selectedRange.min : 0,
+      maxPrice: selectedRange ? selectedRange.max : 0,
+      priceRangeId,
     });
     setCurrentPage('properties');
   };
@@ -304,16 +314,15 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onChange={(e) => setPropertyType(e.target.value as PropertyType | 'all')}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3] font-medium"
                 >
-                  <option value="all">{t.hero.searchCard.allTypes}</option>
-                  <option value="villa">{t.hero.searchCard.villa}</option>
-                  <option value="penthouse">{t.hero.searchCard.penthouse}</option>
-                  <option value="apartment">{t.hero.searchCard.apartment}</option>
-                  <option value="commercial">{t.hero.searchCard.commercial}</option>
-                  <option value="land">{t.hero.searchCard.land}</option>
+                  {OWNER_PROPERTY_TYPES.map((pt) => (
+                    <option key={pt.id} value={pt.id}>
+                      {isAr ? pt.nameAr : pt.nameEn}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {/* Location Select */}
+              {/* Location Select with All Riyadh Neighborhoods */}
               <div>
                 <label className="block text-[11px] font-bold text-[#193555] mb-1">
                   {t.hero.searchCard.location}
@@ -323,31 +332,30 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onChange={(e) => setDistrict(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3] font-medium"
                 >
-                  <option value="all">{t.hero.searchCard.allLocations}</option>
-                  <option value="حطين">{isAr ? 'حي حطين' : 'Hittin'}</option>
-                  <option value="الملقا">{isAr ? 'حي الملقا' : 'Al Malqa'}</option>
-                  <option value="النرجس">{isAr ? 'حي النرجس' : 'Al Narjis'}</option>
-                  <option value="الياسمين">{isAr ? 'حي الياسمين' : 'Al Yasmin'}</option>
-                  <option value="العليا">{isAr ? 'العليا - طريق الملك فهد' : 'Al Olaya'}</option>
-                  <option value="الخير">{isAr ? 'حي الخير شمال الرياض' : 'Al Khair'}</option>
+                  <option value="all">{isAr ? 'كافة أحياء الرياض' : 'All Riyadh Districts'}</option>
+                  {RIYADH_DISTRICTS.map((d) => (
+                    <option key={d.id} value={d.nameAr}>
+                      {isAr ? `حي ${d.nameAr}` : `${d.nameEn} District`}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {/* Price Range */}
+              {/* Exact Owner-Specified Price Ranges */}
               <div>
                 <label className="block text-[11px] font-bold text-[#193555] mb-1">
                   {t.hero.searchCard.priceRange}
                 </label>
                 <select
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(Number(e.target.value))}
+                  value={priceRangeId}
+                  onChange={(e) => setPriceRangeId(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3] font-medium"
                 >
-                  <option value="0">{t.hero.searchCard.allPrices}</option>
-                  <option value="500000">{isAr ? 'حتى 500,000 ر.س' : 'Up to 500,000 SAR'}</option>
-                  <option value="2000000">{isAr ? 'حتى 2,000,000 ر.س' : 'Up to 2,000,000 SAR'}</option>
-                  <option value="5000000">{isAr ? 'حتى 5,000,000 ر.س' : 'Up to 5,000,000 SAR'}</option>
-                  <option value="10000000">{isAr ? 'حتى 10,000,000 ر.س' : 'Up to 10,000,000 SAR'}</option>
+                  {EXACT_PRICE_RANGES.map((pr) => (
+                    <option key={pr.id} value={pr.id}>
+                      {isAr ? pr.labelAr : pr.labelEn}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -499,7 +507,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 4. Why Choose Us (لماذا أنوار نجد العقارية؟) */}
+      {/* 4. Why Choose Us (لماذا انوار نجد العقارية؟) */}
       <section className="py-20 lg:py-28 bg-[#F8FAFC] border-t border-[#E2E8F0] relative overflow-hidden">
         <ArchitecturalBackground />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -640,7 +648,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </h3>
                 <p className="text-xs text-slate-200 mt-2 leading-relaxed">
                   {isAr
-                    ? 'فريق شركة أنوار نجد العقارية على استعداد للإجابة على استفساراتكم ومرافقتكم في كل خطوة.'
+                    ? 'فريق شركة انوار نجد العقارية على استعداد للإجابة على استفساراتكم ومرافقتكم في كل خطوة.'
                     : 'Our team is ready to evaluate your requirements and offer dedicated advisory.'}
                 </p>
               </div>

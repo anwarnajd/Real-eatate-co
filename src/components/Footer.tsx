@@ -2,6 +2,7 @@ import React from 'react';
 import { PageId, Language } from '../types';
 import { translations } from '../data/translations';
 import { Logo } from './Logo';
+import { RegaLogo } from './RegaLogo';
 import { Phone, MessageCircle, Mail, MapPin, ShieldCheck, ArrowUpRight } from 'lucide-react';
 
 interface FooterProps {
@@ -25,7 +26,7 @@ export const Footer: React.FC<FooterProps> = ({
 
   const openWhatsApp = () => {
     const message = isAr
-      ? 'السلام عليكم، أود التواصل مع شركة أنوار نجد العقارية'
+      ? 'السلام عليكم، أود التواصل مع شركة انوار نجد العقارية'
       : 'Hello, I would like to contact Anwar Najd Real Estate Company';
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -223,8 +224,13 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
         </div>
 
+        {/* Official REGA Logo - Centered, balanced, secondary to Anwar Najd branding */}
+        <div className="mt-12 pt-8 border-t border-slate-700/60 flex items-center justify-center">
+          <RegaLogo isAr={isAr} />
+        </div>
+
         {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-slate-700/60 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>{t.footer.copyright}</p>
           <p className="text-[11px] text-slate-400">{t.footer.disclaimer}</p>
         </div>

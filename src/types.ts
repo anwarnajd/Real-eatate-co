@@ -2,7 +2,23 @@ export type Language = 'ar' | 'en';
 
 export type PageId = 'home' | 'about' | 'properties' | 'property-details' | 'services' | 'contact';
 
-export type PropertyType = 'villa' | 'apartment' | 'penthouse' | 'commercial' | 'land';
+export type PropertyType =
+  | 'villa'
+  | 'apartment'
+  | 'penthouse'
+  | 'commercial'
+  | 'land'
+  | 'ground_floor'
+  | 'upper_floor'
+  | 'resort'
+  | 'roof_apartment'
+  | 'residential_land'
+  | 'commercial_land'
+  | 'commercial_building'
+  | 'residential_building'
+  | 'retail_shop'
+  | 'warehouse';
+
 export type PropertyPurpose = 'buy' | 'rent';
 
 export interface Property {
@@ -57,6 +73,7 @@ export interface PropertyFilterState {
   district: string;
   minPrice: number;
   maxPrice: number;
+  priceRangeId?: string;
   searchQuery: string;
   sortBy: 'featured' | 'price-asc' | 'price-desc' | 'area-desc';
 }

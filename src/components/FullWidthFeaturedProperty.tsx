@@ -32,7 +32,7 @@ export const FullWidthFeaturedProperty: React.FC<FullWidthFeaturedPropertyProps>
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
     const text = isAr
-      ? `السلام عليكم، أود الاستفسار عن القصر المميز: ${property.title.ar} (المرجع: ${property.refNumber}) لدى شركة أنوار نجد العقارية.`
+      ? `السلام عليكم، أود الاستفسار عن القصر المميز: ${property.title.ar} (المرجع: ${property.refNumber}) لدى شركة انوار نجد العقارية.`
       : `Hello, I would like to inquire about the featured luxury residence: ${property.title.en} (Ref: ${property.refNumber}) at Anwar Najd Real Estate Company.`;
 
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');

@@ -114,7 +114,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const handleWhatsAppInquiry = () => {
     const propTitle = isAr ? property.title.ar : property.title.en;
     const text = isAr
-      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة أنوار نجد العقارية.`
+      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة انوار نجد العقارية.`
       : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}) at Anwar Najd Real Estate Company.`;
 
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
@@ -494,7 +494,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               className="p-6 sm:p-7 rounded-2xl bg-white border border-[#088AC3]/40 shadow-xl"
             >
               <span className="text-[11px] uppercase tracking-wider text-[#088AC3] font-bold block mb-1">
-                {isAr ? 'شركة أنوار نجد العقارية' : 'Anwar Najd Real Estate Co.'}
+                {isAr ? 'شركة انوار نجد العقارية' : 'Anwar Najd Real Estate Co.'}
               </span>
               <h3 className="text-xl font-black text-[#193555]">
                 {t.propertyDetails.enquireBtn}
