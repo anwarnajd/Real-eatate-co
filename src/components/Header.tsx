@@ -278,10 +278,10 @@ export const Header: React.FC<HeaderProps> = ({
 
             <a
               href={`tel:${t.companyPhone}`}
-              className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-bold text-[#193555] bg-slate-100 hover:bg-slate-200 rounded-lg"
+              className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-bold text-[#193555] bg-slate-100 hover:bg-slate-200 rounded-lg font-mono dir-ltr"
             >
               <Phone className="w-4 h-4 text-[#088AC3]" />
-              <span>{isAr ? 'اتصال هاتف مباشر' : 'Call Phone Directly'}</span>
+              <span>{t.companyPhoneDisplay}</span>
             </a>
           </div>
         </motion.div>

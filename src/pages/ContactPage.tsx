@@ -131,6 +131,18 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
               <div className="space-y-4 pt-4 border-t border-slate-100 text-xs sm:text-sm">
                 <div className="flex items-start gap-3">
                   <div className="p-2 rounded-lg bg-[#F0F7FB] text-[#088AC3] flex-shrink-0">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[#64748B] block text-xs">{t.contactPage.phoneLabel}</span>
+                    <a href={`tel:${t.companyPhone}`} className="text-[#193555] font-mono hover:text-[#088AC3] font-bold text-sm block mt-0.5">
+                      {t.companyPhoneDisplay}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-[#F0F7FB] text-[#088AC3] flex-shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
