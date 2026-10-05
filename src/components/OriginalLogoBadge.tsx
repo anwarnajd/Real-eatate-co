@@ -10,9 +10,9 @@ export const OriginalLogoBadge: React.FC<OriginalLogoBadgeProps> = ({
   size = 'md',
 }) => {
   const sizeMap = {
-    sm: 'w-32',
-    md: 'w-48',
-    lg: 'w-64',
+    sm: 'w-36',
+    md: 'w-52 sm:w-56',
+    lg: 'w-64 sm:w-72',
   };
 
   return (
@@ -60,12 +60,30 @@ export const OriginalLogoBadge: React.FC<OriginalLogoBadgeProps> = ({
         {/* Curved Horizon Swoosh Base */}
         <path d="M 98 301 C 180 278 320 278 402 301 C 320 286 180 286 98 301 Z" fill="url(#badgeHorizonGrad)" />
 
-        {/* Typography from client logo */}
-        <text x="250" y="342" fontFamily="'Cairo', sans-serif" fontWeight="800" fill="#193555" fontSize="36" textAnchor="middle">
-          مكتب انوار نجد
+        {/* Official Brand Typography */}
+        <text
+          x="250"
+          y="346"
+          fontFamily="'Cairo', 'Segoe UI', system-ui, sans-serif"
+          fontWeight="800"
+          fill="#193555"
+          fontSize="29"
+          letterSpacing="-0.3"
+          textAnchor="middle"
+        >
+          شركة انوار نجد العقارية
         </text>
-        <text x="250" y="380" fontFamily="'Cairo', sans-serif" fontWeight="700" fill="#088AC3" fontSize="24" textAnchor="middle">
-          للخدمات العقارية
+        <text
+          x="250"
+          y="384"
+          fontFamily="'Cairo', 'Segoe UI', system-ui, sans-serif"
+          fontWeight="700"
+          fill="#088AC3"
+          fontSize="20"
+          letterSpacing="0.2"
+          textAnchor="middle"
+        >
+          للخدمات العقارية والاستثمار
         </text>
       </svg>
     </div>

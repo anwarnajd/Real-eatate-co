@@ -6,8 +6,8 @@
       .cyan-stroke { stroke: #088AC3; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
       .medium-stroke { stroke: #355D7F; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
       .horizon-fill { fill: url(#horizonGrad); }
-      .ar-title { font-family: 'Cairo', 'Segoe UI', system-ui, sans-serif; font-weight: 800; fill: #193555; font-size: 38px; text-anchor: middle; letter-spacing: -0.5px; }
-      .ar-subtitle { font-family: 'Cairo', 'Segoe UI', system-ui, sans-serif; font-weight: 700; fill: #088AC3; font-size: 26px; text-anchor: middle; letter-spacing: 0.5px; }
+      .ar-title { font-family: 'Cairo', 'Segoe UI', system-ui, sans-serif; font-weight: 800; fill: #193555; font-size: 30px; text-anchor: middle; letter-spacing: -0.4px; }
+      .ar-subtitle { font-family: 'Cairo', 'Segoe UI', system-ui, sans-serif; font-weight: 700; fill: #088AC3; font-size: 21px; text-anchor: middle; letter-spacing: 0.3px; }
     </style>
     <linearGradient id="horizonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stopColor="#193555" />
@@ -49,6 +49,6 @@
   <path d="M 98 301 C 180 278 320 278 402 301 C 320 286 180 286 98 301 Z" class="horizon-fill" />
 
   <!-- 4. Typography directly matching the original uploaded logo -->
-  <text x="250" y="338" class="ar-title">مكتب انوار نجد</text>
-  <text x="250" y="375" class="ar-subtitle">للخدمات العقارية</text>
+  <text x="250" y="344" class="ar-title">شركة انوار نجد العقارية</text>
+  <text x="250" y="380" class="ar-subtitle">للخدمات العقارية والاستثمار</text>
 </svg>

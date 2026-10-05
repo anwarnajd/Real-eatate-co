@@ -85,3 +85,13 @@ export interface ContactFormData {
   serviceOrProperty: string;
   message: string;
 }
+
+export interface CustomerReview {
+  id: string;
+  name: string;
+  rating: number; // 1-5 stars
+  text: string;
+  date: string;
+  roleOrCity?: string;
+  avatarUrl?: string;
+}

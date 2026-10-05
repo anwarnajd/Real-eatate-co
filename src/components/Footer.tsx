@@ -3,6 +3,7 @@ import { PageId, Language } from '../types';
 import { translations } from '../data/translations';
 import { Logo } from './Logo';
 import { RegaLogo } from './RegaLogo';
+import { SocialLinks } from './SocialLinks';
 import { Phone, MessageCircle, Mail, MapPin, ShieldCheck, ArrowUpRight } from 'lucide-react';
 
 interface FooterProps {
@@ -191,8 +192,13 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
             </div>
 
+            {/* Official Social Media Section */}
+            <div className="pt-2 border-t border-slate-700/60">
+              <SocialLinks language={language} />
+            </div>
+
             {/* Functional Language Switcher: العربية | English */}
-            <div className="pt-3">
+            <div className="pt-2">
               <div className="inline-flex items-center p-1 rounded-xl bg-white/10 border border-white/15">
                 <button
                   type="button"

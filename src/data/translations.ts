@@ -59,7 +59,7 @@ const rawTranslations = {
       stat3Label: 'خيارات عقارية متنوعة',
       stat3Sub: 'خيارات عقارية متنوعة تلبي الاحتياجات السكنية والتجارية والاستثمارية',
       stat4Number: '98%',
-      stat4Label: 'نسبة رضا العملاء',
+      stat4Label: 'رضا العملاء',
       stat4Sub: 'التزام كامل بالشفافية والدقة وسرعة الإنجاز',
     },
 
@@ -351,7 +351,7 @@ const rawTranslations = {
       stat3Label: 'Diverse Property Options',
       stat3Sub: 'Tailored property solutions catering to residential, commercial, and investment needs.',
       stat4Number: '98%',
-      stat4Label: 'Client Satisfaction',
+      stat4Label: 'Customer Satisfaction',
       stat4Sub: 'Unwavering commitment to integrity, transparency, and timely delivery',
     },
 

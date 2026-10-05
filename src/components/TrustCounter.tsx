@@ -13,7 +13,7 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
   const t = translations[language];
   const [count, setCount] = useState(0);
   const [expCount, setExpCount] = useState(0);
-  const [satCount, setSatCount] = useState(0);
+  const [satCount, setSatCount] = useState(98);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
@@ -213,12 +213,12 @@ export const TrustCounter: React.FC<TrustCounterProps> = ({ language }) => {
               <div>
                 <div
                   className="text-3xl sm:text-4xl font-black text-[#193555] font-mono tabular-nums"
-                  dir={language === 'ar' ? 'rtl' : 'ltr'}
+                  dir="ltr"
                 >
-                  {language === 'ar' ? `%{satCount}` : `${satCount}%`}
+                  {satCount}%
                 </div>
                 <div className="text-xs sm:text-sm font-extrabold text-[#088AC3]">
-                  {t.trustSection.stat4Label}
+                  {language === 'ar' ? 'رضا العملاء' : 'Customer Satisfaction'}
                 </div>
               </div>
             </div>

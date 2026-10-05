@@ -7,6 +7,7 @@ import { PropertyCard } from '../components/PropertyCard';
 import { FullWidthFeaturedProperty } from '../components/FullWidthFeaturedProperty';
 import { MagneticButton } from '../components/MagneticButton';
 import { ArchitecturalBackground } from '../components/ArchitecturalBackground';
+import { CustomerReviews } from '../components/CustomerReviews';
 import {
   Search,
   ArrowRight,
@@ -666,7 +667,10 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 5. Listing CTA Banner in Deep Navy Accent */}
+      {/* 5. Customer Reviews Section (آراء العملاء) */}
+      <CustomerReviews language={language} onOpenInquiry={onOpenInquiry} />
+
+      {/* 6. Listing CTA Banner in Deep Navy Accent */}
       <section className="py-16 relative overflow-hidden bg-[#10243B] text-white border-t border-slate-200">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
