@@ -174,6 +174,59 @@ export const EXACT_PRICE_RANGES: PriceRangeOption[] = [
   },
 ];
 
+export const SALE_PRICE_RANGES = EXACT_PRICE_RANGES;
+
+export const RENT_PRICE_RANGES: PriceRangeOption[] = [
+  {
+    id: 'all',
+    min: 0,
+    max: 0,
+    labelAr: 'كافة الأسعار',
+    labelEn: 'All Prices',
+  },
+  {
+    id: '20k-30k',
+    min: 20000,
+    max: 30000,
+    labelAr: 'من 20 ألف إلى 30 ألف',
+    labelEn: '20,000 – 30,000 SAR',
+  },
+  {
+    id: '30k-40k',
+    min: 30000,
+    max: 40000,
+    labelAr: 'من 30 ألف إلى 40 ألف',
+    labelEn: '30,000 – 40,000 SAR',
+  },
+  {
+    id: '40k-50k',
+    min: 40000,
+    max: 50000,
+    labelAr: 'من 40 ألف إلى 50 ألف',
+    labelEn: '40,000 – 50,000 SAR',
+  },
+  {
+    id: '50k-plus',
+    min: 50000,
+    max: 0,
+    labelAr: '50 ألف فأكثر',
+    labelEn: '50,000 SAR and above',
+  },
+];
+
+export interface RentalPeriodOption {
+  id: 'all' | 'daily' | 'monthly' | 'annual';
+  nameAr: string;
+  nameEn: string;
+}
+
+export const RENTAL_PERIOD_OPTIONS: RentalPeriodOption[] = [
+  { id: 'all', nameAr: 'كافة فترات الإيجار', nameEn: 'All Rental Periods' },
+  { id: 'daily', nameAr: 'إيجار يومي', nameEn: 'Daily Rental' },
+  { id: 'monthly', nameAr: 'إيجار شهري', nameEn: 'Monthly Rental' },
+  { id: 'annual', nameAr: 'إيجار سنوي', nameEn: 'Annual Rental' },
+];
+
 export interface OwnerPropertyTypeOption {
   id: string;
   nameAr: string;

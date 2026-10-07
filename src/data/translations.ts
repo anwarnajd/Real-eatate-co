@@ -1,7 +1,7 @@
 const rawTranslations = {
   ar: {
     companyName: 'شركة انوار نجد العقارية',
-    companyShort: 'انوار نجد العقارية',
+    companyShort: 'شركة انوار نجد العقارية',
     companyTagline: 'حلول عقارية احترافية تجمع بين الخبرة، الثقة والجودة',
     companyPhone: '0502886202',
     companyPhoneDisplay: '050 288 6202',
@@ -41,6 +41,11 @@ const rawTranslations = {
         allLocations: 'كافة أحياء الرياض',
         priceRange: 'نطاق السعر',
         allPrices: 'كافة الأسعار',
+        rentalPeriod: 'فترة الإيجار',
+        allRentalPeriods: 'كافة فترات الإيجار',
+        dailyRental: 'إيجار يومي',
+        monthlyRental: 'إيجار شهري',
+        annualRental: 'إيجار سنوي',
         searchBtn: 'بحث فوري',
       },
     },
@@ -102,7 +107,7 @@ const rawTranslations = {
 
     whyUs: {
       badge: 'لماذا تختارنا',
-      title: 'لماذا انوار نجد؟',
+      title: 'لماذا شركة انوار نجد العقارية؟',
       subtitle: 'نرتكز على أسس راسخة من الموثوقية والمهنية لنمنحك تجربة عقارية استثنائية',
       item1: {
         title: 'خدمات عقارية احترافية',
@@ -178,6 +183,7 @@ const rawTranslations = {
       filterType: 'نوع العقار',
       filterDistrict: 'الحي',
       filterPriceRange: 'نطاق السعر',
+      filterRentalPeriod: 'فترة الإيجار',
       all: 'الكل',
       residential: 'سكني',
       commercial: 'تجاري',
@@ -333,6 +339,11 @@ const rawTranslations = {
         allLocations: 'All Riyadh Districts',
         priceRange: 'Price Range',
         allPrices: 'All Price Ranges',
+        rentalPeriod: 'Rental Period',
+        allRentalPeriods: 'All Rental Periods',
+        dailyRental: 'Daily Rental',
+        monthlyRental: 'Monthly Rental',
+        annualRental: 'Annual Rental',
         searchBtn: 'Search Now',
       },
     },
@@ -470,6 +481,7 @@ const rawTranslations = {
       filterType: 'Type',
       filterDistrict: 'District',
       filterPriceRange: 'Price Range',
+      filterRentalPeriod: 'Rental Period',
       all: 'All',
       residential: 'Residential',
       commercial: 'Commercial',
