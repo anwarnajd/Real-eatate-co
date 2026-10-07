@@ -139,9 +139,20 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
           {/* Floating Badges */}
           <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-xs font-bold pointer-events-none z-10">
-            <span className="px-3 py-1 rounded-lg bg-white/95 text-[#193555] shadow-sm backdrop-blur-xs font-mono">
-              {isAr ? purposeLabels[property.purpose]?.ar : purposeLabels[property.purpose]?.en}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="px-3 py-1 rounded-lg bg-white/95 text-[#193555] shadow-sm backdrop-blur-xs font-mono">
+                {isAr ? purposeLabels[property.purpose]?.ar : purposeLabels[property.purpose]?.en}
+              </span>
+              {property.purpose === 'rent' && property.rentalPeriod && (
+                <span className="px-2.5 py-1 rounded-lg bg-[#088AC3]/95 text-white shadow-sm backdrop-blur-xs text-[11px] font-bold">
+                  {property.rentalPeriod === 'daily'
+                    ? (isAr ? 'إيجار يومي' : 'Daily')
+                    : property.rentalPeriod === 'monthly'
+                    ? (isAr ? 'إيجار شهري' : 'Monthly')
+                    : (isAr ? 'إيجار سنوي' : 'Annual')}
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-1.5">
               <span className="px-2.5 py-1 rounded-lg bg-emerald-600/95 text-white shadow-sm backdrop-blur-xs text-[11px] font-bold">
                 {isAr ? 'متاح' : 'AVAILABLE'}
