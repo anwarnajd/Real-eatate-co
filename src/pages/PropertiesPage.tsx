@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Property, Language, PropertyPurpose, PropertyType, PropertyFilterState } from '../types';
+import { Property, Language, PropertyPurpose, PropertyType, RentalPeriod, PropertyFilterState } from '../types';
 import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   RIYADH_DISTRICTS,
   EXACT_PRICE_RANGES,
+  RENT_PRICE_RANGES,
+  RENTAL_PERIOD_OPTIONS,
   OWNER_PROPERTY_TYPES,
 } from '../data/riyadhNeighborhoods';
 import {
@@ -41,6 +43,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   const [purpose, setPurpose] = useState<PropertyPurpose | 'all'>(
     initialFilters?.purpose || 'all'
   );
+  const [rentalPeriod, setRentalPeriod] = useState<RentalPeriod | 'all'>(
+    initialFilters?.rentalPeriod || 'all'
+  );
   const [category, setCategory] = useState<'all' | 'residential' | 'commercial' | 'investment' | 'projects'>('all');
   const [propertyType, setPropertyType] = useState<PropertyType | 'all'>(initialFilters?.type || 'all');
   const [district, setDistrict] = useState<string>(initialFilters?.district || 'all');
@@ -49,11 +54,24 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'area-desc'>('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
+  const handlePurposeChange = (newPurpose: PropertyPurpose | 'all') => {
+    setPurpose(newPurpose);
+    setPriceRangeId('all');
+    if (newPurpose === 'buy' || newPurpose === 'all') {
+      setRentalPeriod('all');
+    }
+  };
+
   // Filter computation
   const filteredProperties = useMemo(() => {
     return propertiesData.filter((prop) => {
       // Purpose match
       if (purpose !== 'all' && prop.purpose !== purpose) return false;
+
+      // Rental Period match (only relevant when purpose is rent)
+      if (purpose === 'rent' && rentalPeriod !== 'all') {
+        if (prop.rentalPeriod !== rentalPeriod) return false;
+      }
 
       // Category match
       if (category === 'residential') {
@@ -99,9 +117,10 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         if (!matchesAr && !matchesEn && !matchesViaItem) return false;
       }
 
-      // Exact Owner-Specified Price Range Match
+      // Exact Owner-Specified Price Range Match (Separate Rent and Sale)
       if (priceRangeId !== 'all') {
-        const selectedRange = EXACT_PRICE_RANGES.find((r) => r.id === priceRangeId);
+        const activeRanges = purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES;
+        const selectedRange = activeRanges.find((r) => r.id === priceRangeId);
         if (selectedRange && selectedRange.min > 0 && prop.price < selectedRange.min) return false;
         if (selectedRange && selectedRange.max > 0 && prop.price > selectedRange.max) return false;
       }
@@ -133,10 +152,11 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
       if (sortBy === 'area-desc') return b.area - a.area;
       return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
     });
-  }, [purpose, category, propertyType, district, priceRangeId, searchQuery, sortBy]);
+  }, [purpose, rentalPeriod, category, propertyType, district, priceRangeId, searchQuery, sortBy]);
 
   const handleResetFilters = () => {
     setPurpose('all');
+    setRentalPeriod('all');
     setCategory('all');
     setPropertyType('all');
     setDistrict('all');
@@ -172,7 +192,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
             <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
               <button
                 type="button"
-                onClick={() => setPurpose('all')}
+                onClick={() => handlePurposeChange('all')}
                 className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                   purpose === 'all'
                     ? 'bg-[#088AC3] text-white shadow-xs'
@@ -183,7 +203,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setPurpose('buy')}
+                onClick={() => handlePurposeChange('buy')}
                 className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                   purpose === 'buy'
                     ? 'bg-[#088AC3] text-white shadow-xs'
@@ -194,7 +214,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setPurpose('rent')}
+                onClick={() => handlePurposeChange('rent')}
                 className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                   purpose === 'rent'
                     ? 'bg-[#088AC3] text-white shadow-xs'
@@ -241,8 +261,8 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
             </button>
           </div>
 
-          {/* Bottom row: Search input, Property Type, District, Price Range */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Bottom row: Search input, Property Type, District, Rental Period (if rent), Price Range */}
+          <div className={`grid grid-cols-1 sm:grid-cols-2 ${purpose === 'rent' ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-3`}>
             {/* Search Input */}
             <div className="relative">
               <Search className="w-4 h-4 absolute top-3 start-3 text-[#64748B]" />
@@ -286,14 +306,31 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               </select>
             </div>
 
-            {/* Exact Owner-Specified Price Range */}
+            {/* Rental Period Filter - Only visible when Rent is selected */}
+            {purpose === 'rent' && (
+              <div>
+                <select
+                  value={rentalPeriod}
+                  onChange={(e) => setRentalPeriod(e.target.value as RentalPeriod | 'all')}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
+                >
+                  {RENTAL_PERIOD_OPTIONS.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {isAr ? opt.nameAr : opt.nameEn}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Price Range: Rent vs Sale */}
             <div>
               <select
                 value={priceRangeId}
                 onChange={(e) => setPriceRangeId(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
               >
-                {EXACT_PRICE_RANGES.map((pr) => (
+                {(purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES).map((pr) => (
                   <option key={pr.id} value={pr.id}>
                     {isAr ? pr.labelAr : pr.labelEn}
                   </option>

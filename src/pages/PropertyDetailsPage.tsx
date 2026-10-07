@@ -224,6 +224,15 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               <span className="px-3.5 py-1 rounded-lg bg-[#088AC3] text-white font-bold text-xs shadow-md">
                 {isAr ? purposeLabels[property.purpose]?.ar : purposeLabels[property.purpose]?.en}
               </span>
+              {property.purpose === 'rent' && property.rentalPeriod && (
+                <span className="px-3.5 py-1 rounded-lg bg-[#193555] text-white font-bold text-xs shadow-md">
+                  {property.rentalPeriod === 'daily'
+                    ? (isAr ? 'إيجار يومي' : 'Daily Rental')
+                    : property.rentalPeriod === 'monthly'
+                    ? (isAr ? 'إيجار شهري' : 'Monthly Rental')
+                    : (isAr ? 'إيجار سنوي' : 'Annual Rental')}
+                </span>
+              )}
               <span className="px-3.5 py-1 rounded-lg bg-white/95 text-[#193555] font-bold text-xs shadow-md">
                 {isAr ? typeLabels[property.type]?.ar : typeLabels[property.type]?.en}
               </span>

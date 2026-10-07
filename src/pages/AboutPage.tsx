@@ -3,6 +3,7 @@ import { Language, PageId } from '../types';
 import { translations } from '../data/translations';
 import { TrustCounter } from '../components/TrustCounter';
 import { OriginalLogoBadge } from '../components/OriginalLogoBadge';
+import { Logo } from '../components/Logo';
 import {
   Compass,
   Target,
@@ -13,6 +14,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import corporateLoungeImg from '../assets/images/anwar_najd_corporate_lounge_1791316418144.jpg';
 
 interface AboutPageProps {
   language: Language;
@@ -126,7 +128,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
           >
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl group bg-slate-100">
               <motion.img
-                src="/images/about-corporate-lounge.jpg"
+                src={corporateLoungeImg}
                 alt="Anwar Najd Real Estate Corporate Advisory Suite"
                 loading="lazy"
                 referrerPolicy="no-referrer"
@@ -139,6 +141,21 @@ export const AboutPage: React.FC<AboutPageProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/80 via-transparent to-transparent pointer-events-none" />
 
+              {/* Official Anwar Najd Company Branding Overlay */}
+              <div className="absolute top-4 start-4 z-10 px-3.5 py-2 rounded-xl bg-[#10243B]/92 backdrop-blur-md border border-white/20 shadow-lg text-white flex items-center gap-2.5">
+                <div className="w-7 h-7 flex-shrink-0 flex items-center justify-center">
+                  <Logo size="sm" showText={false} variant="dark" language={language} />
+                </div>
+                <div className="flex flex-col text-start">
+                  <span className="font-bold text-xs sm:text-sm tracking-wide leading-tight">
+                    {isAr ? 'شركة انوار نجد العقارية' : 'Anwar Najd Real Estate'}
+                  </span>
+                  <span className="text-[10px] text-cyan-300 font-medium leading-tight mt-0.5">
+                    {isAr ? 'للخدمات العقارية والاستثمار' : 'Real Estate & Advisory'}
+                  </span>
+                </div>
+              </div>
+
               {/* Overlaid Accreditation Callout */}
               <div className="absolute bottom-4 inset-x-4 p-4 rounded-xl bg-white/95 backdrop-blur-md border border-slate-200 shadow-md">
                 <div className="flex items-center gap-3">
@@ -147,7 +164,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-[#193555]">
-                      {isAr ? 'اعتماد نظامي وترخيص رسمي' : 'Fully Licensed Enterprise'}
+                      {isAr ? 'شركة انوار نجد العقارية' : 'Anwar Najd Real Estate Company'}
                     </h4>
                     <p className="text-[11px] text-[#64748B]">
                       {isAr

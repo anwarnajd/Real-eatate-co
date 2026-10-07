@@ -1,5 +1,4 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { Property, Language, PageId, PropertyPurpose, PropertyType } from '../types';
 import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
 import { TrustCounter } from '../components/TrustCounter';
@@ -23,8 +22,11 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import {
   RIYADH_DISTRICTS,
   EXACT_PRICE_RANGES,
+  RENT_PRICE_RANGES,
+  RENTAL_PERIOD_OPTIONS,
   OWNER_PROPERTY_TYPES,
 } from '../data/riyadhNeighborhoods';
+import { Property, Language, PropertyPurpose, PropertyType, RentalPeriod, PageId } from '../types';
 
 interface HomePageProps {
   language: Language;
@@ -38,6 +40,7 @@ interface HomePageProps {
     minPrice: number;
     maxPrice: number;
     priceRangeId?: string;
+    rentalPeriod?: RentalPeriod | 'all';
   }) => void;
 }
 
@@ -53,9 +56,18 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Search Bar State
   const [purpose, setPurpose] = useState<PropertyPurpose>('buy');
+  const [rentalPeriod, setRentalPeriod] = useState<RentalPeriod | 'all'>('all');
   const [propertyType, setPropertyType] = useState<PropertyType | 'all'>('all');
   const [district, setDistrict] = useState<string>('all');
   const [priceRangeId, setPriceRangeId] = useState<string>('all');
+
+  const handlePurposeChange = (newPurpose: PropertyPurpose) => {
+    setPurpose(newPurpose);
+    setPriceRangeId('all');
+    if (newPurpose === 'buy') {
+      setRentalPeriod('all');
+    }
+  };
 
   // Mouse Parallax for Hero
   const heroRef = useRef<HTMLDivElement>(null);
@@ -98,7 +110,8 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const selectedRange = EXACT_PRICE_RANGES.find((r) => r.id === priceRangeId);
+    const activeRanges = purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES;
+    const selectedRange = activeRanges.find((r) => r.id === priceRangeId);
     onApplySearchFilter({
       purpose,
       type: propertyType,
@@ -106,6 +119,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       minPrice: selectedRange ? selectedRange.min : 0,
       maxPrice: selectedRange ? selectedRange.max : 0,
       priceRangeId,
+      rentalPeriod: purpose === 'rent' ? rentalPeriod : undefined,
     });
     setCurrentPage('properties');
   };
@@ -282,7 +296,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
               <button
                 type="button"
-                onClick={() => setPurpose('buy')}
+                onClick={() => handlePurposeChange('buy')}
                 className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
                   purpose === 'buy'
                     ? 'bg-[#088AC3] text-white shadow-sm'
@@ -293,7 +307,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setPurpose('rent')}
+                onClick={() => handlePurposeChange('rent')}
                 className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
                   purpose === 'rent'
                     ? 'bg-[#088AC3] text-white shadow-sm'
@@ -304,7 +318,10 @@ export const HomePage: React.FC<HomePageProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <form
+              onSubmit={handleSearchSubmit}
+              className={`grid grid-cols-1 sm:grid-cols-2 ${purpose === 'rent' ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-3`}
+            >
               {/* Type Select */}
               <div>
                 <label className="block text-[11px] font-bold text-[#193555] mb-1">
@@ -342,7 +359,27 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </select>
               </div>
 
-              {/* Exact Owner-Specified Price Ranges */}
+              {/* Rental Period Filter - Only visible when Rent is selected */}
+              {purpose === 'rent' && (
+                <div>
+                  <label className="block text-[11px] font-bold text-[#193555] mb-1">
+                    {t.hero.searchCard.rentalPeriod || (isAr ? 'فترة الإيجار' : 'Rental Period')}
+                  </label>
+                  <select
+                    value={rentalPeriod}
+                    onChange={(e) => setRentalPeriod(e.target.value as RentalPeriod | 'all')}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3] font-medium"
+                  >
+                    {RENTAL_PERIOD_OPTIONS.map((opt) => (
+                      <option key={opt.id} value={opt.id}>
+                        {isAr ? opt.nameAr : opt.nameEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Price Ranges: Rent vs Sale */}
               <div>
                 <label className="block text-[11px] font-bold text-[#193555] mb-1">
                   {t.hero.searchCard.priceRange}
@@ -352,7 +389,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onChange={(e) => setPriceRangeId(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3] font-medium"
                 >
-                  {EXACT_PRICE_RANGES.map((pr) => (
+                  {(purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES).map((pr) => (
                     <option key={pr.id} value={pr.id}>
                       {isAr ? pr.labelAr : pr.labelEn}
                     </option>
