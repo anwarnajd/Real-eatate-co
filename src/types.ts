@@ -21,6 +21,8 @@ export type PropertyType =
 
 export type PropertyPurpose = 'buy' | 'rent';
 
+export type RentalPeriod = 'daily' | 'monthly' | 'annual';
+
 export interface Property {
   id: string;
   refNumber: string;
@@ -29,6 +31,7 @@ export interface Property {
     en: string;
   };
   purpose: PropertyPurpose;
+  rentalPeriod?: RentalPeriod;
   type: PropertyType;
   price: number;
   priceFormatted: {
@@ -69,6 +72,7 @@ export interface Property {
 
 export interface PropertyFilterState {
   purpose: PropertyPurpose | 'all';
+  rentalPeriod?: RentalPeriod | 'all';
   type: PropertyType | 'all';
   district: string;
   minPrice: number;
