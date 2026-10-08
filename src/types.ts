@@ -32,6 +32,7 @@ export interface Property {
   };
   purpose: PropertyPurpose;
   rentalPeriod?: RentalPeriod;
+  dailyPrice?: number;
   type: PropertyType;
   price: number;
   priceFormatted: {

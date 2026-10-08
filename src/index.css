@@ -127,8 +127,25 @@
   perspective: 1000px;
 }
 
-.preserve-3d {
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.preserve-3d,
+.transform-style-3d {
   transform-style: preserve-3d;
+}
+
+.transform-translate-z-10 {
+  transform: translateZ(10px);
+}
+
+.transform-translate-z-20 {
+  transform: translateZ(20px);
+}
+
+.transform-translate-z-30 {
+  transform: translateZ(30px);
 }
 
 @keyframes floatSubtle {
