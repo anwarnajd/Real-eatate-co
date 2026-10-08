@@ -1,0 +1,27 @@
+[build]
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/api/tabby-checkout"
+  to = "/.netlify/functions/tabby-checkout"
+  status = 200
+
+[[redirects]]
+  from = "/api/tamara-checkout"
+  to = "/.netlify/functions/tamara-checkout"
+  status = 200
+
+[[redirects]]
+  from = "/api/payment-status"
+  to = "/.netlify/functions/payment-status"
+  status = 200
+
+# SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
