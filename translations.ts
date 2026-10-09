@@ -69,9 +69,9 @@ const rawTranslations = {
     },
 
     featured: {
-      badge: 'العقارات والمشاريع',
-      title: 'العقارات والمشاريع المميزة',
-      subtitle: 'اكتشف مجموعة مختارة من الفرص العقارية والمشاريع والعقارات التي تقدمها شركة انوار نجد العقارية.',
+      badge: 'عقارات مميزة',
+      title: 'عقارات مميزة',
+      subtitle: 'اكتشف نخبة العروض العقارية الحصرية والمختارة بعناية في أرقى أحياء الرياض',
       viewAll: 'عرض كافة العقارات',
       viewDetails: 'عرض التفاصيل',
       askAbout: 'استفسر عن هذا العقار',
@@ -98,11 +98,37 @@ const rawTranslations = {
       },
     },
 
+    catalog: {
+      badge: 'تصفح العروض',
+      title: 'كافة العروض والعقارات المتاحة',
+      subtitle: 'تصفح قائمة العقارات المتاحة للبيع والإيجار مع إمكانية التصفية المباشرة بحسب النوع والمنطقة.',
+    },
+
     investment: {
       badge: 'حلول استثمارية',
       title: 'فرص عقارية واستثمارية',
       subtitle: 'اكتشف فرصاً عقارية مختارة لتلبية الاحتياجات السكنية والتجارية والاستثمارية المختلفة.',
       cta: 'ناقش فرصة استثمارية',
+    },
+
+    videoTours: {
+      badge: 'جولات مرئية',
+      title: 'جولات عقارية بالفيديو',
+      subtitle: 'شاهد بعض العقارات والعروض من خلال جولات الفيديو',
+      video1: {
+        tag: 'جولة عقارية',
+        title: 'شقة مميزة للبيع — حي اليرموك',
+        location: 'حي اليرموك، الرياض',
+        specs: '126 م² • 850,000 ر.س • ضمان ذهبي',
+        inquireBtn: 'استفسر عن هذا العرض',
+      },
+      video2: {
+        tag: 'عرض عقاري',
+        title: 'شقة فاخرة مفروشة للبيع — حي القادسية',
+        location: 'حي القادسية، الرياض',
+        specs: '212 م² • 1,050,000 ر.س • مؤثثة بالكامل',
+        inquireBtn: 'استفسر عن هذا العرض',
+      },
     },
 
     whyUs: {
@@ -367,9 +393,9 @@ const rawTranslations = {
     },
 
     featured: {
-      badge: 'Properties & Projects',
-      title: 'FEATURED PROPERTIES & PROJECTS',
-      subtitle: 'Explore selected real-estate opportunities, projects and properties presented by Anwar Najd Real Estate Company.',
+      badge: 'Featured Properties',
+      title: 'Featured Properties',
+      subtitle: 'Explore our curated portfolio of premier properties in Riyadh’s most prestigious neighborhoods.',
       viewAll: 'View All Properties',
       viewDetails: 'VIEW DETAILS',
       askAbout: 'ASK ABOUT THIS PROPERTY',
@@ -396,11 +422,37 @@ const rawTranslations = {
       },
     },
 
+    catalog: {
+      badge: 'Browse Listings',
+      title: 'All Available Real Estate Offerings',
+      subtitle: 'Browse all properties for sale and rent with direct filters by type and location.',
+    },
+
     investment: {
       badge: 'Investment Solutions',
       title: 'REAL ESTATE & INVESTMENT OPPORTUNITIES',
       subtitle: 'Discover real-estate opportunities selected to support different residential, commercial and investment needs.',
       cta: 'DISCUSS AN OPPORTUNITY',
+    },
+
+    videoTours: {
+      badge: 'Video Tours',
+      title: 'Property Video Tours',
+      subtitle: 'Explore selected properties and offers through our video tours.',
+      video1: {
+        tag: 'Property Tour',
+        title: 'Featured Apartment for Sale — Al Yarmouk',
+        location: 'Al Yarmouk District, Riyadh',
+        specs: '126 m² • 850,000 SAR • Certified Warranty',
+        inquireBtn: 'Inquire About This Offer',
+      },
+      video2: {
+        tag: 'Real Estate Showcase',
+        title: 'Luxury Furnished Apartment for Sale — Al Qadisiyah',
+        location: 'Al Qadisiyah District, Riyadh',
+        specs: '212 m² • 1,050,000 SAR • Turnkey Furnished',
+        inquireBtn: 'Inquire About This Offer',
+      },
     },
 
     whyUs: {

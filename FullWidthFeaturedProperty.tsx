@@ -88,10 +88,16 @@ export const FullWidthFeaturedProperty: React.FC<FullWidthFeaturedPropertyProps>
               <div className="absolute bottom-4 inset-x-4 flex items-end justify-between z-20">
                 <div className="px-5 py-2.5 rounded-2xl bg-[#088AC3]/95 text-white shadow-xl backdrop-blur-md">
                   <span className="text-[10px] uppercase font-bold text-cyan-100 block">
-                    {isAr ? 'القيمة الاستثمارية' : 'Listing Value'}
+                    {property.purpose === 'rent' && property.rentalPeriod === 'daily'
+                      ? (isAr ? 'سعر الإيجار اليومي' : 'Daily Rental Price')
+                      : (isAr ? 'القيمة الاستثمارية' : 'Listing Value')}
                   </span>
                   <span className="text-xl sm:text-2xl font-black font-mono">
-                    {isAr ? property.priceFormatted.ar : property.priceFormatted.en}
+                    {property.purpose === 'rent' && property.rentalPeriod === 'daily'
+                      ? (isAr
+                          ? `${property.dailyPrice ?? property.price} ريال / يوم`
+                          : `${property.dailyPrice ?? property.price} SAR / day`)
+                      : (isAr ? property.priceFormatted.ar : property.priceFormatted.en)}
                   </span>
                 </div>
               </div>
