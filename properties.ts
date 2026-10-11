@@ -1,5 +1,8 @@
 import { Property } from '../types';
 
+// Demo & Example Properties for Anwar Najd Real Estate
+// Note: These property listings and daily rental rates (120, 180, 250 SAR/day) are illustrative demo data
+// and will be updated with official client properties once real listings are provided.
 export const propertiesData: Property[] = [
   {
     id: 'anw-01',
@@ -558,11 +561,12 @@ export const propertiesData: Property[] = [
     },
     purpose: 'rent',
     rentalPeriod: 'daily',
+    dailyPrice: 250,
     type: 'resort',
-    price: 25000,
+    price: 250,
     priceFormatted: {
-      ar: '25,000 ر.س / باقة يومية خاصة',
-      en: '25,000 SAR / Private Daily Package',
+      ar: '250 ريال / يوم',
+      en: '250 SAR / day',
     },
     location: {
       districtAr: 'الخير - شمال الرياض',
@@ -607,6 +611,7 @@ export const propertiesData: Property[] = [
     specs: [
       { labelAr: 'المساحة', labelEn: 'Area', valueAr: '450 م²', valueEn: '450 m²' },
       { labelAr: 'فترة الإيجار', labelEn: 'Rental Period', valueAr: 'إيجار يومي', valueEn: 'Daily Rental' },
+      { labelAr: 'سعر الإيجار اليومي', labelEn: 'Daily Rental Price', valueAr: '250 ريال / يوم', valueEn: '250 SAR / day' },
       { labelAr: 'المرافق', labelEn: 'Amenities', valueAr: 'مسبح + حدائق + مجلس ضيافة', valueEn: 'Pool, Lawns & Salon' },
     ],
   },
@@ -619,11 +624,12 @@ export const propertiesData: Property[] = [
     },
     purpose: 'rent',
     rentalPeriod: 'daily',
+    dailyPrice: 180,
     type: 'villa',
-    price: 34000,
+    price: 180,
     priceFormatted: {
-      ar: '34,000 ر.س / باقة يومية فاخرة',
-      en: '34,000 SAR / VIP Daily Package',
+      ar: '180 ريال / يوم',
+      en: '180 SAR / day',
     },
     location: {
       districtAr: 'الصحافة',
@@ -668,6 +674,7 @@ export const propertiesData: Property[] = [
     specs: [
       { labelAr: 'المساحة', labelEn: 'Area', valueAr: '500 م²', valueEn: '500 m²' },
       { labelAr: 'فترة الإيجار', labelEn: 'Rental Period', valueAr: 'إيجار يومي', valueEn: 'Daily Rental' },
+      { labelAr: 'سعر الإيجار اليومي', labelEn: 'Daily Rental Price', valueAr: '180 ريال / يوم', valueEn: '180 SAR / day' },
       { labelAr: 'الاستخدام', labelEn: 'Usage', valueAr: 'ضيافة خاصة ومناسبات', valueEn: 'VIP Private & Corporate' },
     ],
   },
@@ -791,6 +798,69 @@ export const propertiesData: Property[] = [
       { labelAr: 'المساحة', labelEn: 'Area', valueAr: '195 م²', valueEn: '195 m²' },
       { labelAr: 'فترة الإيجار', labelEn: 'Rental Period', valueAr: 'إيجار سنوي', valueEn: 'Annual Rental' },
       { labelAr: 'التراس', labelEn: 'Terrace Area', valueAr: 'سطح خاص 60 م²', valueEn: 'Private 60 m² Rooftop' },
+    ],
+  },
+  {
+    id: 'anw-14',
+    refNumber: 'ANW-7088',
+    title: {
+      ar: 'شقة استوديو فندقية فاخرة للإيجار اليومي بحي العليا',
+      en: 'Boutique Hotel Studio Suite for Daily Rental in Al Olaya',
+    },
+    purpose: 'rent',
+    rentalPeriod: 'daily',
+    dailyPrice: 120,
+    type: 'apartment',
+    price: 120,
+    priceFormatted: {
+      ar: '120 ريال / يوم',
+      en: '120 SAR / day',
+    },
+    location: {
+      districtAr: 'العليا',
+      districtEn: 'Al Olaya',
+      cityAr: 'الرياض',
+      cityEn: 'Riyadh',
+    },
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 75,
+    featured: false,
+    images: [
+      '/images/property-apartment-yasmin.jpg',
+      '/images/property-penthouse-malqa.jpg',
+      '/images/hero-skyline.jpg',
+    ],
+    description: {
+      ar: 'استوديو فندقي فاخر مؤثث بأرقى المعايير بنظام الإيجار اليومي في قلب حي العليا بالرياض. مجهز بإنترنت فائق السرعة، دخول ذكي، وخدمات تنظيف فندقية.',
+      en: 'Boutique executive hotel studio suite available on a flexible daily rental basis in central Al Olaya. Features high-speed fiber Wi-Fi, keyless smart entry, and hotel housekeeping.',
+    },
+    features: {
+      ar: [
+        'نظام إيجار يومي مرن مع دخول ذاتي ذكي',
+        'موقع استراتيجي وسط العليا قريب من الأبراج ومحطة المترو',
+        'مفروش بالكامل بأثاث فندقي 5 نجوم',
+        'مطبخ تحضيري مجهز وآلة قهوة',
+        'موقف سيارة خاص وخدمة أمنية',
+      ],
+      en: [
+        'Flexible daily rental with seamless smart self check-in',
+        'Central Al Olaya location near financial towers and metro',
+        'Fully furnished with five-star hospitality fittings',
+        'Kitchenette with espresso station and appliances',
+        'Dedicated parking bay with 24/7 security',
+      ],
+    },
+    yearBuilt: 2024,
+    facade: {
+      ar: 'واجهة شمالية بإطلالة على أبراج العليا',
+      en: 'North-facing with city skyline panorama',
+    },
+    specs: [
+      { labelAr: 'المساحة', labelEn: 'Area', valueAr: '75 م²', valueEn: '75 m²' },
+      { labelAr: 'فترة الإيجار', labelEn: 'Rental Period', valueAr: 'إيجار يومي', valueEn: 'Daily Rental' },
+      { labelAr: 'سعر الإيجار اليومي', labelEn: 'Daily Rental Price', valueAr: '120 ريال / يوم', valueEn: '120 SAR / day' },
+      { labelAr: 'الدخول', labelEn: 'Check-in', valueAr: 'دخول ذاتي ذكي 24/7', valueEn: 'Smart Self Check-in 24/7' },
     ],
   },
 ];

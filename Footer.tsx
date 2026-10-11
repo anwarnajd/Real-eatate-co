@@ -4,7 +4,7 @@ import { translations } from '../data/translations';
 import { Logo } from './Logo';
 import { RegaLogo } from './RegaLogo';
 import { SocialLinks } from './SocialLinks';
-import { Phone, MessageCircle, Mail, MapPin, ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { Phone, MessageCircle, MapPin, ShieldCheck, ArrowUpRight } from 'lucide-react';
 
 interface FooterProps {
   setCurrentPage: (page: PageId) => void;
@@ -182,12 +182,6 @@ export const Footer: React.FC<FooterProps> = ({
                 <Phone className="w-4 h-4 text-[#38BDF8] flex-shrink-0" />
                 <a href={`tel:${t.companyPhone}`} className="hover:text-[#38BDF8] font-mono dir-ltr font-bold">
                   {t.companyPhoneDisplay}
-                </a>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-[#38BDF8] flex-shrink-0" />
-                <a href={`mailto:${t.companyEmail}`} className="hover:text-[#38BDF8] font-mono">
-                  {t.companyEmail}
                 </a>
               </div>
             </div>

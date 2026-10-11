@@ -3,7 +3,7 @@ import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
 import { TrustCounter } from '../components/TrustCounter';
 import { PropertyCard } from '../components/PropertyCard';
-import { FullWidthFeaturedProperty } from '../components/FullWidthFeaturedProperty';
+import { FeaturedProperties3DShowcase } from '../components/FeaturedProperties3DShowcase';
 import { MagneticButton } from '../components/MagneticButton';
 import { ArchitecturalBackground } from '../components/ArchitecturalBackground';
 import { CustomerReviews } from '../components/CustomerReviews';
@@ -22,7 +22,12 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import {
   RIYADH_DISTRICTS,
   EXACT_PRICE_RANGES,
+  SALE_PRICE_RANGES,
+  ANNUAL_RENT_PRICE_RANGES,
+  MONTHLY_RENT_PRICE_RANGES,
+  DAILY_RENT_PRICE_RANGES,
   RENT_PRICE_RANGES,
+  getActivePriceRanges,
   RENTAL_PERIOD_OPTIONS,
   OWNER_PROPERTY_TYPES,
 } from '../data/riyadhNeighborhoods';
@@ -69,6 +74,11 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   };
 
+  const handleRentalPeriodChange = (newPeriod: RentalPeriod | 'all') => {
+    setRentalPeriod(newPeriod);
+    setPriceRangeId('all');
+  };
+
   // Mouse Parallax for Hero
   const heroRef = useRef<HTMLDivElement>(null);
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
@@ -110,7 +120,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const activeRanges = purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES;
+    const activeRanges = getActivePriceRanges(purpose, rentalPeriod);
     const selectedRange = activeRanges.find((r) => r.id === priceRangeId);
     onApplySearchFilter({
       purpose,
@@ -292,30 +302,58 @@ export const HomePage: React.FC<HomePageProps> = ({
             transition={{ duration: 0.85, delay: 0.95, ease: [0.22, 1, 0.36, 1] }}
             className="mt-10 sm:mt-12 w-full max-w-4xl mx-auto bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-[0_20px_50px_rgba(25,53,85,0.25)] border border-slate-100 text-start text-[#193555]"
           >
-            {/* Segmented Purpose Tabs */}
-            <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
-              <button
-                type="button"
-                onClick={() => handlePurposeChange('buy')}
-                className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
-                  purpose === 'buy'
-                    ? 'bg-[#088AC3] text-white shadow-sm'
-                    : 'text-[#475569] hover:text-[#193555] bg-slate-100'
-                }`}
-              >
-                {t.hero.searchCard.buy}
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePurposeChange('rent')}
-                className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
-                  purpose === 'rent'
-                    ? 'bg-[#088AC3] text-white shadow-sm'
-                    : 'text-[#475569] hover:text-[#193555] bg-slate-100'
-                }`}
-              >
-                {t.hero.searchCard.rent}
-              </button>
+            {/* Segmented Purpose Tabs & Rental Period Switcher */}
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handlePurposeChange('buy')}
+                  className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
+                    purpose === 'buy'
+                      ? 'bg-[#088AC3] text-white shadow-sm'
+                      : 'text-[#475569] hover:text-[#193555] bg-slate-100'
+                  }`}
+                >
+                  {t.hero.searchCard.buy}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handlePurposeChange('rent')}
+                  className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
+                    purpose === 'rent'
+                      ? 'bg-[#088AC3] text-white shadow-sm'
+                      : 'text-[#475569] hover:text-[#193555] bg-slate-100'
+                  }`}
+                >
+                  {t.hero.searchCard.rent}
+                </button>
+              </div>
+
+              {purpose === 'rent' && (
+                <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl overflow-x-auto scrollbar-none">
+                  {(
+                    [
+                      { id: 'all', labelAr: 'كافة الإيجار', labelEn: 'All Rentals' },
+                      { id: 'daily', labelAr: 'إيجار يومي (من 120 ر.س)', labelEn: 'Daily (From 120 SAR)' },
+                      { id: 'monthly', labelAr: 'إيجار شهري', labelEn: 'Monthly' },
+                      { id: 'annual', labelAr: 'إيجار سنوي', labelEn: 'Annual' },
+                    ] as const
+                  ).map((pTab) => (
+                    <button
+                      key={pTab.id}
+                      type="button"
+                      onClick={() => handleRentalPeriodChange(pTab.id)}
+                      className={`px-3 py-1 text-xs font-bold rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
+                        rentalPeriod === pTab.id
+                          ? 'bg-[#088AC3] text-white shadow-xs'
+                          : 'text-[#475569] hover:text-[#193555]'
+                      }`}
+                    >
+                      {isAr ? pTab.labelAr : pTab.labelEn}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <form
@@ -367,7 +405,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </label>
                   <select
                     value={rentalPeriod}
-                    onChange={(e) => setRentalPeriod(e.target.value as RentalPeriod | 'all')}
+                    onChange={(e) => handleRentalPeriodChange(e.target.value as RentalPeriod | 'all')}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3] font-medium"
                   >
                     {RENTAL_PERIOD_OPTIONS.map((opt) => (
@@ -379,7 +417,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               )}
 
-              {/* Price Ranges: Rent vs Sale */}
+              {/* Price Ranges: Rent (Daily vs Monthly/Annual) vs Sale */}
               <div>
                 <label className="block text-[11px] font-bold text-[#193555] mb-1">
                   {t.hero.searchCard.priceRange}
@@ -389,7 +427,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onChange={(e) => setPriceRangeId(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3] font-medium"
                 >
-                  {(purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES).map((pr) => (
+                  {getActivePriceRanges(purpose, rentalPeriod).map((pr) => (
                     <option key={pr.id} value={pr.id}>
                       {isAr ? pr.labelAr : pr.labelEn}
                     </option>
@@ -412,12 +450,17 @@ export const HomePage: React.FC<HomePageProps> = ({
         </motion.div>
       </section>
 
-      {/* 5. FULL-WIDTH FEATURED LUXURY PROPERTY OF THE MONTH */}
+      {/* 2. FEATURED PROPERTIES 3D / MOTION SHOWCASE (عقارات مميزة) */}
       {featuredProperties.length > 0 && (
-        <FullWidthFeaturedProperty
-          property={featuredProperties[0]}
+        <FeaturedProperties3DShowcase
+          featuredProperties={featuredProperties}
           language={language}
           onSelectProperty={onSelectProperty}
+          onOpenInquiry={onOpenInquiry}
+          onViewAll={() => {
+            setCurrentPage('properties');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         />
       )}
 
@@ -435,13 +478,13 @@ export const HomePage: React.FC<HomePageProps> = ({
         >
           <div>
             <span className="text-xs uppercase tracking-widest font-extrabold text-[#088AC3]">
-              {t.featured.badge}
+              {t.catalog.badge}
             </span>
             <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black text-[#193555] tracking-tight">
-              {t.featured.title}
+              {t.catalog.title}
             </h2>
             <p className="mt-2 text-sm sm:text-base text-[#475569] max-w-xl leading-relaxed">
-              {t.featured.subtitle}
+              {t.catalog.subtitle}
             </p>
           </div>
 
@@ -704,7 +747,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 5. Customer Reviews Section (آراء العملاء) */}
+      {/* Customer Reviews Section (آراء العملاء) */}
       <CustomerReviews language={language} onOpenInquiry={onOpenInquiry} />
 
       {/* 6. Listing CTA Banner in Deep Navy Accent */}

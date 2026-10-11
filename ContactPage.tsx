@@ -153,18 +153,6 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
 
                 <div className="flex items-start gap-3">
                   <div className="p-2 rounded-lg bg-[#F0F7FB] text-[#088AC3] flex-shrink-0">
-                    <Mail className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[#64748B] block text-xs">{t.contactPage.email}</span>
-                    <a href={`mailto:${t.companyEmail}`} className="text-[#193555] font-mono hover:text-[#088AC3] font-semibold">
-                      {t.companyEmail}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-[#F0F7FB] text-[#088AC3] flex-shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>

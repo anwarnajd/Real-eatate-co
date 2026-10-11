@@ -7,7 +7,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   RIYADH_DISTRICTS,
   EXACT_PRICE_RANGES,
+  SALE_PRICE_RANGES,
+  ANNUAL_RENT_PRICE_RANGES,
+  MONTHLY_RENT_PRICE_RANGES,
+  DAILY_RENT_PRICE_RANGES,
   RENT_PRICE_RANGES,
+  getActivePriceRanges,
   RENTAL_PERIOD_OPTIONS,
   OWNER_PROPERTY_TYPES,
 } from '../data/riyadhNeighborhoods';
@@ -60,6 +65,11 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     if (newPurpose === 'buy' || newPurpose === 'all') {
       setRentalPeriod('all');
     }
+  };
+
+  const handleRentalPeriodChange = (newPeriod: RentalPeriod | 'all') => {
+    setRentalPeriod(newPeriod);
+    setPriceRangeId('all');
   };
 
   // Filter computation
@@ -117,12 +127,37 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         if (!matchesAr && !matchesEn && !matchesViaItem) return false;
       }
 
-      // Exact Owner-Specified Price Range Match (Separate Rent and Sale)
+      // Exact Price Range Match (Separate Daily Rent, Monthly Rent, Annual Rent, and Sale)
       if (priceRangeId !== 'all') {
-        const activeRanges = purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES;
-        const selectedRange = activeRanges.find((r) => r.id === priceRangeId);
-        if (selectedRange && selectedRange.min > 0 && prop.price < selectedRange.min) return false;
-        if (selectedRange && selectedRange.max > 0 && prop.price > selectedRange.max) return false;
+        if (purpose === 'rent' && rentalPeriod === 'daily') {
+          const selectedDailyRange = DAILY_RENT_PRICE_RANGES.find((r) => r.id === priceRangeId);
+          const effectivePrice = prop.dailyPrice ?? (prop.rentalPeriod === 'daily' ? prop.price : undefined);
+          if (effectivePrice !== undefined) {
+            if (selectedDailyRange && selectedDailyRange.min > 0 && effectivePrice < selectedDailyRange.min) return false;
+            if (selectedDailyRange && selectedDailyRange.max > 0 && effectivePrice > selectedDailyRange.max) return false;
+          }
+        } else if (purpose === 'rent' && rentalPeriod === 'monthly') {
+          const selectedMonthlyRange = MONTHLY_RENT_PRICE_RANGES.find((r) => r.id === priceRangeId);
+          if (selectedMonthlyRange && selectedMonthlyRange.min > 0 && prop.price < selectedMonthlyRange.min) return false;
+          if (selectedMonthlyRange && selectedMonthlyRange.max > 0 && prop.price > selectedMonthlyRange.max) return false;
+        } else if (purpose === 'rent' && rentalPeriod === 'annual') {
+          const selectedAnnualRange = ANNUAL_RENT_PRICE_RANGES.find((r) => r.id === priceRangeId);
+          if (selectedAnnualRange && selectedAnnualRange.min > 0 && prop.price < selectedAnnualRange.min) return false;
+          if (selectedAnnualRange && selectedAnnualRange.max > 0 && prop.price > selectedAnnualRange.max) return false;
+        } else if (purpose === 'rent') {
+          // Broad rent with 'all' periods: don't exclude daily rental properties using annual price ranges
+          if (prop.rentalPeriod === 'daily') {
+            return true;
+          }
+          const selectedRange = ANNUAL_RENT_PRICE_RANGES.find((r) => r.id === priceRangeId);
+          if (selectedRange && selectedRange.min > 0 && prop.price < selectedRange.min) return false;
+          if (selectedRange && selectedRange.max > 0 && prop.price > selectedRange.max) return false;
+        } else {
+          // Sale
+          const selectedRange = SALE_PRICE_RANGES.find((r) => r.id === priceRangeId);
+          if (selectedRange && selectedRange.min > 0 && prop.price < selectedRange.min) return false;
+          if (selectedRange && selectedRange.max > 0 && prop.price > selectedRange.max) return false;
+        }
       }
 
       // Search Query
@@ -188,12 +223,12 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         <div className="bg-white border border-[#E2E8F0] shadow-sm rounded-2xl p-5 mb-8 space-y-4">
           {/* Top row: Purpose segmented buttons & Category segmented buttons */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            {/* Purpose tabs (All / Buy / Rent) */}
-            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+            {/* Purpose & Transaction Tabs (All / Buy / Annual Rent / Monthly Rent / Daily Rent) */}
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl overflow-x-auto scrollbar-none">
               <button
                 type="button"
                 onClick={() => handlePurposeChange('all')}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
                   purpose === 'all'
                     ? 'bg-[#088AC3] text-white shadow-xs'
                     : 'text-[#475569] hover:text-[#193555]'
@@ -204,7 +239,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               <button
                 type="button"
                 onClick={() => handlePurposeChange('buy')}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
                   purpose === 'buy'
                     ? 'bg-[#088AC3] text-white shadow-xs'
                     : 'text-[#475569] hover:text-[#193555]'
@@ -214,14 +249,48 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => handlePurposeChange('rent')}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
-                  purpose === 'rent'
+                onClick={() => {
+                  setPurpose('rent');
+                  setRentalPeriod('annual');
+                  setPriceRangeId('all');
+                }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+                  purpose === 'rent' && rentalPeriod === 'annual'
                     ? 'bg-[#088AC3] text-white shadow-xs'
                     : 'text-[#475569] hover:text-[#193555]'
                 }`}
               >
-                {t.hero.searchCard.rent}
+                {isAr ? 'إيجار سنوي' : 'Annual Rent'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPurpose('rent');
+                  setRentalPeriod('monthly');
+                  setPriceRangeId('all');
+                }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+                  purpose === 'rent' && rentalPeriod === 'monthly'
+                    ? 'bg-[#088AC3] text-white shadow-xs'
+                    : 'text-[#475569] hover:text-[#193555]'
+                }`}
+              >
+                {isAr ? 'إيجار شهري' : 'Monthly Rent'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPurpose('rent');
+                  setRentalPeriod('daily');
+                  setPriceRangeId('all');
+                }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+                  purpose === 'rent' && rentalPeriod === 'daily'
+                    ? 'bg-[#088AC3] text-white shadow-xs'
+                    : 'text-[#475569] hover:text-[#193555]'
+                }`}
+              >
+                {isAr ? 'إيجار يومي (من 120 ريال)' : 'Daily Rent (From 120 SAR)'}
               </button>
             </div>
 
@@ -311,7 +380,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               <div>
                 <select
                   value={rentalPeriod}
-                  onChange={(e) => setRentalPeriod(e.target.value as RentalPeriod | 'all')}
+                  onChange={(e) => handleRentalPeriodChange(e.target.value as RentalPeriod | 'all')}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
                 >
                   {RENTAL_PERIOD_OPTIONS.map((opt) => (
@@ -323,14 +392,14 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
               </div>
             )}
 
-            {/* Price Range: Rent vs Sale */}
+            {/* Price Range: Rent (Daily vs Monthly/Annual) vs Sale */}
             <div>
               <select
                 value={priceRangeId}
                 onChange={(e) => setPriceRangeId(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-[#193555] focus:outline-none focus:border-[#088AC3]"
               >
-                {(purpose === 'rent' ? RENT_PRICE_RANGES : EXACT_PRICE_RANGES).map((pr) => (
+                {getActivePriceRanges(purpose, rentalPeriod).map((pr) => (
                   <option key={pr.id} value={pr.id}>
                     {isAr ? pr.labelAr : pr.labelEn}
                   </option>
@@ -494,17 +563,39 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
 
                     <div className="flex items-center gap-4">
                       <span className="text-lg font-black text-[#193555] font-mono">
-                        {isAr ? prop.priceFormatted.ar : prop.priceFormatted.en}
+                        {prop.purpose === 'rent' && prop.rentalPeriod === 'daily'
+                          ? (isAr
+                              ? `${prop.dailyPrice ?? prop.price} ريال / يوم`
+                              : `${prop.dailyPrice ?? prop.price} SAR / day`)
+                          : (isAr ? prop.priceFormatted.ar : prop.priceFormatted.en)}
                       </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectProperty(prop);
-                        }}
-                        className="px-4 py-2 bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
-                      >
-                        {t.featured.viewDetails}
-                      </button>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectProperty(prop);
+                          }}
+                          className="px-4 py-2 bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                        >
+                          {t.featured.viewDetails}
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const propTitle = isAr ? prop.title.ar : prop.title.en;
+                            const text = isAr
+                              ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${prop.refNumber}) لدى شركة انوار نجد العقارية.`
+                              : `Hello, I would like more information about [${propTitle}] (Ref: ${prop.refNumber}) at Anwar Najd Real Estate Company.`;
+                            window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
+                          }}
+                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+                          title={isAr ? 'واتساب' : 'WhatsApp'}
+                        >
+                          <span>{isAr ? 'واتساب' : 'WhatsApp'}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

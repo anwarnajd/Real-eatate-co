@@ -3,6 +3,8 @@ import { Property, Language, PageId } from '../types';
 import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
+import { DailyRentalBookingSection } from '../components/DailyRentalBookingSection';
+import { RizeAnnualRentSection } from '../components/RizeAnnualRentSection';
 import {
   ArrowLeft,
   ArrowRight,
@@ -111,11 +113,22 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     setTouchStartX(null);
   };
 
+  const isDailyRent = property.purpose === 'rent' && property.rentalPeriod === 'daily';
+  const isAnnualRent = property.purpose === 'rent' && property.rentalPeriod === 'annual';
+  const dailyPriceVal = property.dailyPrice ?? (isDailyRent ? property.price : undefined);
+
+  const displayPrice = isDailyRent && dailyPriceVal !== undefined
+    ? (isAr ? `سعر الإيجار اليومي: ${dailyPriceVal} ريال` : `Daily rental price: ${dailyPriceVal} SAR`)
+    : (isAr ? property.priceFormatted.ar : property.priceFormatted.en);
+
   const handleWhatsAppInquiry = () => {
     const propTitle = isAr ? property.title.ar : property.title.en;
+    const priceNote = isDailyRent && dailyPriceVal !== undefined
+      ? (isAr ? ` (سعر الإيجار اليومي: ${dailyPriceVal} ريال)` : ` (Daily Rental Price: ${dailyPriceVal} SAR)`)
+      : '';
     const text = isAr
-      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة انوار نجد العقارية.`
-      : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}) at Anwar Najd Real Estate Company.`;
+      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}${priceNote}) لدى شركة انوار نجد العقارية.`
+      : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}${priceNote}) at Anwar Najd Real Estate Company.`;
 
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -259,10 +272,12 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             {/* Price Badge on Hero */}
             <div className="absolute bottom-4 start-4 sm:bottom-6 sm:start-6 text-white z-10">
               <span className="text-xs uppercase tracking-wider text-[#38BDF8] font-bold block mb-1">
-                {isAr ? 'القيمة الاستثمارية / السعر' : 'Listing Price'}
+                {isDailyRent
+                  ? (isAr ? 'سعر الإيجار اليومي' : 'Daily Rental Price')
+                  : (isAr ? 'القيمة الاستثمارية / السعر' : 'Listing Price')}
               </span>
               <div className="text-2xl sm:text-4xl font-black font-mono tracking-tight drop-shadow-md">
-                {isAr ? property.priceFormatted.ar : property.priceFormatted.en}
+                {displayPrice}
               </div>
             </div>
 
@@ -270,6 +285,26 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             <div className="absolute bottom-4 end-4 z-10 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-xs font-mono">
               {activeImageIndex + 1} / {images.length}
             </div>
+
+            {/* Mobile Dots Indicator */}
+            {images.length > 1 && (
+              <div className="sm:hidden absolute bottom-4 start-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(i);
+                    }}
+                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                      activeImageIndex === i ? 'bg-cyan-400 w-4' : 'bg-white/60 w-1.5'
+                    }`}
+                    aria-label={`Go to slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Thumbnails row */}
@@ -325,6 +360,50 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#193555] tracking-tight leading-tight">
                 {isAr ? property.title.ar : property.title.en}
               </h1>
+
+              {/* Prominent Price Banner */}
+              <div className={`mt-4 p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 ${
+                isDailyRent
+                  ? 'bg-gradient-to-r from-[#EBF6FC] to-[#F8FAFC] border-[#088AC3]/30'
+                  : 'bg-[#F8FAFC] border-[#E2E8F0]'
+              }`}>
+                <div>
+                  <span className="text-xs uppercase tracking-wider text-[#088AC3] font-bold block mb-0.5">
+                    {isDailyRent
+                      ? (isAr ? 'نظام الإيجار اليومي' : 'Daily Rental Plan')
+                      : (isAr ? 'القيمة / السعر' : 'Price / Value')}
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-[#193555]">
+                    {isDailyRent && dailyPriceVal !== undefined
+                      ? (isAr ? `سعر الإيجار اليومي: ${dailyPriceVal} ريال` : `Daily rental price: ${dailyPriceVal} SAR`)
+                      : (isAr ? property.priceFormatted.ar : property.priceFormatted.en)}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {isDailyRent && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                    >
+                      {isAr ? 'احجز الآن / خيارات الدفع' : 'Book Now / Payment'}
+                    </button>
+                  )}
+                  {isAnnualRent && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        document.getElementById('rize-section')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                    >
+                      {isAr ? 'قسّم الإيجار مع رايز' : 'Pay Monthly with Rize'}
+                    </button>
+                  )}
+                </div>
+              </div>
             </motion.div>
 
             {/* Quick Metrics Bar with Verified Details Only */}
@@ -496,6 +575,20 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
           {/* Sticky Inquiry Column (4 cols) with 3D Depth Lift */}
           <div className="lg:col-span-4 sticky top-28 space-y-6">
+            {/* 1. DAILY RENTAL: Direct Booking & Payment Options (Tabby & Tamara) */}
+            {isDailyRent && (
+              <div id="booking-section">
+                <DailyRentalBookingSection property={property} language={language} />
+              </div>
+            )}
+
+            {/* 2. ANNUAL RENTAL: Rize Monthly Rent Installments */}
+            {isAnnualRent && (
+              <div id="rize-section">
+                <RizeAnnualRentSection property={property} language={language} />
+              </div>
+            )}
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -513,6 +606,21 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   ? 'تواصل مباشرة مع مستشارينا لمعاينة العقار، الحصول على ملف المواصفات الكامل، أو حجز موعد المعاينة.'
                   : 'Contact our senior property specialists for scheduling a private tour or receiving full documentation.'}
               </p>
+
+              {/* Dedicated Daily Rental Price Badge */}
+              {isDailyRent && dailyPriceVal !== undefined && (
+                <div className="mt-4 p-4 rounded-xl bg-[#F0F7FB] border border-[#088AC3]/30">
+                  <span className="text-[11px] font-bold text-[#088AC3] block mb-1">
+                    {isAr ? 'نظام التسعير اليومي' : 'Daily Rental Pricing'}
+                  </span>
+                  <div className="text-xl sm:text-2xl font-black font-mono text-[#193555]">
+                    {isAr ? `سعر الإيجار اليومي: ${dailyPriceVal} ريال` : `Daily rental price: ${dailyPriceVal} SAR`}
+                  </div>
+                  <span className="text-[11px] text-[#64748B] mt-1 block">
+                    {isAr ? 'حجز يومي مرن يشمل التجهيزات الفندقية والخدمات' : 'Flexible daily booking inclusive of all amenities'}
+                  </span>
+                </div>
+              )}
 
               {/* Action Buttons with Motion */}
               <div className="mt-6 space-y-3">

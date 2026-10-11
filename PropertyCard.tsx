@@ -67,12 +67,22 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     rent: { ar: 'للإيجار', en: 'FOR RENT' },
   };
 
+  const isDailyRent = property.purpose === 'rent' && property.rentalPeriod === 'daily';
+  const effectiveDailyPrice = property.dailyPrice ?? (isDailyRent ? property.price : undefined);
+
+  const displayPrice = isDailyRent && effectiveDailyPrice !== undefined
+    ? (isAr ? `${effectiveDailyPrice} ريال / يوم` : `${effectiveDailyPrice} SAR / day`)
+    : (isAr ? property.priceFormatted.ar : property.priceFormatted.en);
+
   const handleWhatsAppInquiry = (e: React.MouseEvent) => {
     e.stopPropagation();
     const propTitle = isAr ? property.title.ar : property.title.en;
+    const priceNote = isDailyRent && effectiveDailyPrice !== undefined
+      ? (isAr ? ` - سعر الإيجار اليومي: ${effectiveDailyPrice} ريال / يوم` : ` - Daily Price: ${effectiveDailyPrice} SAR / day`)
+      : '';
     const text = isAr
-      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}) لدى شركة انوار نجد العقارية.`
-      : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}) at Anwar Najd Real Estate Company.`;
+      ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}${priceNote}) لدى شركة انوار نجد العقارية.`
+      : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}${priceNote}) at Anwar Najd Real Estate Company.`;
 
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -166,7 +176,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           {/* Floating Price Tag */}
           <div className="absolute bottom-3.5 inset-x-3.5 flex items-end justify-between text-white pointer-events-none z-10">
             <div className="text-xl font-black font-mono tracking-tight drop-shadow-md">
-              {isAr ? property.priceFormatted.ar : property.priceFormatted.en}
+              {displayPrice}
             </div>
             {property.featured && (
               <span className="px-2.5 py-0.5 rounded-md bg-[#088AC3]/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs flex items-center gap-1">
@@ -201,6 +211,26 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             <p className="mt-1.5 text-xs text-[#475569] line-clamp-2 leading-relaxed font-normal">
               {isAr ? property.description.ar : property.description.en}
             </p>
+
+            {/* Dedicated Card Price Info */}
+            <div className={`mt-2.5 flex items-center justify-between py-1.5 px-3 rounded-xl border ${
+              isDailyRent
+                ? 'bg-[#EBF6FC] border-[#088AC3]/30 text-[#088AC3]'
+                : 'bg-slate-50 border-slate-200 text-[#193555]'
+            }`}>
+              <span className="text-[11px] font-bold">
+                {isDailyRent
+                  ? (isAr ? 'سعر الإيجار اليومي:' : 'Daily Rental Price:')
+                  : property.purpose === 'rent'
+                  ? (property.rentalPeriod === 'monthly'
+                    ? (isAr ? 'الإيجار الشهري:' : 'Monthly Rent:')
+                    : (isAr ? 'الإيجار السنوي:' : 'Annual Rent:'))
+                  : (isAr ? 'السعر المطلوب:' : 'Price:')}
+              </span>
+              <span className="text-sm font-black font-mono">
+                {displayPrice}
+              </span>
+            </div>
           </div>
 
           {/* Layer 3: Specifications & Dual Action Buttons */}

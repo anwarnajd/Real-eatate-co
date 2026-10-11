@@ -176,43 +176,120 @@ export const EXACT_PRICE_RANGES: PriceRangeOption[] = [
 
 export const SALE_PRICE_RANGES = EXACT_PRICE_RANGES;
 
-export const RENT_PRICE_RANGES: PriceRangeOption[] = [
+export const ANNUAL_RENT_PRICE_RANGES: PriceRangeOption[] = [
   {
     id: 'all',
     min: 0,
     max: 0,
-    labelAr: 'كافة الأسعار',
-    labelEn: 'All Prices',
+    labelAr: 'كافة أسعار الإيجار السنوي',
+    labelEn: 'All Annual Rates',
   },
   {
-    id: '20k-30k',
+    id: '20k-40k-annual',
     min: 20000,
-    max: 30000,
-    labelAr: 'من 20 ألف إلى 30 ألف',
-    labelEn: '20,000 – 30,000 SAR',
-  },
-  {
-    id: '30k-40k',
-    min: 30000,
     max: 40000,
-    labelAr: 'من 30 ألف إلى 40 ألف',
-    labelEn: '30,000 – 40,000 SAR',
+    labelAr: 'من 20 ألف إلى 40 ألف ر.س / سنوياً',
+    labelEn: '20,000 – 40,000 SAR / year',
   },
   {
-    id: '40k-50k',
+    id: '40k-60k-annual',
     min: 40000,
-    max: 50000,
-    labelAr: 'من 40 ألف إلى 50 ألف',
-    labelEn: '40,000 – 50,000 SAR',
+    max: 60000,
+    labelAr: 'من 40 ألف إلى 60 ألف ر.س / سنوياً',
+    labelEn: '40,000 – 60,000 SAR / year',
   },
   {
-    id: '50k-plus',
-    min: 50000,
+    id: '60k-100k-annual',
+    min: 60000,
+    max: 100000,
+    labelAr: 'من 60 ألف إلى 100 ألف ر.س / سنوياً',
+    labelEn: '60,000 – 100,000 SAR / year',
+  },
+  {
+    id: '100k-plus-annual',
+    min: 100000,
     max: 0,
-    labelAr: '50 ألف فأكثر',
-    labelEn: '50,000 SAR and above',
+    labelAr: '100 ألف ر.س فأكثر / سنوياً',
+    labelEn: '100,000+ SAR / year',
   },
 ];
+
+export const RENT_PRICE_RANGES = ANNUAL_RENT_PRICE_RANGES;
+
+export const MONTHLY_RENT_PRICE_RANGES: PriceRangeOption[] = [
+  {
+    id: 'all',
+    min: 0,
+    max: 0,
+    labelAr: 'كافة أسعار الإيجار الشهري',
+    labelEn: 'All Monthly Rates',
+  },
+  {
+    id: '20k-30k-monthly',
+    min: 20000,
+    max: 30000,
+    labelAr: 'من 20,000 إلى 30,000 ر.س / شهرياً',
+    labelEn: '20,000 – 30,000 SAR / month',
+  },
+  {
+    id: '30k-40k-monthly',
+    min: 30000,
+    max: 40000,
+    labelAr: 'من 30,000 إلى 40,000 ر.س / شهرياً',
+    labelEn: '30,000 – 40,000 SAR / month',
+  },
+  {
+    id: '40k-plus-monthly',
+    min: 40000,
+    max: 0,
+    labelAr: '40,000 ر.س فأكثر / شهرياً',
+    labelEn: '40,000+ SAR / month',
+  },
+];
+
+export const DAILY_RENT_PRICE_RANGES: PriceRangeOption[] = [
+  {
+    id: 'all',
+    min: 0,
+    max: 0,
+    labelAr: '120 ريال فأكثر / يوم (كافة أسعار اليومي)',
+    labelEn: '120 SAR and above / day (All Daily Rates)',
+  },
+  {
+    id: '120-150',
+    min: 120,
+    max: 150,
+    labelAr: 'من 120 إلى 150 ريال / يوم',
+    labelEn: '120 – 150 SAR / day',
+  },
+  {
+    id: '150-200',
+    min: 150,
+    max: 200,
+    labelAr: 'من 150 إلى 200 ريال / يوم',
+    labelEn: '150 – 200 SAR / day',
+  },
+  {
+    id: '200-plus',
+    min: 200,
+    max: 0,
+    labelAr: '200 ريال فأكثر / يوم',
+    labelEn: '200+ SAR / day',
+  },
+];
+
+export const getActivePriceRanges = (
+  purpose: 'buy' | 'rent' | 'all',
+  rentalPeriod?: 'daily' | 'monthly' | 'annual' | 'all'
+): PriceRangeOption[] => {
+  if (purpose === 'rent') {
+    if (rentalPeriod === 'daily') return DAILY_RENT_PRICE_RANGES;
+    if (rentalPeriod === 'monthly') return MONTHLY_RENT_PRICE_RANGES;
+    return ANNUAL_RENT_PRICE_RANGES;
+  }
+  return SALE_PRICE_RANGES;
+};
+
 
 export interface RentalPeriodOption {
   id: 'all' | 'daily' | 'monthly' | 'annual';
