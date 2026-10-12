@@ -47,7 +47,7 @@ export interface Property {
   };
   bedrooms?: number;
   bathrooms?: number;
-  area: number; // in sq meters
+  area?: number; // in sq meters
   featured: boolean;
   images: string[];
   description: {

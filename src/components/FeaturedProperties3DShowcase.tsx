@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Eye,
   Calendar,
+  ImageOff,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MagneticButton } from './MagneticButton';
@@ -41,6 +42,7 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
   const [isHovered, setIsHovered] = useState(false);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   const stageRef = useRef<HTMLDivElement>(null);
   const activeProperty = featuredProperties[activeIndex] || featuredProperties[0];
@@ -51,6 +53,9 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
     apartment: { ar: 'شقة سكنية', en: 'Apartment' },
     commercial: { ar: 'تجاري ومكاتب', en: 'Commercial' },
     land: { ar: 'أرض استثمارية', en: 'Investment Land' },
+    upper_floor: { ar: 'دور أول', en: 'First Floor' },
+    ground_floor: { ar: 'دور أرضي', en: 'Ground Floor' },
+    roof_apartment: { ar: 'شقة روف', en: 'Roof Apartment' },
   };
 
   const purposeLabels: Record<string, { ar: string; en: string }> = {
@@ -215,25 +220,37 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute inset-0 z-0 overflow-hidden"
               >
-                <motion.img
-                  src={activeProperty.images[0] || '/images/property-fallback.jpg'}
-                  alt={isAr ? activeProperty.title.ar : activeProperty.title.en}
-                  loading="eager"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
-                  }}
-                  animate={{
-                    scale: [1.0, 1.05],
-                  }}
-                  transition={{
-                    duration: 10,
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                    ease: 'easeInOut',
-                  }}
-                  className="w-full h-full object-cover object-center will-change-transform"
-                />
+                {failedImages.has(activeProperty.images[0]) || !activeProperty.images[0] ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-slate-400 p-6 text-center select-none">
+                    <ImageOff className="w-16 h-16 text-slate-500 mb-3 stroke-[1.5]" />
+                    <span className="text-sm font-semibold text-slate-200">
+                      {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
+                    </span>
+                    <span className="text-xs text-slate-400 mt-2 font-mono break-all max-w-md">
+                      {activeProperty.images[0]}
+                    </span>
+                  </div>
+                ) : (
+                  <motion.img
+                    src={activeProperty.images[0]}
+                    alt={isAr ? activeProperty.title.ar : activeProperty.title.en}
+                    loading="eager"
+                    referrerPolicy="no-referrer"
+                    onError={() => {
+                      setFailedImages((prev) => new Set(prev).add(activeProperty.images[0]));
+                    }}
+                    animate={{
+                      scale: [1.0, 1.05],
+                    }}
+                    transition={{
+                      duration: 10,
+                      repeat: Infinity,
+                      repeatType: 'reverse',
+                      ease: 'easeInOut',
+                    }}
+                    className="w-full h-full object-cover object-center will-change-transform"
+                  />
+                )}
 
                 {/* Multi-layered Cinematic Gradient Scrim */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#10243B] via-[#10243B]/60 to-black/35 pointer-events-none" />
@@ -417,11 +434,20 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
                         : 'bg-white/5 border border-white/10 hover:bg-white/10 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img
-                      src={prop.images[0] || '/images/property-fallback.jpg'}
-                      alt={isAr ? prop.title.ar : prop.title.en}
-                      className="w-8 h-8 rounded-lg object-cover"
-                    />
+                    {failedImages.has(prop.images[0]) || !prop.images[0] ? (
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/50">
+                        <ImageOff className="w-4 h-4" />
+                      </div>
+                    ) : (
+                      <img
+                        src={prop.images[0]}
+                        alt={isAr ? prop.title.ar : prop.title.en}
+                        onError={() => {
+                          setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                        }}
+                        className="w-8 h-8 rounded-lg object-cover"
+                      />
+                    )}
                     <div className="text-start hidden md:block max-w-[130px]">
                       <span className="block text-[11px] font-bold text-white truncate">
                         {isAr ? prop.title.ar : prop.title.en}
@@ -466,19 +492,31 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
                 className="group bg-white rounded-3xl overflow-hidden border border-[#E2E8F0] hover:border-[#088AC3]/40 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col cursor-pointer"
               >
                 {/* Large Premium Image with Hover Zoom */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
-                  <motion.img
-                    src={prop.images[0] || '/images/property-fallback.jpg'}
-                    alt={isAr ? prop.title.ar : prop.title.en}
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 flex items-center justify-center">
+                  {failedImages.has(prop.images[0]) || !prop.images[0] ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-500 p-4 text-center select-none">
+                      <ImageOff className="w-10 h-10 text-slate-400 mb-2 stroke-[1.5]" />
+                      <span className="text-xs font-semibold text-slate-600">
+                        {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 mt-1 font-mono break-all max-w-[90%]">
+                        {prop.images[0] || 'Image missing'}
+                      </span>
+                    </div>
+                  ) : (
+                    <motion.img
+                      src={prop.images[0]}
+                      alt={isAr ? prop.title.ar : prop.title.en}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      onError={() => {
+                        setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
 
                   {/* Gradient Scrim */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
