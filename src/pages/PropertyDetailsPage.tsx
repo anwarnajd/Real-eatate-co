@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Property, Language, PageId } from '../types';
 import { translations } from '../data/translations';
-import { propertiesData } from '../data/properties';
+import { propertiesData, isPropertyPublished } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
 import { getOptimizedImageUrl, getResponsiveImageSrcSet, DETAIL_HERO_SIZES } from '../utils/imageUtils';
 import { DailyRentalBookingSection } from '../components/DailyRentalBookingSection';
@@ -55,7 +55,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
   const images = property.images && property.images.length > 0
     ? property.images
-    : ['/properties/al-yasmin/01.jpg'];
+    : ['/images/property-fallback.jpg'];
 
   const typeLabels: Record<string, { ar: string; en: string }> = {
     villa: { ar: 'فيلا فاخرة', en: 'Luxury Villa' },
@@ -152,7 +152,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   };
 
   const similarProps = propertiesData
-    .filter((p) => p.id !== property.id && (p.type === property.type || p.purpose === property.purpose))
+    .filter((p) => isPropertyPublished(p) && p.id !== property.id && (p.type === property.type || p.purpose === property.purpose))
     .slice(0, 3);
 
   return (

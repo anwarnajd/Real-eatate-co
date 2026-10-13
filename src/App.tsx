@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Language, PageId, Property, PropertyFilterState } from './types';
-import { propertiesData } from './data/properties';
+import { propertiesData, publishedProperties, isPropertyPublished } from './data/properties';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { InquiryModal } from './components/InquiryModal';
@@ -212,7 +212,7 @@ export default function App() {
 
               {currentPage === 'property-details' && (
                 <PropertyDetailsPage
-                  property={selectedProperty || propertiesData[0]}
+                  property={(selectedProperty && isPropertyPublished(selectedProperty)) ? selectedProperty : (publishedProperties[0] || propertiesData[0])}
                   language={language}
                   setCurrentPage={setCurrentPage}
                   onSelectProperty={handleSelectProperty}

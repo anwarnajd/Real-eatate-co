@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Property, Language, PropertyPurpose, PropertyType, RentalPeriod, PropertyFilterState } from '../types';
 import { translations } from '../data/translations';
-import { propertiesData } from '../data/properties';
+import { propertiesData, isPropertyPublished } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
 import { getOptimizedImageUrl, getResponsiveImageSrcSet } from '../utils/imageUtils';
 import { motion, AnimatePresence } from 'motion/react';
@@ -78,6 +78,9 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   // Filter computation
   const filteredProperties = useMemo(() => {
     return propertiesData.filter((prop) => {
+      // Exclude draft/unpublished listings
+      if (!isPropertyPublished(prop)) return false;
+
       // Purpose match
       if (purpose !== 'all' && prop.purpose !== purpose) return false;
 

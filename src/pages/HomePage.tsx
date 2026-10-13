@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { translations } from '../data/translations';
-import { propertiesData } from '../data/properties';
+import { propertiesData, isPropertyPublished } from '../data/properties';
 import { TrustCounter } from '../components/TrustCounter';
 import { PropertyCard } from '../components/PropertyCard';
 import { FeaturedProperties3DShowcase } from '../components/FeaturedProperties3DShowcase';
@@ -114,6 +114,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const displayedProperties = useMemo<Property[]>(() => {
     return propertiesData.filter((p: Property) => {
+      if (!isPropertyPublished(p)) return false;
       if (featuredCategory === 'all') return true;
       if (featuredCategory === 'residential') return ['villa', 'penthouse', 'apartment'].includes(p.type);
       if (featuredCategory === 'commercial') return p.type === 'commercial';
@@ -123,7 +124,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     });
   }, [featuredCategory]);
 
-  const featuredProperties = propertiesData.filter((p) => p.featured);
+  const featuredProperties = propertiesData.filter((p) => isPropertyPublished(p) && p.featured);
   const headlineWords = t.hero.headline.split(' ');
 
   const handleSearchSubmit = (e: React.FormEvent) => {

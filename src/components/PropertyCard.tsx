@@ -95,7 +95,7 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
                 {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
               </span>
               <span className="text-[10px] text-slate-400 mt-1 font-mono break-all max-w-[90%]">
-                {coverImage || '/properties/al-yasmin/01.jpg'}
+                {coverImage || '/images/property-fallback.jpg'}
               </span>
             </div>
           ) : (
