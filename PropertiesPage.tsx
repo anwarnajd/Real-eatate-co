@@ -27,6 +27,7 @@ import {
   Bath,
   Maximize2,
   Building,
+  ImageOff,
 } from 'lucide-react';
 
 interface PropertiesPageProps {
@@ -58,6 +59,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'area-desc'>('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   const handlePurposeChange = (newPurpose: PropertyPurpose | 'all') => {
     setPurpose(newPurpose);
@@ -184,7 +186,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
     }).sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
-      if (sortBy === 'area-desc') return b.area - a.area;
+      if (sortBy === 'area-desc') return (b.area || 0) - (a.area || 0);
       return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
     });
   }, [purpose, rentalPeriod, category, propertyType, district, priceRangeId, searchQuery, sortBy]);
@@ -504,17 +506,29 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                 onClick={() => onSelectProperty(prop)}
                 className="group bg-white border border-[#E2E8F0] hover:border-[#088AC3]/50 rounded-2xl overflow-hidden transition-all duration-300 shadow-xs hover:shadow-lg flex flex-col md:flex-row cursor-pointer"
               >
-                <div className="relative md:w-80 h-56 md:h-auto flex-shrink-0 bg-slate-100 overflow-hidden">
-                  <img
-                    src={prop.images[0] || '/images/property-fallback.jpg'}
-                    alt={isAr ? prop.title.ar : prop.title.en}
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
-                    }}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                <div className="relative md:w-80 h-56 md:h-auto flex-shrink-0 bg-slate-100 overflow-hidden flex items-center justify-center">
+                  {failedImages.has(prop.images[0]) || !prop.images[0] ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-500 p-4 text-center select-none">
+                      <ImageOff className="w-8 h-8 text-slate-400 mb-1.5 stroke-[1.5]" />
+                      <span className="text-xs font-semibold text-slate-600">
+                        {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 mt-1 font-mono break-all max-w-[90%]">
+                        {prop.images[0] || 'Image missing'}
+                      </span>
+                    </div>
+                  ) : (
+                    <img
+                      src={prop.images[0]}
+                      alt={isAr ? prop.title.ar : prop.title.en}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      onError={() => {
+                        setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                      }}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
                   <div className="absolute top-3.5 start-3.5 px-3 py-1 rounded-lg bg-white/95 text-[#193555] text-xs font-bold shadow-xs">
                     {prop.purpose === 'buy' ? (isAr ? 'للبيع' : 'For Sale') : (isAr ? 'للإيجار' : 'For Rent')}
                   </div>
@@ -554,11 +568,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                           <span>{t.featured.baths}</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-1.5">
-                        <Maximize2 className="w-3.5 h-3.5 text-[#355D7F]" />
-                        <span className="font-mono font-bold text-[#193555]">{prop.area}</span>
-                        <span>{t.featured.areaUnit}</span>
-                      </div>
+                      {prop.area !== undefined && prop.area > 0 && (
+                        <div className="flex items-center gap-1.5">
+                          <Maximize2 className="w-3.5 h-3.5 text-[#355D7F]" />
+                          <span className="font-mono font-bold text-[#193555]">{prop.area}</span>
+                          <span>{t.featured.areaUnit}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-4">

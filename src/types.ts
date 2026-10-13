@@ -39,6 +39,18 @@ export interface Property {
     ar: string;
     en: string;
   };
+  paymentOptions?: {
+    onePayment: {
+      amount: number;
+      textAr: string;
+      textEn: string;
+    };
+    twoPayments: {
+      amount: number;
+      textAr: string;
+      textEn: string;
+    };
+  };
   location: {
     districtAr: string;
     districtEn: string;
@@ -47,7 +59,7 @@ export interface Property {
   };
   bedrooms?: number;
   bathrooms?: number;
-  area: number; // in sq meters
+  area?: number; // in sq meters
   featured: boolean;
   images: string[];
   description: {

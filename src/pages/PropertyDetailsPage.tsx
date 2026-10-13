@@ -23,6 +23,7 @@ import {
   ChevronRight,
   X,
   Sparkles,
+  ImageOff,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -49,10 +50,11 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const [copied, setCopied] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   const images = property.images && property.images.length > 0
     ? property.images
-    : ['/images/property-fallback.jpg'];
+    : ['/properties/al-yasmin/01.jpg'];
 
   const typeLabels: Record<string, { ar: string; en: string }> = {
     villa: { ar: 'فيلا فاخرة', en: 'Luxury Villa' },
@@ -60,6 +62,9 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     apartment: { ar: 'شقة سكنية', en: 'Apartment' },
     commercial: { ar: 'تجاري ومكاتب', en: 'Commercial' },
     land: { ar: 'أرض استثمارية', en: 'Investment Land' },
+    upper_floor: { ar: 'دور أول', en: 'First Floor' },
+    ground_floor: { ar: 'دور أرضي', en: 'Ground Floor' },
+    roof_apartment: { ar: 'شقة روف', en: 'Roof Apartment' },
   };
 
   const purposeLabels: Record<string, { ar: string; en: string }> = {
@@ -125,6 +130,10 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     const propTitle = isAr ? property.title.ar : property.title.en;
     const priceNote = isDailyRent && dailyPriceVal !== undefined
       ? (isAr ? ` (سعر الإيجار اليومي: ${dailyPriceVal} ريال)` : ` (Daily Rental Price: ${dailyPriceVal} SAR)`)
+      : property.paymentOptions
+      ? (isAr
+          ? ` (خيارات الدفع: ${property.paymentOptions.onePayment.textAr} أو ${property.paymentOptions.twoPayments.textAr})`
+          : ` (Payment Options: ${property.paymentOptions.onePayment.textEn} or ${property.paymentOptions.twoPayments.textEn})`)
       : '';
     const text = isAr
       ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}${priceNote}) لدى شركة انوار نجد العقارية.`
@@ -184,22 +193,34 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             onClick={() => setIsLightboxOpen(true)}
             className="relative aspect-[16/9] sm:aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl group cursor-zoom-in"
           >
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={activeImageIndex}
-                src={images[activeImageIndex]}
-                alt={isAr ? property.title.ar : property.title.en}
-                referrerPolicy="no-referrer"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
-                }}
-                initial={{ opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: isZoomed ? 1.07 : 1.02 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full h-full object-cover transition-transform duration-700"
-              />
-            </AnimatePresence>
+            {failedImages.has(images[activeImageIndex]) ? (
+              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-slate-400 p-6 text-center select-none">
+                <ImageOff className="w-12 h-12 text-slate-500 mb-3 stroke-[1.5]" />
+                <span className="text-sm font-semibold text-slate-200">
+                  {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
+                </span>
+                <span className="text-xs text-slate-400 mt-1.5 font-mono break-all max-w-md">
+                  {images[activeImageIndex]}
+                </span>
+              </div>
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeImageIndex}
+                  src={images[activeImageIndex]}
+                  alt={isAr ? property.title.ar : property.title.en}
+                  referrerPolicy="no-referrer"
+                  onError={() => {
+                    setFailedImages((prev) => new Set(prev).add(images[activeImageIndex]));
+                  }}
+                  initial={{ opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 1, scale: isZoomed ? 1.07 : 1.02 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full h-full object-cover transition-transform duration-700"
+                />
+              </AnimatePresence>
+            )}
 
             {/* Subtle Gradient Scrim on Bottom */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
@@ -321,16 +342,25 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       : 'border-slate-200 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img
-                    src={img}
-                    alt={`Thumbnail ${idx + 1}`}
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
-                    }}
-                    className="w-full h-full object-cover"
-                  />
+                  {failedImages.has(img) ? (
+                    <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center text-slate-400 p-1 text-center">
+                      <ImageOff className="w-4 h-4 text-slate-400" />
+                      <span className="text-[9px] font-mono mt-0.5 truncate max-w-full px-1">
+                        #{idx + 1}
+                      </span>
+                    </div>
+                  ) : (
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      onError={() => {
+                        setFailedImages((prev) => new Set(prev).add(img));
+                      }}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </motion.button>
               ))}
             </div>
@@ -404,6 +434,57 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                   )}
                 </div>
               </div>
+
+              {/* Dedicated Payment Options Cards */}
+              {property.paymentOptions && (
+                <div className="mt-4 p-5 rounded-2xl bg-gradient-to-br from-[#F8FAFC] to-[#EFF6FF] border border-[#088AC3]/30 shadow-xs">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs uppercase tracking-wider text-[#088AC3] font-bold">
+                      {isAr ? 'خيارات الدفع المتاحة' : 'Available Payment Options'}
+                    </span>
+                    <span className="text-[11px] text-[#64748B]">
+                      {isAr ? 'اختر خطة السداد المناسبة لك' : 'Choose your payment plan'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {/* Option 1: 55,000 SAR — one payment */}
+                    <div className="p-4 rounded-xl bg-white border-2 border-emerald-500/30 shadow-xs flex flex-col justify-between hover:border-emerald-500 transition-colors">
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <span className="text-xs font-bold text-emerald-800">
+                          {isAr ? 'دفعة واحدة' : 'One Payment'}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase">
+                          {isAr ? 'أفضل سعر' : 'Best Rate'}
+                        </span>
+                      </div>
+                      <div className="text-2xl font-black font-mono text-[#193555] my-1">
+                        {isAr ? property.paymentOptions.onePayment.textAr : property.paymentOptions.onePayment.textEn}
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        {isAr ? '55,000 ريال — دفعة واحدة' : '55,000 SAR — one payment'}
+                      </div>
+                    </div>
+
+                    {/* Option 2: 58,000 SAR — two payments */}
+                    <div className="p-4 rounded-xl bg-white border-2 border-[#088AC3]/30 shadow-xs flex flex-col justify-between hover:border-[#088AC3] transition-colors">
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <span className="text-xs font-bold text-[#088AC3]">
+                          {isAr ? 'على دفعتين' : 'Two Payments'}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-sky-100 text-[#088AC3] text-[10px] font-black uppercase">
+                          {isAr ? 'سداد ميسر' : 'Flexible'}
+                        </span>
+                      </div>
+                      <div className="text-2xl font-black font-mono text-[#193555] my-1">
+                        {isAr ? property.paymentOptions.twoPayments.textAr : property.paymentOptions.twoPayments.textEn}
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        {isAr ? '58,000 ريال — على دفعتين' : '58,000 SAR — two payments'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
             {/* Quick Metrics Bar with Verified Details Only */}
@@ -413,17 +494,19 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               transition={{ duration: 0.5, delay: 0.1 }}
               className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]"
             >
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-white text-[#088AC3] border border-slate-200 shadow-xs">
-                  <Maximize2 className="w-5 h-5" />
+              {property.area !== undefined && property.area > 0 && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-white text-[#088AC3] border border-slate-200 shadow-xs">
+                    <Maximize2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#64748B] block">{t.propertyDetails.area}</span>
+                    <span className="text-sm font-bold text-[#193555] font-mono">
+                      {property.area} {t.featured.areaUnit}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-[11px] text-[#64748B] block">{t.propertyDetails.area}</span>
-                  <span className="text-sm font-bold text-[#193555] font-mono">
-                    {property.area} {t.featured.areaUnit}
-                  </span>
-                </div>
-              </div>
+              )}
 
               {property.bedrooms !== undefined && (
                 <div className="flex items-center gap-3">
@@ -622,6 +705,25 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 </div>
               )}
 
+              {/* Dedicated Payment Options in Sidebar */}
+              {property.paymentOptions && (
+                <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200">
+                  <span className="text-[11px] font-bold text-[#088AC3] block mb-2">
+                    {isAr ? 'خيارات الدفع المتاحة' : 'Payment Options'}
+                  </span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-white border border-sky-100">
+                      <span className="text-[#64748B] font-medium">{isAr ? 'دفعة واحدة:' : 'One Payment:'}</span>
+                      <span className="font-bold font-mono text-[#193555]">{isAr ? property.paymentOptions.onePayment.textAr : property.paymentOptions.onePayment.textEn}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-white border border-sky-100">
+                      <span className="text-[#64748B] font-medium">{isAr ? 'على دفعتين:' : 'Two Payments:'}</span>
+                      <span className="font-bold font-mono text-[#193555]">{isAr ? property.paymentOptions.twoPayments.textAr : property.paymentOptions.twoPayments.textEn}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Action Buttons with Motion */}
               <div className="mt-6 space-y-3">
                 <motion.button
@@ -743,18 +845,33 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
             {/* Center Large Image with Slide Animation */}
             <div className="relative flex-1 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={activeImageIndex}
-                  src={images[activeImageIndex]}
-                  alt={`${isAr ? property.title.ar : property.title.en} - ${activeImageIndex + 1}`}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
-                  className="max-h-[75vh] max-w-full object-contain rounded-xl shadow-2xl"
-                />
-              </AnimatePresence>
+              {failedImages.has(images[activeImageIndex]) ? (
+                <div className="max-h-[75vh] w-full max-w-xl aspect-video bg-slate-900 border border-white/10 rounded-xl flex flex-col items-center justify-center p-6 text-center text-slate-400 select-none">
+                  <ImageOff className="w-14 h-14 text-slate-500 mb-3 stroke-[1.5]" />
+                  <span className="text-base font-semibold text-slate-200">
+                    {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
+                  </span>
+                  <span className="text-xs text-slate-400 mt-2 font-mono break-all max-w-md">
+                    {images[activeImageIndex]}
+                  </span>
+                </div>
+              ) : (
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeImageIndex}
+                    src={images[activeImageIndex]}
+                    alt={`${isAr ? property.title.ar : property.title.en} - ${activeImageIndex + 1}`}
+                    onError={() => {
+                      setFailedImages((prev) => new Set(prev).add(images[activeImageIndex]));
+                    }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    className="max-h-[75vh] max-w-full object-contain rounded-xl shadow-2xl"
+                  />
+                </AnimatePresence>
+              )}
 
               {/* Prev / Next Buttons in Lightbox */}
               {images.length > 1 && (
@@ -800,7 +917,20 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                         : 'border-white/30 opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    {failedImages.has(img) ? (
+                      <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-400">
+                        <ImageOff className="w-3.5 h-3.5" />
+                      </div>
+                    ) : (
+                      <img
+                        src={img}
+                        alt=""
+                        onError={() => {
+                          setFailedImages((prev) => new Set(prev).add(img));
+                        }}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </button>
                 ))}
               </div>

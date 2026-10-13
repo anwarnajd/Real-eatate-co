@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Property, Language } from '../types';
 import { translations } from '../data/translations';
-import { MapPin, BedDouble, Bath, Maximize2, ArrowLeft, ArrowRight, MessageCircle, Sparkles } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Maximize2, ArrowLeft, ArrowRight, MessageCircle, Sparkles, ImageOff } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface PropertyCardProps {
@@ -23,6 +23,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Micro cursor tilt strictly on desktop (max 1.5 degrees, no large rotation)
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -60,6 +61,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     apartment: { ar: 'شقة سكنية', en: 'Apartment' },
     commercial: { ar: 'تجاري ومكاتب', en: 'Commercial' },
     land: { ar: 'أرض استثمارية', en: 'Investment Land' },
+    upper_floor: { ar: 'دور أول', en: 'First Floor' },
+    ground_floor: { ar: 'دور أرضي', en: 'Ground Floor' },
+    roof_apartment: { ar: 'شقة روف', en: 'Roof Apartment' },
   };
 
   const purposeLabels: Record<string, { ar: string; en: string }> = {
@@ -113,21 +117,31 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         }`}
       >
         {/* Layer 1: Property Image with Slow Luxury Zoom & Hover Overlay (aspect 4/3) */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
-          <motion.img
-            src={property.images[0] || '/images/property-fallback.jpg'}
-            alt={isAr ? property.title.ar : property.title.en}
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
-            }}
-            animate={{
-              scale: isHovered ? 1.045 : 1,
-            }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full h-full object-cover"
-          />
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 flex items-center justify-center">
+          {imageError || !property.images[0] ? (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-500 p-4 text-center select-none">
+              <ImageOff className="w-10 h-10 text-slate-400 mb-2 stroke-[1.5]" />
+              <span className="text-xs font-semibold text-slate-600">
+                {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
+              </span>
+              <span className="text-[10px] text-slate-400 mt-1 font-mono break-all max-w-[90%]">
+                {property.images[0] || '/properties/al-yasmin/01.jpg'}
+              </span>
+            </div>
+          ) : (
+            <motion.img
+              src={property.images[0]}
+              alt={isAr ? property.title.ar : property.title.en}
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              onError={() => setImageError(true)}
+              animate={{
+                scale: isHovered ? 1.045 : 1,
+              }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full h-full object-cover"
+            />
+          )}
 
           {/* Scrim Gradient for text contrast */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/85 via-transparent to-transparent pointer-events-none" />
@@ -224,7 +238,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   : property.purpose === 'rent'
                   ? (property.rentalPeriod === 'monthly'
                     ? (isAr ? 'الإيجار الشهري:' : 'Monthly Rent:')
-                    : (isAr ? 'الإيجار السنوي:' : 'Annual Rent:'))
+                    : property.rentalPeriod === 'annual'
+                    ? (isAr ? 'الإيجار السنوي:' : 'Annual Rent:')
+                    : (isAr ? 'قيمة الإيجار:' : 'Rent:'))
                   : (isAr ? 'السعر المطلوب:' : 'Price:')}
               </span>
               <span className="text-sm font-black font-mono">
@@ -253,11 +269,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 </div>
               )}
 
-              <div className="flex items-center gap-1.5">
-                <Maximize2 className="w-4 h-4 text-[#355D7F]" />
-                <span className="font-mono font-bold text-[#193555]">{property.area}</span>
-                <span className="text-[#64748B]">{t.featured.areaUnit}</span>
-              </div>
+              {property.area !== undefined && property.area > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <Maximize2 className="w-4 h-4 text-[#355D7F]" />
+                  <span className="font-mono font-bold text-[#193555]">{property.area}</span>
+                  <span className="text-[#64748B]">{t.featured.areaUnit}</span>
+                </div>
+              )}
             </div>
 
             {/* Dual CTA Actions: VIEW DETAILS (Primary) & ASK ABOUT THIS PROPERTY (Secondary / WhatsApp) */}
