@@ -1,59 +1,27 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, memo } from 'react';
 import { Property, Language } from '../types';
 import { translations } from '../data/translations';
 import { MapPin, BedDouble, Bath, Maximize2, ArrowLeft, ArrowRight, MessageCircle, Sparkles, ImageOff } from 'lucide-react';
 import { motion } from 'motion/react';
+import { getOptimizedImageUrl, getResponsiveImageSrcSet, CARD_IMAGE_SIZES } from '../utils/imageUtils';
 
 interface PropertyCardProps {
   property: Property;
   language: Language;
   onSelect: (property: Property) => void;
+  priority?: boolean;
 }
 
-export const PropertyCard: React.FC<PropertyCardProps> = ({
+const PropertyCardComponent: React.FC<PropertyCardProps> = ({
   property,
   language,
   onSelect,
+  priority = false,
 }) => {
   const t = translations[language];
   const isAr = language === 'ar';
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // 3D Tilt State
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
-
-  // Micro cursor tilt strictly on desktop (max 1.5 degrees, no large rotation)
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      return;
-    }
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // Subtle 1.5 degrees max
-    const rX = ((mouseY / height) - 0.5) * -2.5;
-    const rY = ((mouseX / width) - 0.5) * 2.5;
-
-    setRotateX(rX);
-    setRotateY(rY);
-  };
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setRotateX(0);
-    setRotateY(0);
-  };
 
   const typeLabels: Record<string, { ar: string; en: string }> = {
     villa: { ar: 'فيلا فاخرة', en: 'Luxury Villa' },
@@ -73,7 +41,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
   const isDailyRent = property.purpose === 'rent' && property.rentalPeriod === 'daily';
   const effectiveDailyPrice = property.dailyPrice ?? (isDailyRent ? property.price : undefined);
-
   const displayPrice = isDailyRent && effectiveDailyPrice !== undefined
     ? (isAr ? `${effectiveDailyPrice} ريال / يوم` : `${effectiveDailyPrice} SAR / day`)
     : (isAr ? property.priceFormatted.ar : property.priceFormatted.en);
@@ -87,59 +54,62 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     const text = isAr
       ? `السلام عليكم، أود الاستفسار عن عقار [${propTitle}] (المرجع: ${property.refNumber}${priceNote}) لدى شركة انوار نجد العقارية.`
       : `Hello, I would like more information about [${propTitle}] (Ref: ${property.refNumber}${priceNote}) at Anwar Najd Real Estate Company.`;
-
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const coverImage = property.images && property.images.length > 0 ? property.images[0] : '';
+  const optimizedSrc = getOptimizedImageUrl(coverImage, 800, 80);
+  const responsiveSrcSet = getResponsiveImageSrcSet(coverImage, [400, 800, 1200], 80);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (!img.dataset.fallbackApplied && coverImage) {
+      img.dataset.fallbackApplied = 'true';
+      img.srcset = '';
+      img.src = coverImage;
+    } else {
+      setImageError(true);
+    }
   };
 
   return (
     <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelect(property)}
-      className="cursor-pointer select-none h-full"
+      className="cursor-pointer select-none h-full transition-transform duration-300 hover:-translate-y-1.5"
     >
-      <motion.div
-        animate={{
-          rotateX: isHovered ? rotateX : 0,
-          rotateY: isHovered ? rotateY : 0,
-          y: isHovered ? -6 : 0,
-        }}
-        transition={{
-          duration: 0.4,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        className={`group bg-white rounded-2xl overflow-hidden border transition-all duration-500 flex flex-col h-full ${
+      <div
+        className={`group bg-white rounded-2xl overflow-hidden border transition-all duration-300 flex flex-col h-full ${
           isHovered
             ? 'border-[#088AC3]/40 shadow-[0_20px_35px_-10px_rgba(25,53,85,0.14)]'
             : 'border-[#E2E8F0] shadow-sm'
         }`}
       >
-        {/* Layer 1: Property Image with Slow Luxury Zoom & Hover Overlay (aspect 4/3) */}
+        {/* Layer 1: Property Cover Image with Netlify Image CDN and Aspect Ratio (4/3) */}
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 flex items-center justify-center">
-          {imageError || !property.images[0] ? (
+          {imageError || !coverImage ? (
             <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-500 p-4 text-center select-none">
               <ImageOff className="w-10 h-10 text-slate-400 mb-2 stroke-[1.5]" />
               <span className="text-xs font-semibold text-slate-600">
                 {isAr ? 'الصورة غير متوفرة' : 'Image Not Found'}
               </span>
               <span className="text-[10px] text-slate-400 mt-1 font-mono break-all max-w-[90%]">
-                {property.images[0] || '/properties/al-yasmin/01.jpg'}
+                {coverImage || '/images/property-fallback.jpg'}
               </span>
             </div>
           ) : (
-            <motion.img
-              src={property.images[0]}
+            <img
+              src={optimizedSrc}
+              srcSet={responsiveSrcSet}
+              sizes={CARD_IMAGE_SIZES}
               alt={isAr ? property.title.ar : property.title.en}
-              loading="lazy"
+              loading={priority ? 'eager' : 'lazy'}
+              decoding="async"
+              fetchPriority={priority ? 'high' : 'auto'}
               referrerPolicy="no-referrer"
-              onError={() => setImageError(true)}
-              animate={{
-                scale: isHovered ? 1.045 : 1,
-              }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full h-full object-cover"
+              onError={handleImageError}
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]"
             />
           )}
 
@@ -148,17 +118,17 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
           {/* Hover Overlay with VIEW PROPERTY Callout */}
           <div
-            className={`absolute inset-0 bg-[#10243B]/30 backdrop-blur-[1px] transition-opacity duration-400 flex items-center justify-center pointer-events-none ${
+            className={`absolute inset-0 bg-[#10243B]/30 backdrop-blur-[1px] transition-opacity duration-300 flex items-center justify-center pointer-events-none ${
               isHovered ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <motion.span
-              animate={{ y: isHovered ? 0 : 8, opacity: isHovered ? 1 : 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="px-4 py-2 rounded-xl bg-white/95 text-[#193555] font-black text-xs shadow-lg flex items-center gap-1.5"
+            <span
+              className={`px-4 py-2 rounded-xl bg-white/95 text-[#193555] font-black text-xs shadow-lg flex items-center gap-1.5 transition-all duration-300 ${
+                isHovered ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+              }`}
             >
               <span>{isAr ? 'عرض تفاصيل العقار' : 'VIEW DETAILS'}</span>
-            </motion.span>
+            </span>
           </div>
 
           {/* Floating Badges */}
@@ -260,7 +230,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   <span className="text-[#64748B]">{t.featured.beds}</span>
                 </div>
               )}
-
               {property.bathrooms !== undefined && (
                 <div className="flex items-center gap-1.5">
                   <Bath className="w-4 h-4 text-[#355D7F]" />
@@ -268,7 +237,6 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   <span className="text-[#64748B]">{t.featured.baths}</span>
                 </div>
               )}
-
               {property.area !== undefined && property.area > 0 && (
                 <div className="flex items-center gap-1.5">
                   <Maximize2 className="w-4 h-4 text-[#355D7F]" />
@@ -309,7 +277,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
+
+export const PropertyCard = memo(PropertyCardComponent);

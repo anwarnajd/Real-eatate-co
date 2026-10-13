@@ -22,10 +22,13 @@ export type PropertyType =
 export type PropertyPurpose = 'buy' | 'rent';
 
 export type RentalPeriod = 'daily' | 'monthly' | 'annual';
+export type PropertyPublishStatus = 'published' | 'draft';
 
 export interface Property {
   id: string;
   refNumber: string;
+  status?: PropertyPublishStatus;
+  isPublished?: boolean;
   title: {
     ar: string;
     en: string;

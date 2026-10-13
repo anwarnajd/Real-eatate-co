@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Property, Language, PageId } from '../types';
 import { translations } from '../data/translations';
-import { propertiesData } from '../data/properties';
+import { propertiesData, isPropertyPublished } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
+import { getOptimizedImageUrl, getResponsiveImageSrcSet, DETAIL_HERO_SIZES } from '../utils/imageUtils';
 import { DailyRentalBookingSection } from '../components/DailyRentalBookingSection';
 import { RizeAnnualRentSection } from '../components/RizeAnnualRentSection';
 import {
@@ -54,7 +55,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
   const images = property.images && property.images.length > 0
     ? property.images
-    : ['/properties/al-yasmin/01.jpg'];
+    : ['/images/property-fallback.jpg'];
 
   const typeLabels: Record<string, { ar: string; en: string }> = {
     villa: { ar: 'فيلا فاخرة', en: 'Luxury Villa' },
@@ -151,7 +152,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   };
 
   const similarProps = propertiesData
-    .filter((p) => p.id !== property.id && (p.type === property.type || p.purpose === property.purpose))
+    .filter((p) => isPropertyPublished(p) && p.id !== property.id && (p.type === property.type || p.purpose === property.purpose))
     .slice(0, 3);
 
   return (
@@ -207,11 +208,22 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               <AnimatePresence mode="wait">
                 <motion.img
                   key={activeImageIndex}
-                  src={images[activeImageIndex]}
+                  src={getOptimizedImageUrl(images[activeImageIndex], 1200, 80)}
+                  srcSet={getResponsiveImageSrcSet(images[activeImageIndex], [400, 800, 1200, 1600], 80)}
+                  sizes={DETAIL_HERO_SIZES}
                   alt={isAr ? property.title.ar : property.title.en}
+                  loading="eager"
+                  decoding="async"
                   referrerPolicy="no-referrer"
-                  onError={() => {
-                    setFailedImages((prev) => new Set(prev).add(images[activeImageIndex]));
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.fallbackApplied && images[activeImageIndex]) {
+                      target.dataset.fallbackApplied = 'true';
+                      target.srcset = '';
+                      target.src = images[activeImageIndex];
+                    } else {
+                      setFailedImages((prev) => new Set(prev).add(images[activeImageIndex]));
+                    }
                   }}
                   initial={{ opacity: 0, scale: 1.04 }}
                   animate={{ opacity: 1, scale: isZoomed ? 1.07 : 1.02 }}
@@ -351,12 +363,19 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                     </div>
                   ) : (
                     <img
-                      src={img}
+                      src={getOptimizedImageUrl(img, 240, 80)}
                       alt={`Thumbnail ${idx + 1}`}
                       loading="lazy"
+                      decoding="async"
                       referrerPolicy="no-referrer"
-                      onError={() => {
-                        setFailedImages((prev) => new Set(prev).add(img));
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.dataset.fallbackApplied && img) {
+                          target.dataset.fallbackApplied = 'true';
+                          target.src = img;
+                        } else {
+                          setFailedImages((prev) => new Set(prev).add(img));
+                        }
                       }}
                       className="w-full h-full object-cover"
                     />
@@ -859,10 +878,21 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
-                    src={images[activeImageIndex]}
+                    src={getOptimizedImageUrl(images[activeImageIndex], 1600, 85)}
+                    srcSet={getResponsiveImageSrcSet(images[activeImageIndex], [800, 1200, 1600, 2000], 85)}
+                    sizes="100vw"
                     alt={`${isAr ? property.title.ar : property.title.en} - ${activeImageIndex + 1}`}
-                    onError={() => {
-                      setFailedImages((prev) => new Set(prev).add(images[activeImageIndex]));
+                    loading="eager"
+                    decoding="async"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.fallbackApplied && images[activeImageIndex]) {
+                        target.dataset.fallbackApplied = 'true';
+                        target.srcset = '';
+                        target.src = images[activeImageIndex];
+                      } else {
+                        setFailedImages((prev) => new Set(prev).add(images[activeImageIndex]));
+                      }
                     }}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -923,10 +953,18 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       </div>
                     ) : (
                       <img
-                        src={img}
+                        src={getOptimizedImageUrl(img, 160, 80)}
                         alt=""
-                        onError={() => {
-                          setFailedImages((prev) => new Set(prev).add(img));
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.fallbackApplied && img) {
+                            target.dataset.fallbackApplied = 'true';
+                            target.src = img;
+                          } else {
+                            setFailedImages((prev) => new Set(prev).add(img));
+                          }
                         }}
                         className="w-full h-full object-cover"
                       />

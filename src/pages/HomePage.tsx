@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { translations } from '../data/translations';
-import { propertiesData } from '../data/properties';
+import { propertiesData, isPropertyPublished } from '../data/properties';
 import { TrustCounter } from '../components/TrustCounter';
 import { PropertyCard } from '../components/PropertyCard';
 import { FeaturedProperties3DShowcase } from '../components/FeaturedProperties3DShowcase';
@@ -18,7 +18,7 @@ import {
   Headphones,
   Sparkles,
 } from 'lucide-react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValue } from 'motion/react';
 import {
   RIYADH_DISTRICTS,
   EXACT_PRICE_RANGES,
@@ -32,6 +32,7 @@ import {
   OWNER_PROPERTY_TYPES,
 } from '../data/riyadhNeighborhoods';
 import { Property, Language, PropertyPurpose, PropertyType, RentalPeriod, PageId } from '../types';
+import { getOptimizedImageUrl, getResponsiveImageSrcSet, HERO_SKYLINE_SIZES } from '../utils/imageUtils';
 
 interface HomePageProps {
   language: Language;
@@ -79,9 +80,14 @@ export const HomePage: React.FC<HomePageProps> = ({
     setPriceRangeId('all');
   };
 
-  // Mouse Parallax for Hero
+  // Mouse Parallax for Hero using GPU motion values (zero React re-renders)
   const heroRef = useRef<HTMLDivElement>(null);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const orb1X = useTransform(mouseX, (x) => x * 0.5);
+  const orb1Y = useTransform(mouseY, (y) => y * 0.5);
+  const orb2X = useTransform(mouseX, (x) => x * -0.4);
+  const orb2Y = useTransform(mouseY, (y) => y * -0.4);
 
   // Scroll-based parallax for Hero layers
   const { scrollY } = useScroll();
@@ -92,13 +98,15 @@ export const HomePage: React.FC<HomePageProps> = ({
     if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     if (!heroRef.current) return;
     const rect = heroRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMouseOffset({ x: x * 22, y: y * 18 });
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 22;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 18;
+    mouseX.set(x);
+    mouseY.set(y);
   };
 
   const handleHeroMouseLeave = () => {
-    setMouseOffset({ x: 0, y: 0 });
+    mouseX.set(0);
+    mouseY.set(0);
   };
 
   // Featured Properties Filter State
@@ -106,6 +114,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const displayedProperties = useMemo<Property[]>(() => {
     return propertiesData.filter((p: Property) => {
+      if (!isPropertyPublished(p)) return false;
       if (featuredCategory === 'all') return true;
       if (featuredCategory === 'residential') return ['villa', 'penthouse', 'apartment'].includes(p.type);
       if (featuredCategory === 'commercial') return p.type === 'commercial';
@@ -115,7 +124,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     });
   }, [featuredCategory]);
 
-  const featuredProperties = propertiesData.filter((p) => p.featured);
+  const featuredProperties = propertiesData.filter((p) => isPropertyPublished(p) && p.featured);
   const headlineWords = t.hero.headline.split(' ');
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -149,16 +158,25 @@ export const HomePage: React.FC<HomePageProps> = ({
           className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
         >
           <motion.img
-            src="/images/hero-skyline.jpg"
+            src={getOptimizedImageUrl('/images/hero-skyline.jpg', 1200, 80)}
+            srcSet={getResponsiveImageSrcSet('/images/hero-skyline.jpg', [480, 800, 1200, 1600], 80)}
+            sizes={HERO_SKYLINE_SIZES}
             alt="Riyadh Luxury Architecture & Skyline"
             loading="eager"
+            decoding="async"
+            fetchPriority="high"
             referrerPolicy="no-referrer"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';
+              const target = e.currentTarget;
+              if (!target.dataset.fallbackApplied) {
+                target.dataset.fallbackApplied = 'true';
+                target.srcset = '';
+                target.src = '/images/hero-skyline.jpg';
+              } else {
+                target.src = '/images/property-fallback.jpg';
+              }
             }}
-            animate={{
-              scale: [1.00, 1.05, 1.00],
-            }}
+            animate={typeof window !== 'undefined' && window.innerWidth >= 768 ? { scale: [1.00, 1.04, 1.00] } : undefined}
             transition={{
               duration: 16,
               repeat: Infinity,
@@ -186,19 +204,11 @@ export const HomePage: React.FC<HomePageProps> = ({
 
         {/* Layer 4: Floating Ambient Light Orbs - Desktop fine pointer only */}
         <motion.div
-          animate={{
-            x: mouseOffset.x * 0.5,
-            y: mouseOffset.y * 0.5,
-          }}
-          transition={{ type: 'spring', stiffness: 60, damping: 30 }}
+          style={{ x: orb1X, y: orb1Y }}
           className="hidden md:block absolute top-1/4 start-0 w-80 h-80 bg-[#088AC3]/20 rounded-full blur-[120px] pointer-events-none z-[3]"
         />
         <motion.div
-          animate={{
-            x: mouseOffset.x * -0.4,
-            y: mouseOffset.y * -0.4,
-          }}
-          transition={{ type: 'spring', stiffness: 60, damping: 30 }}
+          style={{ x: orb2X, y: orb2Y }}
           className="hidden md:block absolute bottom-1/4 end-0 w-80 h-80 bg-[#38BDF8]/15 rounded-full blur-[130px] pointer-events-none z-[3]"
         />
 
@@ -545,6 +555,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   property={prop}
                   language={language}
                   onSelect={onSelectProperty}
+                  priority={idx < 2}
                 />
               </motion.div>
             ))}

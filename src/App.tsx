@@ -3,22 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Language, PageId, Property, PropertyFilterState } from './types';
-import { propertiesData } from './data/properties';
+import { propertiesData, publishedProperties, isPropertyPublished } from './data/properties';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { InquiryModal } from './components/InquiryModal';
 import { IntroAnimation } from './components/IntroAnimation';
 import { CustomCursor } from './components/CustomCursor';
 import { HomePage } from './pages/HomePage';
-import { AboutPage } from './pages/AboutPage';
-import { PropertiesPage } from './pages/PropertiesPage';
-import { PropertyDetailsPage } from './pages/PropertyDetailsPage';
-import { ServicesPage } from './pages/ServicesPage';
-import { ContactPage } from './pages/ContactPage';
 import { MessageCircle, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+// Code-split routes for maximum initial load performance
+const AboutPage = lazy(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
+const PropertiesPage = lazy(() => import('./pages/PropertiesPage').then((m) => ({ default: m.PropertiesPage })));
+const PropertyDetailsPage = lazy(() => import('./pages/PropertyDetailsPage').then((m) => ({ default: m.PropertyDetailsPage })));
+const ServicesPage = lazy(() => import('./pages/ServicesPage').then((m) => ({ default: m.ServicesPage })));
+const ContactPage = lazy(() => import('./pages/ContactPage').then((m) => ({ default: m.ContactPage })));
 
 // Bulletproof storage helper that never crashes even in strict private mode or sandboxed iframes
 const getInitialLanguage = (): Language => {
@@ -45,20 +47,21 @@ const setSafeLanguage = (lang: Language): void => {
   }
 };
 
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+// Safe Error Boundary to prevent any unhandled crash from breaking the app
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false };
   }
-
   static getDerivedStateFromError() {
     return { hasError: true };
   }
-
   componentDidCatch(error: any) {
     console.error('Anwar Najd App caught error:', error);
   }
-
   render() {
     if (this.state.hasError) {
       return (
@@ -163,66 +166,74 @@ export default function App() {
         onOpenInquiry={() => handleOpenInquiry(null)}
       />
 
-      {/* Main Pages with Smooth Page Transitions */}
+      {/* Main Pages with Smooth Page Transitions & Code Splitting */}
       <main className="flex-1">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${currentPage}-${language}${currentPage === 'property-details' ? `-${selectedProperty?.id || 'default'}` : ''}`}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {currentPage === 'home' && (
-              <HomePage
-                language={language}
-                setCurrentPage={setCurrentPage}
-                onSelectProperty={handleSelectProperty}
-                onOpenInquiry={handleOpenInquiry}
-                onApplySearchFilter={handleApplySearchFilter}
-              />
-            )}
+        <Suspense
+          fallback={
+            <div className="min-h-[50vh] flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-[#088AC3]/20 border-t-[#088AC3] rounded-full animate-spin" />
+            </div>
+          }
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${currentPage}-${language}${currentPage === 'property-details' ? `-${selectedProperty?.id || 'default'}` : ''}`}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {currentPage === 'home' && (
+                <HomePage
+                  language={language}
+                  setCurrentPage={setCurrentPage}
+                  onSelectProperty={handleSelectProperty}
+                  onOpenInquiry={handleOpenInquiry}
+                  onApplySearchFilter={handleApplySearchFilter}
+                />
+              )}
 
-            {currentPage === 'about' && (
-              <AboutPage
-                language={language}
-                setCurrentPage={setCurrentPage}
-                onOpenInquiry={() => handleOpenInquiry(null)}
-              />
-            )}
+              {currentPage === 'about' && (
+                <AboutPage
+                  language={language}
+                  setCurrentPage={setCurrentPage}
+                  onOpenInquiry={() => handleOpenInquiry(null)}
+                />
+              )}
 
-            {currentPage === 'properties' && (
-              <PropertiesPage
-                language={language}
-                initialFilters={initialFilters}
-                onSelectProperty={handleSelectProperty}
-                onOpenInquiry={handleOpenInquiry}
-              />
-            )}
+              {currentPage === 'properties' && (
+                <PropertiesPage
+                  language={language}
+                  initialFilters={initialFilters}
+                  onSelectProperty={handleSelectProperty}
+                  onOpenInquiry={handleOpenInquiry}
+                />
+              )}
 
-            {currentPage === 'property-details' && (
-              <PropertyDetailsPage
-                property={selectedProperty || propertiesData[0]}
-                language={language}
-                setCurrentPage={setCurrentPage}
-                onSelectProperty={handleSelectProperty}
-                onOpenInquiry={(p) => handleOpenInquiry(p)}
-              />
-            )}
+              {currentPage === 'property-details' && (
+                <PropertyDetailsPage
+                  property={(selectedProperty && isPropertyPublished(selectedProperty)) ? selectedProperty : (publishedProperties[0] || propertiesData[0])}
+                  language={language}
+                  setCurrentPage={setCurrentPage}
+                  onSelectProperty={handleSelectProperty}
+                  onOpenInquiry={(p) => handleOpenInquiry(p)}
+                />
+              )}
 
-            {currentPage === 'services' && (
-              <ServicesPage
-                language={language}
-                setCurrentPage={setCurrentPage}
-                onOpenInquiry={(svcTitle) => handleOpenInquiry(null, svcTitle)}
-              />
-            )}
+              {currentPage === 'services' && (
+                <ServicesPage
+                  language={language}
+                  setCurrentPage={setCurrentPage}
+                  onOpenInquiry={(svcTitle) => handleOpenInquiry(null, svcTitle)}
+                />
+              )}
 
-            {currentPage === 'contact' && (
-              <ContactPage language={language} />
-            )}
-          </motion.div>
-        </AnimatePresence>
+              {currentPage === 'contact' && (
+                <ContactPage language={language} />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </Suspense>
       </main>
 
       {/* Footer in Luxury Dark Navy Accent */}

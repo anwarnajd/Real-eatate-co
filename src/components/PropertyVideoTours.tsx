@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Language } from '../types';
 import { translations } from '../data/translations';
 import { motion } from 'motion/react';
-import { Video, Film, MapPin, Sparkles, MessageCircle, Play } from 'lucide-react';
+import { Film, MapPin, Sparkles, MessageCircle, Play } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface PropertyVideoToursProps {
   language: Language;
@@ -15,6 +16,7 @@ export const PropertyVideoTours: React.FC<PropertyVideoToursProps> = ({
 }) => {
   const t = translations[language];
   const isAr = language === 'ar';
+  const [playingVideos, setPlayingVideos] = useState<Record<string, boolean>>({});
 
   const tours = [
     {
@@ -43,11 +45,14 @@ export const PropertyVideoTours: React.FC<PropertyVideoToursProps> = ({
     },
   ];
 
+  const handleStartPlay = (tourId: string) => {
+    setPlayingVideos((prev) => ({ ...prev, [tourId]: true }));
+  };
+
   const handleWhatsApp = (tour: typeof tours[0]) => {
     const text = isAr
       ? `السلام عليكم، أود الاستفسار عن ${tour.title} (المرجع: ${tour.refCode}) المعروض في جولات الفيديو لدى شركة انوار نجد العقارية.`
       : `Hello, I would like to inquire about ${tour.title} (Ref: ${tour.refCode}) from the video tours at Anwar Najd Real Estate Company.`;
-
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -69,11 +74,9 @@ export const PropertyVideoTours: React.FC<PropertyVideoToursProps> = ({
             <Film className="w-3.5 h-3.5 text-[#088AC3]" />
             <span>{t.videoTours.badge}</span>
           </span>
-
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#193555] tracking-tight">
             {t.videoTours.title}
           </h2>
-
           <p className="mt-3 text-sm sm:text-base text-[#475569] leading-relaxed">
             {t.videoTours.subtitle}
           </p>
@@ -81,95 +84,126 @@ export const PropertyVideoTours: React.FC<PropertyVideoToursProps> = ({
 
         {/* Video Cards Grid: Side-by-side on desktop, stacked on mobile/tablet */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 max-w-5xl mx-auto">
-          {tours.map((tour, idx) => (
-            <motion.div
-              key={tour.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: idx * 0.15 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col group"
-            >
-              {/* Card Header Info */}
-              <div className="p-5 sm:p-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-3">
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#F0F7FB] text-[#088AC3] border border-[#088AC3]/20">
-                      <span className="w-2 h-2 rounded-full bg-[#088AC3] animate-pulse" />
-                      <span>{tour.tag}</span>
-                    </span>
-                    <span className="text-[11px] font-mono font-bold text-slate-400">
-                      {tour.refCode}
-                    </span>
+          {tours.map((tour, idx) => {
+            const isPlaying = !!playingVideos[tour.id];
+
+            return (
+              <motion.div
+                key={tour.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                className="bg-white rounded-3xl border border-[#E2E8F0] shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col group"
+              >
+                {/* Card Header Info */}
+                <div className="p-5 sm:p-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-3">
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#F0F7FB] text-[#088AC3] border border-[#088AC3]/20">
+                        <span className="w-2 h-2 rounded-full bg-[#088AC3] animate-pulse" />
+                        <span>{tour.tag}</span>
+                      </span>
+                      <span className="text-[11px] font-mono font-bold text-slate-400">
+                        {tour.refCode}
+                      </span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-bold text-[#193555] truncate pt-1">
+                      {tour.title}
+                    </h3>
+                    <div className="flex items-center gap-1 text-xs text-[#64748B]">
+                      <MapPin className="w-3.5 h-3.5 text-[#088AC3] flex-shrink-0" />
+                      <span className="truncate">{tour.location}</span>
+                    </div>
                   </div>
-                  <h3 className="text-base sm:text-lg font-bold text-[#193555] truncate pt-1">
-                    {tour.title}
-                  </h3>
-                  <div className="flex items-center gap-1 text-xs text-[#64748B]">
-                    <MapPin className="w-3.5 h-3.5 text-[#088AC3] flex-shrink-0" />
-                    <span className="truncate">{tour.location}</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200/60 flex-shrink-0">
+                    {isAr ? 'عقار معتمد' : 'Verified'}
+                  </span>
+                </div>
+
+                {/* 9:16 Vertical Video Container with On-Demand Load */}
+                <div className="p-4 sm:p-6 bg-slate-50 flex items-center justify-center">
+                  <div className="relative aspect-[9/16] w-full max-w-[320px] sm:max-w-[360px] mx-auto rounded-2xl overflow-hidden bg-[#10243B] shadow-lg border border-slate-800">
+                    {isPlaying ? (
+                      <video
+                        controls
+                        autoPlay
+                        preload="none"
+                        playsInline
+                        className="w-full h-full object-contain bg-[#10243B]"
+                        title={`${tour.tag} - ${tour.title}`}
+                      >
+                        <source src={tour.videoSrc} type="video/mp4" />
+                        {isAr
+                          ? 'متصفحك لا يدعم تشغيل هذا الفيديو مباشرة.'
+                          : 'Your browser does not support playing this video.'}
+                      </video>
+                    ) : (
+                      <div
+                        onClick={() => handleStartPlay(tour.id)}
+                        className="relative w-full h-full flex items-center justify-center cursor-pointer group/video bg-[#0f2034]"
+                      >
+                        {/* Poster or Fallback Backdrop */}
+                        <img
+                          src={getOptimizedImageUrl(tour.posterSrc, 400, 80)}
+                          alt={tour.title}
+                          loading="lazy"
+                          decoding="async"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/hero-skyline.jpg';
+                          }}
+                          className="w-full h-full object-cover opacity-80 group-hover/video:opacity-90 transition-opacity"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#10243B]/90 via-[#10243B]/40 to-black/30 pointer-events-none" />
+
+                        {/* Centered Play Button */}
+                        <div className="relative z-10 flex flex-col items-center gap-3 text-center p-4">
+                          <div className="w-16 h-16 rounded-full bg-[#088AC3] text-white flex items-center justify-center shadow-2xl group-hover/video:scale-110 group-hover/video:bg-[#0779AB] transition-all duration-300 ring-4 ring-white/20">
+                            <Play className="w-7 h-7 ms-1 fill-white" />
+                          </div>
+                          <span className="text-xs font-bold text-white px-3 py-1 rounded-full bg-black/40 backdrop-blur-xs">
+                            {isAr ? 'اضغط لتشغيل الفيديو' : 'Click to Play Video'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200/60 flex-shrink-0">
-                  {isAr ? 'عقار معتمد' : 'Verified'}
-                </span>
-              </div>
-
-              {/* 9:16 Vertical Video Container */}
-              <div className="p-4 sm:p-6 bg-slate-50 flex items-center justify-center">
-                <div className="relative aspect-[9/16] w-full max-w-[320px] sm:max-w-[360px] mx-auto rounded-2xl overflow-hidden bg-[#10243B] shadow-lg border border-slate-800">
-                  <video
-                    controls
-                    preload="metadata"
-                    playsInline
-                    poster={tour.posterSrc}
-                    className="w-full h-full object-contain bg-[#10243B]"
-                    title={`${tour.tag} - ${tour.title}`}
-                  >
-                    <source src={tour.videoSrc} type="video/mp4" />
-                    {isAr
-                      ? 'متصفحك لا يدعم تشغيل هذا الفيديو مباشرة.'
-                      : 'Your browser does not support playing this video.'}
-                  </video>
+                {/* Card Footer Actions & Specs */}
+                <div className="p-5 sm:p-6 pt-4 mt-auto border-t border-slate-100 bg-white space-y-3.5">
+                  <div className="text-xs font-semibold text-[#193555] bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center justify-between">
+                    <span>{tour.specs}</span>
+                    <span className="text-[11px] text-[#088AC3] font-bold">{isAr ? 'شركة انوار نجد' : 'Anwar Najd'}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onOpenInquiry) {
+                          onOpenInquiry(null, tour.inquiryTitle);
+                        } else {
+                          handleWhatsApp(tour);
+                        }
+                      }}
+                      className="w-full py-2.5 px-3 bg-[#088AC3] hover:bg-[#0779AB] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span className="truncate">{tour.inquireBtn}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleWhatsApp(tour)}
+                      className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span className="truncate">{isAr ? 'واتساب' : 'WhatsApp'}</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              {/* Card Footer Actions & Specs */}
-              <div className="p-5 sm:p-6 pt-4 mt-auto border-t border-slate-100 bg-white space-y-3.5">
-                <div className="text-xs font-semibold text-[#193555] bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <span>{tour.specs}</span>
-                  <span className="text-[11px] text-[#088AC3] font-bold">{isAr ? 'شركة انوار نجد' : 'Anwar Najd'}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (onOpenInquiry) {
-                        onOpenInquiry(null, tour.inquiryTitle);
-                      } else {
-                        handleWhatsApp(tour);
-                      }
-                    }}
-                    className="w-full py-2.5 px-3 bg-[#088AC3] hover:bg-[#0779AB] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span className="truncate">{tour.inquireBtn}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleWhatsApp(tour)}
-                    className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span className="truncate">{isAr ? 'واتساب' : 'WhatsApp'}</span>
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

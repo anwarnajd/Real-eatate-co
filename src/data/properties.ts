@@ -7,6 +7,8 @@ export const propertiesData: Property[] = [
   {
     id: 'anw-yasmin-rent',
     refNumber: 'ANW-5065',
+    status: 'draft',
+    isPublished: false,
     title: {
       ar: 'شقة للإيجار في حي الياسمين',
       en: 'Apartment for Rent in Al Yasmin',
@@ -75,6 +77,8 @@ export const propertiesData: Property[] = [
   {
     id: 'anw-rimal-rent',
     refNumber: 'ANW-5066',
+    status: 'draft',
+    isPublished: false,
     title: {
       ar: 'فيلا درج داخلي للإيجار في حي الرمال',
       en: 'Internal-Stair Villa for Rent in Al Rimal',
@@ -169,6 +173,8 @@ export const propertiesData: Property[] = [
   {
     id: 'anw-qurtubah-rent',
     refNumber: 'ANW-5068',
+    status: 'draft',
+    isPublished: false,
     title: {
       ar: 'شقة للإيجار في حي قرطبة',
       en: 'Apartment for Rent in Qurtubah',
@@ -240,6 +246,8 @@ export const propertiesData: Property[] = [
   {
     id: 'anw-munsiyah-rent',
     refNumber: 'ANW-5069',
+    status: 'draft',
+    isPublished: false,
     title: {
       ar: 'دور أول للإيجار في حي المونسية',
       en: 'First-Floor Property for Rent in Al Munsiyah',
@@ -325,6 +333,8 @@ export const propertiesData: Property[] = [
   {
     id: 'anw-munsiyah-duplex-rent',
     refNumber: 'ANW-5070',
+    status: 'draft',
+    isPublished: false,
     title: {
       ar: 'فيلا دبلكس للإيجار في حي المونسية',
       en: 'Duplex Villa for Rent in Al Munsiyah',
@@ -1282,3 +1292,23 @@ export const propertiesData: Property[] = [
     ],
   },
 ];
+
+/**
+ * Returns true if a property is published and should be visible publicly.
+ */
+export const isPropertyPublished = (property: Property): boolean => {
+  if (property.status === 'draft' || property.isPublished === false) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Publicly published properties (excludes drafts).
+ */
+export const publishedProperties: Property[] = propertiesData.filter(isPropertyPublished);
+
+/**
+ * Properties currently in draft status awaiting review and reorganization.
+ */
+export const draftProperties: Property[] = propertiesData.filter((p) => !isPropertyPublished(p));
