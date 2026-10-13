@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Property, Language } from '../types';
+import { getOptimizedImageUrl, getResponsiveImageSrcSet } from '../utils/imageUtils';
 import { translations } from '../data/translations';
 import {
   MapPin,
@@ -232,16 +233,24 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
                   </div>
                 ) : (
                   <motion.img
-                    src={activeProperty.images[0]}
+                    src={getOptimizedImageUrl(activeProperty.images[0], 1000, 80)}
+                    srcSet={getResponsiveImageSrcSet(activeProperty.images[0], [400, 800, 1200], 80)}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1100px"
                     alt={isAr ? activeProperty.title.ar : activeProperty.title.en}
                     loading="eager"
+                    decoding="async"
                     referrerPolicy="no-referrer"
-                    onError={() => {
-                      setFailedImages((prev) => new Set(prev).add(activeProperty.images[0]));
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.fallbackApplied && activeProperty.images[0]) {
+                        target.dataset.fallbackApplied = 'true';
+                        target.srcset = '';
+                        target.src = activeProperty.images[0];
+                      } else {
+                        setFailedImages((prev) => new Set(prev).add(activeProperty.images[0]));
+                      }
                     }}
-                    animate={{
-                      scale: [1.0, 1.05],
-                    }}
+                    animate={typeof window !== 'undefined' && window.innerWidth >= 768 ? { scale: [1.0, 1.04] } : undefined}
                     transition={{
                       duration: 10,
                       repeat: Infinity,
@@ -440,10 +449,18 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
                       </div>
                     ) : (
                       <img
-                        src={prop.images[0]}
+                        src={getOptimizedImageUrl(prop.images[0], 120, 80)}
                         alt={isAr ? prop.title.ar : prop.title.en}
-                        onError={() => {
-                          setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.fallbackApplied && prop.images[0]) {
+                            target.dataset.fallbackApplied = 'true';
+                            target.src = prop.images[0];
+                          } else {
+                            setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                          }
                         }}
                         className="w-8 h-8 rounded-lg object-cover"
                       />
@@ -505,12 +522,22 @@ export const FeaturedProperties3DShowcase: React.FC<FeaturedProperties3DShowcase
                     </div>
                   ) : (
                     <motion.img
-                      src={prop.images[0]}
+                      src={getOptimizedImageUrl(prop.images[0], 600, 80)}
+                      srcSet={getResponsiveImageSrcSet(prop.images[0], [360, 600, 900], 80)}
+                      sizes="(max-width: 640px) 100vw, 400px"
                       alt={isAr ? prop.title.ar : prop.title.en}
                       loading="lazy"
+                      decoding="async"
                       referrerPolicy="no-referrer"
-                      onError={() => {
-                        setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.dataset.fallbackApplied && prop.images[0]) {
+                          target.dataset.fallbackApplied = 'true';
+                          target.srcset = '';
+                          target.src = prop.images[0];
+                        } else {
+                          setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                        }
                       }}
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}

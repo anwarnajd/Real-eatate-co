@@ -131,6 +131,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
                 src={corporateLoungeImg}
                 alt="Anwar Najd Real Estate Corporate Advisory Suite"
                 loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/images/property-fallback.jpg';

@@ -130,6 +130,10 @@ export const CustomerReviews: React.FC<CustomerReviewsProps> = ({
                       <img
                         src={review.avatarUrl}
                         alt={review.name}
+                        width={40}
+                        height={40}
+                        loading="lazy"
+                        decoding="async"
                         className="w-10 h-10 rounded-full object-cover border border-slate-200 flex-shrink-0"
                       />
                     ) : (

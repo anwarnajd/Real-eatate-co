@@ -3,6 +3,7 @@ import { Property, Language, PropertyPurpose, PropertyType, RentalPeriod, Proper
 import { translations } from '../data/translations';
 import { propertiesData } from '../data/properties';
 import { PropertyCard } from '../components/PropertyCard';
+import { getOptimizedImageUrl, getResponsiveImageSrcSet } from '../utils/imageUtils';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   RIYADH_DISTRICTS,
@@ -479,7 +480,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         ) : viewMode === 'grid' ? (
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <AnimatePresence>
-              {filteredProperties.map((prop) => (
+              {filteredProperties.map((prop, idx) => (
                 <motion.div
                   layout
                   key={prop.id}
@@ -492,6 +493,7 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                     property={prop}
                     language={language}
                     onSelect={onSelectProperty}
+                    priority={idx < 3}
                   />
                 </motion.div>
               ))}
@@ -500,13 +502,13 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
         ) : (
           /* List View on Crisp White Cards */
           <div className="space-y-6">
-            {filteredProperties.map((prop) => (
+            {filteredProperties.map((prop, idx) => (
               <div
                 key={prop.id}
                 onClick={() => onSelectProperty(prop)}
                 className="group bg-white border border-[#E2E8F0] hover:border-[#088AC3]/50 rounded-2xl overflow-hidden transition-all duration-300 shadow-xs hover:shadow-lg flex flex-col md:flex-row cursor-pointer"
               >
-                <div className="relative md:w-80 h-56 md:h-auto flex-shrink-0 bg-slate-100 overflow-hidden flex items-center justify-center">
+                <div className="relative md:w-80 h-56 md:h-auto flex-shrink-0 bg-slate-100 overflow-hidden flex items-center justify-center aspect-[4/3] md:aspect-auto">
                   {failedImages.has(prop.images[0]) || !prop.images[0] ? (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-500 p-4 text-center select-none">
                       <ImageOff className="w-8 h-8 text-slate-400 mb-1.5 stroke-[1.5]" />
@@ -519,12 +521,23 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                     </div>
                   ) : (
                     <img
-                      src={prop.images[0]}
+                      src={getOptimizedImageUrl(prop.images[0], 800, 80)}
+                      srcSet={getResponsiveImageSrcSet(prop.images[0], [400, 800, 1200], 80)}
+                      sizes="(max-width: 768px) 100vw, 320px"
                       alt={isAr ? prop.title.ar : prop.title.en}
-                      loading="lazy"
+                      loading={idx < 3 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      fetchPriority={idx < 3 ? 'high' : 'auto'}
                       referrerPolicy="no-referrer"
-                      onError={() => {
-                        setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.dataset.fallbackApplied && prop.images[0]) {
+                          target.dataset.fallbackApplied = 'true';
+                          target.srcset = '';
+                          target.src = prop.images[0];
+                        } else {
+                          setFailedImages((prev) => new Set(prev).add(prop.images[0]));
+                        }
                       }}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />

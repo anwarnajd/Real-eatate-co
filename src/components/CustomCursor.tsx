@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, useSpring } from 'motion/react';
 
 export const CustomCursor: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isPointer, setIsPointer] = useState(false);
   const [cursorText, setCursorText] = useState('');
+
+  const isPointerRef = useRef(false);
+  const cursorTextRef = useRef('');
 
   // Spring physics for smooth trailing cursor
   const cursorX = useSpring(0, { stiffness: 450, damping: 28 });
@@ -24,14 +27,18 @@ export const CustomCursor: React.FC = () => {
       // Check if hovering over an interactive element
       const target = e.target as HTMLElement | null;
       if (target) {
-        const interactive = target.closest('button, a, input, select, textarea, [role="button"], .cursor-pointer');
+        const interactive = !!target.closest('button, a, input, select, textarea, [role="button"], .cursor-pointer');
         const viewableCard = target.closest('[data-cursor="view"]');
-        
-        setIsPointer(!!interactive);
-        if (viewableCard) {
-          setCursorText('VIEW');
-        } else {
-          setCursorText('');
+        const nextText = viewableCard ? 'VIEW' : '';
+
+        if (isPointerRef.current !== interactive) {
+          isPointerRef.current = interactive;
+          setIsPointer(interactive);
+        }
+
+        if (cursorTextRef.current !== nextText) {
+          cursorTextRef.current = nextText;
+          setCursorText(nextText);
         }
       }
     };
@@ -40,7 +47,7 @@ export const CustomCursor: React.FC = () => {
       setIsVisible(false);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {

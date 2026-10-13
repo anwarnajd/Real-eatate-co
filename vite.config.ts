@@ -1,12 +1,40 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vite';
+import { defineConfig, Plugin } from 'vite';
+
+// Middleware to mock Netlify Image CDN in Vite development and preview server
+function netlifyImageDevPlugin(): Plugin {
+  const handler = (req: any, _res: any, next: any) => {
+    if (req.url && req.url.startsWith('/.netlify/images')) {
+      try {
+        const parsed = new URL(req.url, 'http://localhost:3000');
+        const targetUrl = parsed.searchParams.get('url');
+        if (targetUrl) {
+          req.url = targetUrl;
+        }
+      } catch {
+        // pass through
+      }
+    }
+    next();
+  };
+
+  return {
+    name: 'netlify-image-dev-proxy',
+    configureServer(server) {
+      server.middlewares.use(handler);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(handler);
+    },
+  };
+}
 
 export default defineConfig(() => {
   return {
     base: './',
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), netlifyImageDevPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname || '.', 'src'),
