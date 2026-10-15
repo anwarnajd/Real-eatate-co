@@ -25,6 +25,9 @@ import {
   X,
   Sparkles,
   ImageOff,
+  Layers,
+  Video,
+  Play,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -53,9 +56,13 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
-  const images = property.images && property.images.length > 0
+  const hasRealImages = Boolean(property.images && property.images.length > 0);
+  const videoSrc = property.videoUrl || property.video;
+  const hasVideoOnly = !hasRealImages && Boolean(videoSrc);
+
+  const images = hasRealImages
     ? property.images
-    : ['/images/property-fallback.jpg'];
+    : [];
 
   const typeLabels: Record<string, { ar: string; en: string }> = {
     villa: { ar: 'فيلا فاخرة', en: 'Luxury Villa' },
@@ -63,6 +70,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
     apartment: { ar: 'شقة سكنية', en: 'Apartment' },
     commercial: { ar: 'تجاري ومكاتب', en: 'Commercial' },
     land: { ar: 'أرض استثمارية', en: 'Investment Land' },
+    commercial_land: { ar: 'أرض تجارية', en: 'Commercial Land' },
     upper_floor: { ar: 'دور أول', en: 'First Floor' },
     ground_floor: { ar: 'دور أرضي', en: 'Ground Floor' },
     roof_apartment: { ar: 'شقة روف', en: 'Roof Apartment' },
@@ -184,17 +192,50 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
           </div>
         </div>
 
-        {/* 1. Large Immersive Gallery with Click to Enlarge / Lightbox */}
+        {/* 1. Large Immersive Gallery with Click to Enlarge / Lightbox or Neutral Video Panel */}
         <div className="mb-10 space-y-4">
           <div
-            onMouseEnter={() => setIsZoomed(true)}
-            onMouseLeave={() => setIsZoomed(false)}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            onClick={() => setIsLightboxOpen(true)}
-            className="relative aspect-[16/9] sm:aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl group cursor-zoom-in"
+            onMouseEnter={() => !hasVideoOnly && setIsZoomed(true)}
+            onMouseLeave={() => !hasVideoOnly && setIsZoomed(false)}
+            onTouchStart={!hasVideoOnly ? handleTouchStart : undefined}
+            onTouchEnd={!hasVideoOnly ? handleTouchEnd : undefined}
+            onClick={() => {
+              if (hasVideoOnly) {
+                document.getElementById('property-video-section')?.scrollIntoView({ behavior: 'smooth' });
+              } else if (hasRealImages) {
+                setIsLightboxOpen(true);
+              }
+            }}
+            className={`relative aspect-[16/9] sm:aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xl group ${
+              hasVideoOnly ? 'cursor-pointer' : hasRealImages ? 'cursor-zoom-in' : ''
+            }`}
           >
-            {failedImages.has(images[activeImageIndex]) ? (
+            {hasVideoOnly ? (
+              <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-[#10243B] via-[#193555] to-[#0D1C2E] flex flex-col items-center justify-center p-6 sm:p-10 text-center select-none">
+                {/* Subtle blueprint grid pattern */}
+                <div
+                  className="absolute inset-0 opacity-15 pointer-events-none"
+                  style={{
+                    backgroundImage: 'radial-gradient(circle at 1px 1px, #38BDF8 1px, transparent 0)',
+                    backgroundSize: '24px 24px',
+                  }}
+                />
+
+                {/* Big Center Play Button */}
+                <div className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#088AC3] hover:bg-[#0779AB] text-white flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-105 ring-4 ring-white/20 mb-4 group/play">
+                  <Play className="w-9 h-9 sm:w-10 sm:h-10 fill-white translate-x-0.5 group-hover/play:scale-110 transition-transform" />
+                </div>
+
+                <div className="relative z-10">
+                  <h2 className="text-xl sm:text-3xl font-black text-white tracking-wide">
+                    {isAr ? 'فيديو العقار متاح' : 'Property video available'}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-[#38BDF8] mt-1.5 font-medium">
+                    {isAr ? 'انقر لمشاهدة فيديو العقار في المشغل أدناه' : 'Click to watch the property video below'}
+                  </p>
+                </div>
+              </div>
+            ) : failedImages.has(images[activeImageIndex]) ? (
               <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-slate-400 p-6 text-center select-none">
                 <ImageOff className="w-12 h-12 text-slate-500 mb-3 stroke-[1.5]" />
                 <span className="text-sm font-semibold text-slate-200">
@@ -238,7 +279,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
             {/* Slider Controls */}
-            {images.length > 1 && (
+            {hasRealImages && images.length > 1 && (
               <>
                 <button
                   type="button"
@@ -282,24 +323,39 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
               <span className="px-3.5 py-1 rounded-lg bg-white/95 text-[#193555] font-bold text-xs shadow-md">
                 {isAr ? typeLabels[property.type]?.ar : typeLabels[property.type]?.en}
               </span>
-              <span className="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow-md">
+              <span className="px-3.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow-md">
                 {isAr ? 'متاح' : 'AVAILABLE'}
               </span>
             </div>
 
-            {/* Enlarge Button Hint */}
-            <div className="absolute top-4 end-4 z-10">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsLightboxOpen(true);
-                }}
-                className="px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 text-white text-xs font-semibold backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
-              >
-                <Maximize2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{isAr ? 'تكبير المعرض' : 'Click to Enlarge'}</span>
-              </button>
+            {/* Enlarge & Video Buttons Hint */}
+            <div className="absolute top-4 end-4 z-10 flex items-center gap-2">
+              {Boolean(videoSrc) && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    document.getElementById('property-video-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-[#088AC3]/90 hover:bg-[#088AC3] text-white text-xs font-semibold backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                >
+                  <Video className="w-3.5 h-3.5" />
+                  <span>{isAr ? 'مشاهدة الفيديو' : 'Watch Video'}</span>
+                </button>
+              )}
+              {hasRealImages && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsLightboxOpen(true);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 text-white text-xs font-semibold backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                >
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{isAr ? 'تكبير المعرض' : 'Click to Enlarge'}</span>
+                </button>
+              )}
             </div>
 
             {/* Price Badge on Hero */}
@@ -315,12 +371,14 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
             </div>
 
             {/* Image Counter */}
-            <div className="absolute bottom-4 end-4 z-10 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-xs font-mono">
-              {activeImageIndex + 1} / {images.length}
-            </div>
+            {hasRealImages && (
+              <div className="absolute bottom-4 end-4 z-10 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-xs font-mono">
+                {activeImageIndex + 1} / {images.length}
+              </div>
+            )}
 
             {/* Mobile Dots Indicator */}
-            {images.length > 1 && (
+            {hasRealImages && images.length > 1 && (
               <div className="sm:hidden absolute bottom-4 start-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md">
                 {images.map((_, i) => (
                   <button
@@ -341,7 +399,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
           </div>
 
           {/* Thumbnails row */}
-          {images.length > 1 && (
+          {hasRealImages && images.length > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
               {images.map((img, idx) => (
                 <motion.button
@@ -422,7 +480,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       ? (isAr ? 'نظام الإيجار اليومي' : 'Daily Rental Plan')
                       : (isAr ? 'القيمة / السعر' : 'Price / Value')}
                   </span>
-                  <div className="text-2xl sm:text-3xl font-black font-mono text-[#193555]">
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-[#193555] whitespace-pre-line leading-tight">
                     {isDailyRent && dailyPriceVal !== undefined
                       ? (isAr ? `سعر الإيجار اليومي: ${dailyPriceVal} ريال` : `Daily rental price: ${dailyPriceVal} SAR`)
                       : (isAr ? property.priceFormatted.ar : property.priceFormatted.en)}
@@ -551,6 +609,22 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                 </div>
               )}
 
+              {property.floor && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-white text-[#088AC3] border border-slate-200 shadow-xs">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#64748B] block">
+                      {isAr ? 'الطابق' : 'Floor'}
+                    </span>
+                    <span className="text-sm font-bold text-[#193555]">
+                      {isAr ? property.floor.ar : property.floor.en}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {property.yearBuilt && (
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-white text-[#088AC3] border border-slate-200 shadow-xs">
@@ -604,6 +678,41 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
                       <span className="text-xs font-bold text-[#193555]">{isAr ? property.facade.ar : property.facade.en}</span>
                     </div>
                   )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Video Section */}
+            {videoSrc && (
+              <motion.div
+                id="property-video-section"
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="p-6 rounded-2xl bg-white border border-[#088AC3]/30 shadow-xs overflow-hidden"
+              >
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <Video className="w-5 h-5 text-[#088AC3]" />
+                    <h3 className="text-lg font-bold text-[#193555]">
+                      {isAr ? 'فيديو العقار' : 'Property Video'}
+                    </h3>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#088AC3]/10 text-[#088AC3] text-xs font-bold">
+                    {isAr ? 'فيديو العقار متاح' : 'Property video available'}
+                  </span>
+                </div>
+                <div className="relative rounded-xl overflow-hidden bg-black aspect-video max-h-[550px] w-full flex items-center justify-center">
+                  <video
+                    controls
+                    playsInline
+                    preload="none"
+                    className="w-full h-full object-contain"
+                  >
+                    <source src={videoSrc} type="video/mp4" />
+                    {isAr ? 'متصفحك لا يدعم تشغيل هذا الفيديو.' : 'Your browser does not support playing this video.'}
+                  </video>
                 </div>
               </motion.div>
             )}
@@ -821,7 +930,7 @@ export const PropertyDetailsPage: React.FC<PropertyDetailsPageProps> = ({
 
       {/* 8. FULLSCREEN GALLERY LIGHTBOX MODAL */}
       <AnimatePresence>
-        {isLightboxOpen && (
+        {isLightboxOpen && hasRealImages && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

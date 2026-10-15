@@ -1,7 +1,7 @@
 import React, { useState, memo } from 'react';
 import { Property, Language } from '../types';
 import { translations } from '../data/translations';
-import { MapPin, BedDouble, Bath, Maximize2, ArrowLeft, ArrowRight, MessageCircle, Sparkles, ImageOff } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Maximize2, ArrowLeft, ArrowRight, MessageCircle, Sparkles, ImageOff, Layers, Video, Play } from 'lucide-react';
 import { motion } from 'motion/react';
 import { getOptimizedImageUrl, getResponsiveImageSrcSet, CARD_IMAGE_SIZES } from '../utils/imageUtils';
 
@@ -29,14 +29,15 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
     apartment: { ar: 'شقة سكنية', en: 'Apartment' },
     commercial: { ar: 'تجاري ومكاتب', en: 'Commercial' },
     land: { ar: 'أرض استثمارية', en: 'Investment Land' },
+    commercial_land: { ar: 'أرض تجارية', en: 'Commercial Land' },
     upper_floor: { ar: 'دور أول', en: 'First Floor' },
     ground_floor: { ar: 'دور أرضي', en: 'Ground Floor' },
     roof_apartment: { ar: 'شقة روف', en: 'Roof Apartment' },
   };
 
   const purposeLabels: Record<string, { ar: string; en: string }> = {
-    buy: { ar: 'للبيع', en: 'FOR SALE' },
-    rent: { ar: 'للإيجار', en: 'FOR RENT' },
+    buy: { ar: 'للبيع', en: 'For Sale' },
+    rent: { ar: 'للإيجار', en: 'For Rent' },
   };
 
   const isDailyRent = property.purpose === 'rent' && property.rentalPeriod === 'daily';
@@ -57,9 +58,11 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
     window.open(`https://wa.me/966502886202?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  const coverImage = property.images && property.images.length > 0 ? property.images[0] : '';
-  const optimizedSrc = getOptimizedImageUrl(coverImage, 800, 80);
-  const responsiveSrcSet = getResponsiveImageSrcSet(coverImage, [400, 800, 1200], 80);
+  const hasRealImages = Boolean(property.images && property.images.length > 0);
+  const hasVideoOnly = !hasRealImages && Boolean(property.video || property.videoUrl);
+  const coverImage = hasRealImages ? property.images[0] : '';
+  const optimizedSrc = coverImage ? getOptimizedImageUrl(coverImage, 800, 80) : '';
+  const responsiveSrcSet = coverImage ? getResponsiveImageSrcSet(coverImage, [400, 800, 1200], 80) : '';
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -86,9 +89,36 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
             : 'border-[#E2E8F0] shadow-sm'
         }`}
       >
-        {/* Layer 1: Property Cover Image with Netlify Image CDN and Aspect Ratio (4/3) */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 flex items-center justify-center">
-          {imageError || !coverImage ? (
+        {/* Layer 1: Property Cover Area (Neutral Video Panel or Image) */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-900 flex items-center justify-center">
+          {hasVideoOnly ? (
+            <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-[#10243B] via-[#193555] to-[#0D1C2E] flex flex-col items-center justify-center p-6 text-center select-none transition-transform duration-500 group-hover:scale-[1.02]">
+              {/* Subtle blueprint grid pattern */}
+              <div
+                className="absolute inset-0 opacity-15 pointer-events-none"
+                style={{
+                  backgroundImage: 'radial-gradient(circle at 1px 1px, #38BDF8 1px, transparent 0)',
+                  backgroundSize: '20px 20px',
+                }}
+              />
+
+              {/* Play / Video Icon Badge */}
+              <div className="relative z-10 w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-xl mb-3 group-hover:scale-110 group-hover:bg-[#088AC3] transition-all duration-300">
+                <Play className="w-7 h-7 fill-white translate-x-0.5" />
+              </div>
+
+              {/* Required Exact Labels */}
+              <div className="relative z-10">
+                <span className="text-sm sm:text-base font-bold text-white tracking-wide block drop-shadow-sm">
+                  {isAr ? 'فيديو العقار متاح' : 'Property video available'}
+                </span>
+                <span className="text-[11px] text-[#38BDF8] font-medium mt-1 inline-flex items-center gap-1">
+                  <Video className="w-3.5 h-3.5" />
+                  <span>{isAr ? 'جولة مصورة حقيقية للموقع' : 'Real onsite video tour'}</span>
+                </span>
+              </div>
+            </div>
+          ) : imageError || !coverImage ? (
             <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-500 p-4 text-center select-none">
               <ImageOff className="w-10 h-10 text-slate-400 mb-2 stroke-[1.5]" />
               <span className="text-xs font-semibold text-slate-600">
@@ -146,6 +176,12 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
                     : (isAr ? 'إيجار سنوي' : 'Annual')}
                 </span>
               )}
+              {Boolean(property.video || property.videoUrl) && (
+                <span className="px-2.5 py-1 rounded-lg bg-[#088AC3]/95 text-white shadow-sm backdrop-blur-xs text-[11px] font-bold flex items-center gap-1">
+                  <Video className="w-3 h-3" />
+                  <span>{isAr ? 'فيديو' : 'Video'}</span>
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-1.5">
               <span className="px-2.5 py-1 rounded-lg bg-emerald-600/95 text-white shadow-sm backdrop-blur-xs text-[11px] font-bold">
@@ -159,11 +195,13 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
 
           {/* Floating Price Tag */}
           <div className="absolute bottom-3.5 inset-x-3.5 flex items-end justify-between text-white pointer-events-none z-10">
-            <div className="text-xl font-black font-mono tracking-tight drop-shadow-md">
+            <div className={`font-black font-mono tracking-tight drop-shadow-md whitespace-pre-line leading-tight ${
+              displayPrice.includes('\n') ? 'text-xs sm:text-sm' : 'text-xl'
+            }`}>
               {displayPrice}
             </div>
             {property.featured && (
-              <span className="px-2.5 py-0.5 rounded-md bg-[#088AC3]/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-md bg-[#088AC3]/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs flex items-center gap-1 shrink-0">
                 <Sparkles className="w-3 h-3 text-[#38BDF8]" />
                 <span>{isAr ? 'مميز' : 'FEATURED'}</span>
               </span>
@@ -202,7 +240,7 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
                 ? 'bg-[#EBF6FC] border-[#088AC3]/30 text-[#088AC3]'
                 : 'bg-slate-50 border-slate-200 text-[#193555]'
             }`}>
-              <span className="text-[11px] font-bold">
+              <span className="text-[11px] font-bold shrink-0">
                 {isDailyRent
                   ? (isAr ? 'سعر الإيجار اليومي:' : 'Daily Rental Price:')
                   : property.purpose === 'rent'
@@ -213,7 +251,9 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
                     : (isAr ? 'قيمة الإيجار:' : 'Rent:'))
                   : (isAr ? 'السعر المطلوب:' : 'Price:')}
               </span>
-              <span className="text-sm font-black font-mono">
+              <span className={`font-black font-mono text-end whitespace-pre-line leading-tight ${
+                displayPrice.includes('\n') ? 'text-xs' : 'text-sm'
+              }`}>
                 {displayPrice}
               </span>
             </div>
@@ -237,11 +277,27 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
                   <span className="text-[#64748B]">{t.featured.baths}</span>
                 </div>
               )}
+              {property.floor && (
+                <div className="flex items-center gap-1.5">
+                  <Layers className="w-4 h-4 text-[#355D7F]" />
+                  <span className="font-bold text-[#193555]">
+                    {isAr ? property.floor.ar : property.floor.en}
+                  </span>
+                </div>
+              )}
               {property.area !== undefined && property.area > 0 && (
                 <div className="flex items-center gap-1.5">
                   <Maximize2 className="w-4 h-4 text-[#355D7F]" />
                   <span className="font-mono font-bold text-[#193555]">{property.area}</span>
                   <span className="text-[#64748B]">{t.featured.areaUnit}</span>
+                </div>
+              )}
+              {property.type === 'commercial_land' && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[#64748B] text-[11px]">{isAr ? 'سعر المتر:' : 'Per m²:'}</span>
+                  <span className="font-mono font-bold text-[#088AC3]">
+                    {isAr ? '6,500 ريال / م²' : '6,500 SAR / m²'}
+                  </span>
                 </div>
               )}
             </div>
@@ -256,7 +312,7 @@ const PropertyCardComponent: React.FC<PropertyCardProps> = ({
                 }}
                 className="w-full sm:flex-1 py-2.5 px-3 bg-[#088AC3] hover:bg-[#0779AB] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>{isAr ? 'عرض التفاصيل' : 'VIEW DETAILS'}</span>
+                <span>{isAr ? 'عرض التفاصيل' : 'View Details'}</span>
                 <motion.span
                   animate={{ x: isHovered ? (isAr ? -3 : 3) : 0 }}
                   transition={{ duration: 0.3 }}

@@ -34,16 +34,8 @@ const renderSocialIcon = (id: SocialPlatform['id'], className = 'w-4 h-4') => {
       );
     case 'tiktok':
       return (
-        <svg
-          viewBox="0 0 24 24"
-          className={className}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+        <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.36a6.34 6.34 0 0 0-.85-.06A6.34 6.34 0 0 0 3.1 15.64a6.34 6.34 0 0 0 10.82 4.48 6.28 6.28 0 0 0 1.87-4.48V8.71a8.28 8.28 0 0 0 4.79 1.5V6.76a4.83 4.83 0 0 1-.99-.07z" />
         </svg>
       );
     case 'snapchat':

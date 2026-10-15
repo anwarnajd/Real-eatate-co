@@ -54,6 +54,7 @@ export const RIYADH_DISTRICTS: RiyadhDistrict[] = [
   { id: 'al-rimal', nameAr: 'الرمال', nameEn: 'Al Rimal', zone: 'east' },
   { id: 'al-mounisiyah', nameAr: 'المونسية', nameEn: 'Al Mounisiyah', zone: 'east' },
   { id: 'qurtubah', nameAr: 'قرطبة', nameEn: 'Qurtubah', zone: 'east' },
+  { id: 'al-qadisiyah', nameAr: 'القادسية', nameEn: 'Al Qadisiyah', zone: 'east' },
   { id: 'al-yarmuk', nameAr: 'اليرموك', nameEn: 'Al Yarmuk', zone: 'east' },
   { id: 'al-hamra', nameAr: 'الحمراء', nameEn: 'Al Hamra', zone: 'east' },
   { id: 'ghirnatah', nameAr: 'غرناطة', nameEn: 'Ghirnatah', zone: 'east' },
