@@ -116,9 +116,9 @@ export const HomePage: React.FC<HomePageProps> = ({
     return propertiesData.filter((p: Property) => {
       if (!isPropertyPublished(p)) return false;
       if (featuredCategory === 'all') return true;
-      if (featuredCategory === 'residential') return ['villa', 'penthouse', 'apartment'].includes(p.type);
-      if (featuredCategory === 'commercial') return p.type === 'commercial';
-      if (featuredCategory === 'investment') return p.type === 'land' || p.type === 'commercial';
+      if (featuredCategory === 'residential') return ['villa', 'penthouse', 'apartment', 'ground_floor', 'upper_floor', 'roof_apartment'].includes(p.type);
+      if (featuredCategory === 'commercial') return ['commercial', 'commercial_land', 'commercial_building', 'retail_shop', 'warehouse'].includes(p.type);
+      if (featuredCategory === 'investment') return ['land', 'residential_land', 'commercial_land', 'commercial', 'commercial_building'].includes(p.type);
       if (featuredCategory === 'projects') return p.featured;
       return true;
     });
