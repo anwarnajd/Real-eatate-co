@@ -29,6 +29,7 @@ import {
   Maximize2,
   Building,
   ImageOff,
+  Play,
 } from 'lucide-react';
 
 interface PropertiesPageProps {
@@ -512,7 +513,16 @@ export const PropertiesPage: React.FC<PropertiesPageProps> = ({
                 className="group bg-white border border-[#E2E8F0] hover:border-[#088AC3]/50 rounded-2xl overflow-hidden transition-all duration-300 shadow-xs hover:shadow-lg flex flex-col md:flex-row cursor-pointer"
               >
                 <div className="relative md:w-80 h-56 md:h-auto flex-shrink-0 bg-slate-100 overflow-hidden flex items-center justify-center aspect-[4/3] md:aspect-auto">
-                  {failedImages.has(prop.images[0]) || !prop.images[0] ? (
+                  {(!prop.images || prop.images.length === 0) && (prop.video || prop.videoUrl) ? (
+                    <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-[#10243B] via-[#193555] to-[#0D1C2E] flex flex-col items-center justify-center p-6 text-center select-none">
+                      <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-md mb-2">
+                        <Play className="w-5 h-5 fill-white translate-x-0.5" />
+                      </div>
+                      <span className="text-xs sm:text-sm font-bold text-white">
+                        {isAr ? 'فيديو العقار متاح' : 'Property video available'}
+                      </span>
+                    </div>
+                  ) : failedImages.has(prop.images[0]) || !prop.images[0] ? (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-500 p-4 text-center select-none">
                       <ImageOff className="w-8 h-8 text-slate-400 mb-1.5 stroke-[1.5]" />
                       <span className="text-xs font-semibold text-slate-600">

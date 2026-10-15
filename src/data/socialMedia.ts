@@ -25,14 +25,14 @@ export const SOCIAL_MEDIA_LINKS: SocialPlatform[] = [
     id: 'instagram',
     nameAr: 'انستقرام',
     nameEn: 'Instagram',
-    url: '', // e.g. 'https://instagram.com/anwarnajd'
+    url: 'https://instagram.com/anwar__najd?xtok=MTNsN2ZjNTM4eHc4eQ%3D%3D',
     ariaLabel: 'Instagram profile',
   },
   {
     id: 'tiktok',
     nameAr: 'تيك توك',
     nameEn: 'TikTok',
-    url: '', // e.g. 'https://tiktok.com/@anwarnajd'
+    url: 'https://www.tiktok.com/@anwar__najd?_r=1&_t=ZS-9AX13jMwSxe',
     ariaLabel: 'TikTok profile',
   },
   {

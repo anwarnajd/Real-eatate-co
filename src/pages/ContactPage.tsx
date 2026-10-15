@@ -169,6 +169,69 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
               </div>
             </div>
 
+            {/* Official Social Channels Card (Instagram & TikTok) */}
+            <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-3">
+              <span className="text-xs uppercase tracking-wider text-[#088AC3] font-bold block">
+                {isAr ? 'حسابات التواصل الرسمية' : 'Official Social Channels'}
+              </span>
+
+              {/* Official Instagram Channel */}
+              <a
+                href="https://instagram.com/anwar__najd?xtok=MTNsN2ZjNTM4eHc4eQ%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#FD1D1D] hover:opacity-95 text-white flex items-center justify-between transition-all group shadow-sm hover:shadow-md cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-pink-100 block">{isAr ? 'حساب انستقرام الرسمي' : 'Official Instagram Account'}</span>
+                    <span className="text-sm font-bold text-white block">@anwar__najd</span>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-white group-hover:underline">
+                  {isAr ? 'متابعة ↗' : 'Follow ↗'}
+                </span>
+              </a>
+
+              {/* Official TikTok Channel */}
+              <a
+                href="https://www.tiktok.com/@anwar__najd?_r=1&_t=ZS-9AX13jMwSxe"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3.5 rounded-xl bg-slate-900 hover:bg-black text-white flex items-center justify-between transition-all group shadow-sm hover:shadow-md cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.36a6.34 6.34 0 0 0-.85-.06A6.34 6.34 0 0 0 3.1 15.64a6.34 6.34 0 0 0 10.82 4.48 6.28 6.28 0 0 0 1.87-4.48V8.71a8.28 8.28 0 0 0 4.79 1.5V6.76a4.83 4.83 0 0 1-.99-.07z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-slate-300 block">{isAr ? 'حساب تيك توك الموثق' : 'Official TikTok Account'}</span>
+                    <span className="text-sm font-bold text-white block">@anwar__najd</span>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-[#38BDF8] group-hover:underline">
+                  {isAr ? 'متابعة ↗' : 'Follow ↗'}
+                </span>
+              </a>
+            </div>
+
             {/* Stylized Riyadh Location Map in Light Theme */}
             <div className="p-6 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
               <h4 className="text-sm font-bold text-[#193555] mb-3">

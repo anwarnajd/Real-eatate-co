@@ -161,6 +161,48 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Phone className="w-4 h-4 text-[#088AC3]" />
             </motion.a>
+
+            {/* Direct TikTok Channel */}
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              href="https://www.tiktok.com/@anwar__najd?_r=1&_t=ZS-9AX13jMwSxe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-[#193555] hover:text-black bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-2xs flex items-center justify-center"
+              title={isAr ? 'حساب الشركة على تيك توك: @anwar__najd' : 'Official TikTok: @anwar__najd'}
+              aria-label="TikTok"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.36a6.34 6.34 0 0 0-.85-.06A6.34 6.34 0 0 0 3.1 15.64a6.34 6.34 0 0 0 10.82 4.48 6.28 6.28 0 0 0 1.87-4.48V8.71a8.28 8.28 0 0 0 4.79 1.5V6.76a4.83 4.83 0 0 1-.99-.07z" />
+              </svg>
+            </motion.a>
+
+            {/* Direct Instagram Channel */}
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              href="https://instagram.com/anwar__najd?xtok=MTNsN2ZjNTM4eHc4eQ%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-[#193555] hover:text-[#E1306C] bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-2xs flex items-center justify-center"
+              title={isAr ? 'حساب الشركة على انستقرام: @anwar__najd' : 'Official Instagram: @anwar__najd'}
+              aria-label="Instagram"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </motion.a>
           </div>
 
           {/* Mobile Menu & Compact Language Toggle */}
@@ -282,6 +324,40 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Phone className="w-4 h-4 text-[#088AC3]" />
               <span>{t.companyPhoneDisplay}</span>
+            </a>
+
+            <a
+              href="https://www.tiktok.com/@anwar__najd?_r=1&_t=ZS-9AX13jMwSxe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-bold text-white bg-slate-900 hover:bg-black rounded-lg shadow-xs"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.36a6.34 6.34 0 0 0-.85-.06A6.34 6.34 0 0 0 3.1 15.64a6.34 6.34 0 0 0 10.82 4.48 6.28 6.28 0 0 0 1.87-4.48V8.71a8.28 8.28 0 0 0 4.79 1.5V6.76a4.83 4.83 0 0 1-.99-.07z" />
+              </svg>
+              <span>{isAr ? 'حسابنا على تيك توك (@anwar__najd)' : 'TikTok (@anwar__najd)'}</span>
+            </a>
+
+            <a
+              href="https://instagram.com/anwar__najd?xtok=MTNsN2ZjNTM4eHc4eQ%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-bold text-white bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#FD1D1D] hover:opacity-95 rounded-lg shadow-xs"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+              <span>{isAr ? 'حسابنا على انستقرام (@anwar__najd)' : 'Instagram (@anwar__najd)'}</span>
             </a>
           </div>
         </motion.div>

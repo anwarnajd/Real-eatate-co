@@ -62,9 +62,15 @@ export interface Property {
   };
   bedrooms?: number;
   bathrooms?: number;
+  floor?: {
+    ar: string;
+    en: string;
+  };
   area?: number; // in sq meters
   featured: boolean;
   images: string[];
+  video?: string;
+  videoUrl?: string;
   description: {
     ar: string;
     en: string;
