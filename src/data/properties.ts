@@ -630,7 +630,9 @@ export const propertiesData: Property[] = [
       en: '30m wide street (west-facing)',
     },
     featured: true,
-    images: [],
+    images: [
+      '/properties/al-munsiyah-commercial-land/al-munsiyah-commercial-landcover.jpg',
+    ],
     videoUrl: '/properties/al-munsiyah-commercial-land/video.mp4',
     description: {
       ar: 'أرض تجارية للبيع في حي المونسية بمدينة الرياض، بمساحة 625 م². أبعاد الأرض 25 متر عرض × 25 متر طول، وتقع على شارع بعرض 30 متر جهة غربية. سعر المتر 6,500 ريال، والسعر الإجمالي 4,062,500 ريال.',

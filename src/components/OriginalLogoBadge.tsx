@@ -1,5 +1,4 @@
 import React from 'react';
-import officialLogoImg from '../assets/images/anwar-najd-logo.png';
 
 interface OriginalLogoBadgeProps {
   className?: string;
@@ -11,44 +10,36 @@ export const OriginalLogoBadge: React.FC<OriginalLogoBadgeProps> = ({
   size = 'md',
 }) => {
   const sizeMap = {
-    sm: 'w-44 p-3',
-    md: 'w-60 sm:w-72 p-4 sm:p-5',
-    lg: 'w-72 sm:w-84 p-5 sm:p-6',
+    sm: 'w-44 p-2',
+    md: 'w-64 sm:w-72 p-3 sm:p-4',
+    lg: 'w-72 sm:w-84 p-4 sm:p-5',
   };
 
   const imgHeightMap = {
-    sm: 'h-20 sm:h-24',
-    md: 'h-28 sm:h-32',
-    lg: 'h-36 sm:h-44',
+    sm: 'max-h-48',
+    md: 'max-h-64 sm:max-h-80',
+    lg: 'max-h-80 sm:max-h-96',
   };
 
   return (
     <div
+      dir="ltr"
+      style={{ transform: 'none', WebkitTransform: 'none' }}
       className={`flex flex-col items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200 ${sizeMap[size]} ${className}`}
     >
-      {/* Official Emblem: Exact Anwar Najd PNG, isolated with dir="ltr" and transform:none to prevent any RTL mirroring */}
+      {/* Official Client Anwar Najd Logo: exact file public/images/anwar-najd-logo.png */}
       <div
         dir="ltr"
         style={{ transform: 'none', WebkitTransform: 'none' }}
-        className={`w-full ${imgHeightMap[size]} flex items-center justify-center overflow-hidden`}
+        className="w-full flex items-center justify-center overflow-hidden"
       >
         <img
-          src={officialLogoImg || '/anwar-najd-logo.png'}
+          src="/images/anwar-najd-logo.png"
           alt="شركة انوار نجد العقارية"
-          className="w-full h-full object-contain select-none pointer-events-none"
+          className={`w-auto h-auto max-w-full ${imgHeightMap[size]} object-contain select-none pointer-events-none rounded-xl`}
           style={{ transform: 'none', WebkitTransform: 'none' }}
           loading="eager"
         />
-      </div>
-
-      {/* Official Arabic Typography rendered in native HTML - 100% correct RTL shaping, never reversed */}
-      <div className="mt-3 text-center w-full select-none" dir="rtl">
-        <h2 className="text-[#193555] font-black text-sm sm:text-base md:text-lg leading-tight tracking-normal font-sans" dir="rtl">
-          شركة انوار نجد العقارية
-        </h2>
-        <p className="text-[#088AC3] font-bold text-[10px] sm:text-xs mt-1 tracking-normal font-sans" dir="rtl">
-          للخدمات العقارية والاستثمار
-        </p>
       </div>
     </div>
   );
