@@ -20,6 +20,15 @@ export function getOptimizedImageUrl(
     return src;
   }
 
+  // In non-Netlify environments (local dev, preview containers), return direct local path immediately
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isNetlify = hostname.includes('netlify.app') || hostname.includes('anwarnajd.sa');
+    if (!isNetlify) {
+      return src;
+    }
+  }
+
   const normalizedSrc = src.startsWith('/') ? src : `/${src}`;
   const encodedSrc = encodeURIComponent(normalizedSrc);
 
@@ -42,6 +51,15 @@ export function getResponsiveImageSrcSet(
     src.startsWith('https://')
   ) {
     return '';
+  }
+
+  // In non-Netlify environments, avoid generating 404 srcset
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isNetlify = hostname.includes('netlify.app') || hostname.includes('anwarnajd.sa');
+    if (!isNetlify) {
+      return '';
+    }
   }
 
   const normalizedSrc = src.startsWith('/') ? src : `/${src}`;

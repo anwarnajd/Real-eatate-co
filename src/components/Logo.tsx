@@ -44,7 +44,7 @@ export const Logo: React.FC<LogoProps> = ({
         } flex items-center justify-center transition-transform duration-300 group-hover:scale-105`}
       >
         <img
-          src={officialLogoImg || '/anwar-najd-logo.png'}
+          src="/images/anwar-najd-logo.png"
           alt="شركة انوار نجد العقارية"
           className="w-full h-full object-contain select-none pointer-events-none"
           style={{ transform: 'none', WebkitTransform: 'none' }}

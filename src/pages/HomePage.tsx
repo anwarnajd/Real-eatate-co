@@ -230,7 +230,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-xl p-2 flex items-center justify-center border border-white/40"
             >
               <img
-                src="/anwar-najd-logo.png"
+                src="/images/anwar-najd-logo.png"
                 alt="شركة انوار نجد العقارية"
                 className="w-full h-full object-contain select-none pointer-events-none"
                 style={{ transform: 'none', WebkitTransform: 'none' }}
