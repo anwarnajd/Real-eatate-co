@@ -116,9 +116,9 @@ export const HomePage: React.FC<HomePageProps> = ({
     return propertiesData.filter((p: Property) => {
       if (!isPropertyPublished(p)) return false;
       if (featuredCategory === 'all') return true;
-      if (featuredCategory === 'residential') return ['villa', 'penthouse', 'apartment'].includes(p.type);
-      if (featuredCategory === 'commercial') return p.type === 'commercial';
-      if (featuredCategory === 'investment') return p.type === 'land' || p.type === 'commercial';
+      if (featuredCategory === 'residential') return ['villa', 'penthouse', 'apartment', 'ground_floor', 'upper_floor', 'roof_apartment'].includes(p.type);
+      if (featuredCategory === 'commercial') return ['commercial', 'commercial_land', 'commercial_building', 'retail_shop', 'warehouse'].includes(p.type);
+      if (featuredCategory === 'investment') return ['land', 'residential_land', 'commercial_land', 'commercial', 'commercial_building'].includes(p.type);
       if (featuredCategory === 'projects') return p.featured;
       return true;
     });
@@ -224,8 +224,18 @@ export const HomePage: React.FC<HomePageProps> = ({
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="mb-3 sm:mb-4 flex justify-center"
           >
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-2 shadow-lg flex items-center justify-center">
-              <Building className="w-5 h-5 text-[#38BDF8]" />
+            <div
+              dir="ltr"
+              style={{ transform: 'none', WebkitTransform: 'none' }}
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-xl p-2 flex items-center justify-center border border-white/40"
+            >
+              <img
+                src="/anwar-najd-logo.png"
+                alt="شركة انوار نجد العقارية"
+                className="w-full h-full object-contain select-none pointer-events-none"
+                style={{ transform: 'none', WebkitTransform: 'none' }}
+                loading="eager"
+              />
             </div>
           </motion.div>
 

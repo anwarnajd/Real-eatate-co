@@ -40,7 +40,7 @@ export const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete }) =>
             className="relative z-10 flex flex-col items-center text-center p-6"
           >
             {/* Logo Emblem */}
-            <div className="relative">
+            <div className="relative" dir="ltr" style={{ transform: 'none', WebkitTransform: 'none' }}>
               <OriginalLogoBadge size="md" className="border-none shadow-none" />
 
               {/* Animated Light Shimmer Ring */}
