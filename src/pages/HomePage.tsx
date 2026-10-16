@@ -224,8 +224,18 @@ export const HomePage: React.FC<HomePageProps> = ({
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="mb-3 sm:mb-4 flex justify-center"
           >
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-2 shadow-lg flex items-center justify-center">
-              <Building className="w-5 h-5 text-[#38BDF8]" />
+            <div
+              dir="ltr"
+              style={{ transform: 'none', WebkitTransform: 'none' }}
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-xl p-2 flex items-center justify-center border border-white/40"
+            >
+              <img
+                src="/anwar-najd-logo.png"
+                alt="شركة انوار نجد العقارية"
+                className="w-full h-full object-contain select-none pointer-events-none"
+                style={{ transform: 'none', WebkitTransform: 'none' }}
+                loading="eager"
+              />
             </div>
           </motion.div>
 
