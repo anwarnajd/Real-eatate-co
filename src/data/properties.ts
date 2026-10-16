@@ -670,6 +670,71 @@ export const propertiesData: Property[] = [
       { labelAr: 'التوثيق المصور', labelEn: 'Media Documentation', valueAr: 'فيديو مصور حقيقي للموقع', valueEn: 'Real onsite video available' },
     ],
   },
+  {
+    id: 'anw-munsiyah-residential-land-sale',
+    refNumber: 'ANW-5074',
+    status: 'published',
+    isPublished: true,
+    title: {
+      ar: 'أرض سكنية للبيع في حي المونسية',
+      en: 'Residential Land for Sale in Al Munsiyah',
+    },
+    purpose: 'buy',
+    type: 'residential_land',
+    price: 2250000,
+    priceFormatted: {
+      ar: '2,250,000 ريال',
+      en: '2,250,000 SAR',
+    },
+    location: {
+      districtAr: 'حي المونسية',
+      districtEn: 'Al Munsiyah',
+      cityAr: 'الرياض',
+      cityEn: 'Riyadh',
+    },
+    area: 450,
+    facade: {
+      ar: 'شارع بعرض 15 متر (جهة جنوبية)',
+      en: '15m wide street (south-facing)',
+    },
+    featured: true,
+    images: [
+      '/properties/al-munsiyah-residential-land/cover.jpg',
+    ],
+    videoUrl: '/properties/al-munsiyah-residential-land/video.mp4',
+    description: {
+      ar: 'أرض سكنية للبيع في حي المونسية المتميز بمدينة الرياض، بمساحة 450 م². أبعاد الأرض 12 متر عرض × 37.5 متر طول، وتقع على شارع بعرض 15 متر جهة جنوبية. سعر المتر 5,000 ريال، والسعر الإجمالي 2,250,000 ريال. موقع ممتاز يجمع بين الهدوء وقربه من الخدمات.',
+      en: 'Residential land for sale in prime Al Munsiyah district, Riyadh, with a total area of 450 m². Dimensions are 12 m width × 37.5 m length on a 15-meter-wide south-facing street. Price per square meter is 5,000 SAR, and the total price is 2,250,000 SAR. Excellent location combining quiet residential atmosphere and proximity to amenities.',
+    },
+    features: {
+      ar: [
+        'أرض سكنية استثمارية في موقع مميز بحي المونسية',
+        'مساحة 450 م² (عرض 12 م × طول 37.5 م)',
+        'شارع سكني بعرض 15 متر وجهة جنوبية',
+        'سعر المتر 5,000 ريال',
+        'إجمالي السعر 2,250,000 ريال',
+        'فيديو واقعي موثق ومصور للموقع',
+      ],
+      en: [
+        'Prime residential investment land in Al Munsiyah',
+        'Total area of 450 m² (12 m width × 37.5 m length)',
+        'Wide 15-meter south-facing street',
+        'Price per square meter: 5,000 SAR',
+        'Total price: 2,250,000 SAR',
+        'Real verified onsite video documentation',
+      ],
+    },
+    specs: [
+      { labelAr: 'نوع العقار', labelEn: 'Property Type', valueAr: 'أرض سكنية للبيع', valueEn: 'Residential Land for Sale' },
+      { labelAr: 'الموقع', labelEn: 'Location', valueAr: 'حي المونسية، الرياض', valueEn: 'Al Munsiyah, Riyadh' },
+      { labelAr: 'المساحة', labelEn: 'Area', valueAr: '450 م²', valueEn: '450 m²' },
+      { labelAr: 'الأبعاد', labelEn: 'Dimensions', valueAr: '12 متر عرض × 37.5 متر طول', valueEn: '12 m width × 37.5 m length' },
+      { labelAr: 'الشارع والواجهة', labelEn: 'Street & Facade', valueAr: 'شارع عرض 15 متر (واجهة جنوبية)', valueEn: '15m street (south-facing)' },
+      { labelAr: 'سعر المتر', labelEn: 'Price per m²', valueAr: '5,000 ريال', valueEn: '5,000 SAR' },
+      { labelAr: 'السعر الإجمالي', labelEn: 'Total Price', valueAr: '2,250,000 ريال', valueEn: '2,250,000 SAR' },
+      { labelAr: 'التوثيق المصور', labelEn: 'Media Documentation', valueAr: 'فيديو مصور حقيقي للموقع', valueEn: 'Real onsite video available' },
+    ],
+  },
 ];
 
 /**
