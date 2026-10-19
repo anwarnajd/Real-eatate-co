@@ -35,11 +35,14 @@ export const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-    }, 600);
+    if (!formData.name || !formData.phone || !formData.message) {
+      return;
+    }
+    const whatsappText = isAr
+      ? `السلام عليكم، لدي استفسار جديد من موقع شركة انوار نجد العقارية.\n\n👤 اسم العميل: ${formData.name}\n\n📱 رقم الهاتف: ${formData.phone}\n\n📧 البريد الإلكتروني: ${formData.email || 'غير متوفر'}\n\n📝 تفاصيل الاستفسار:\n${formData.message}${formData.serviceOrProperty ? `\n\n📌 العقار / الخدمة المهتم بها: ${formData.serviceOrProperty}` : ''}\n\n🌐 المصدر: موقع انوار نجد العقارية`
+      : `Hello, I have a new inquiry from the Anwar Najd Real Estate website.\n\n👤 Customer Name: ${formData.name}\n\n📱 Phone Number: ${formData.phone}\n\n📧 Email: ${formData.email || 'Not provided'}\n\n📝 Inquiry Details:\n${formData.message}${formData.serviceOrProperty ? `\n\n📌 Interested Property/Service: ${formData.serviceOrProperty}` : ''}\n\n🌐 Source: Anwar Najd Real Estate Website`;
+
+    window.open(`https://wa.me/966502886202?text=${encodeURIComponent(whatsappText)}`, '_blank');
   };
 
   const handleWhatsAppDirect = () => {
